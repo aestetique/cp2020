@@ -321,7 +321,7 @@ export class CyberpunkItem extends Item {
               }
           };
           let roll = new Multiroll(`${localize("Autofire")}`, `${localize("Range")}: ${localizeParam(attackMods.range, {range: actualRangeBracket})}`);
-          roll.execute(undefined, "systems/cyberpunk2020/templates/chat/multi-hit.hbs", templateData);
+          roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
           rolls.push(roll);
       }
       return rolls;
@@ -365,7 +365,7 @@ export class CyberpunkItem extends Item {
           }
       };
       let roll = new Multiroll(localize("ThreeRoundBurst"));
-      roll.execute(undefined, "systems/cyberpunk2020/templates/chat/multi-hit.hbs", templateData);
+      roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
       this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
       return roll;
   }
@@ -398,14 +398,14 @@ export class CyberpunkItem extends Item {
     }
 
     const html = await renderTemplate(
-      "systems/cyberpunk2020/templates/chat/suppressive.hbs",
+      "systems/cp2020/templates/chat/suppressive.hbs",
       { weaponName: this.name, rounds, width, saveDC, dmgFormula, results }
     );
 
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this.actor }),
       content: html,
-      flags  : { cyberpunk2020: { fireMode: "suppressive" } }
+      flags  : { cp2020: { fireMode: "suppressive" } }
     });
   }
 
@@ -456,7 +456,7 @@ export class CyberpunkItem extends Item {
       };
 
       let roll = new Multiroll(localize("SemiAuto"));
-      roll.execute(undefined, "systems/cyberpunk2020/templates/chat/multi-hit.hbs", templateData);
+      roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
 
       this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
       

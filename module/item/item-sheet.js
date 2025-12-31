@@ -21,7 +21,7 @@ export class CyberpunkItemSheet extends ItemSheet {
 
   /** @override */
   get template() {
-    const path = "systems/cyberpunk2020/templates/item";
+    const path = "systems/cp2020/templates/item";
     // Return a single sheet for all item types.
     // return `${path}/item-sheet.hbs`;
 

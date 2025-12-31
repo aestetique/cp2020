@@ -103,13 +103,13 @@ export async function getDefaultSkills() {
     let packName;
     switch(selectedLanguage) {
         case "en":
-            packName = "cyberpunk2020.default-skills-en";
+            packName = "cp2020.default-skills-en";
             break;
         case "ru":
-            packName = "cyberpunk2020.default-skills-ru";
+            packName = "cp2020.default-skills-ru";
             break;
         default:
-            packName = "cyberpunk2020.default-skills-en";
+            packName = "cp2020.default-skills-en";
     }
 
     // Получаем пакет на основе его имени

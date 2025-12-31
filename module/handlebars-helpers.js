@@ -1,6 +1,6 @@
 import { deepLookup, localize, properCase, replaceIn, shortLocalize } from "./utils.js"
 
-const templatePath = "systems/cyberpunk2020/templates/";
+const templatePath = "systems/cp2020/templates/";
 export function registerHandlebarsHelpers() {
     Handlebars.registerHelper('properCase', properCase);
     // Short for cyberpunk localize
@@ -168,7 +168,7 @@ export function registerHandlebarsHelpers() {
         return templatePath + templateName + ".hbs";
     });
 
-    // eg. {{> (replaceIn "systems/cyberpunk2020/templates/path/to/a-partial-[VAR]" foo)}}
+    // eg. {{> (replaceIn "systems/cp2020/templates/path/to/a-partial-[VAR]" foo)}}
     Handlebars.registerHelper("replaceIn", replaceIn);
     // eg. {{> (CPTemplate "path/to/static-partial.hbs")}}
     Handlebars.registerHelper("CPTemplate", function(path) {

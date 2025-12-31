@@ -26,9 +26,9 @@ Hooks.once('init', async function () {
 
     // Register sheets, unregister original core sheets
     Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("cyberpunk2020", CyberpunkActorSheet, { makeDefault: true });
+    Actors.registerSheet("cp2020", CyberpunkActorSheet, { makeDefault: true });
     Items.unregisterSheet("core", ItemSheet);
-    Items.registerSheet("cyberpunk2020", CyberpunkItemSheet, { makeDefault: true });
+    Items.registerSheet("cp2020", CyberpunkItemSheet, { makeDefault: true });
 
     // Register System Settings
     registerSystemSettings();
@@ -45,7 +45,7 @@ Hooks.once('init', async function () {
 Hooks.once("ready", function() {
     // Determine whether a system migration is required and feasible
     if ( !game.user.isGM ) return;
-    const lastMigrateVersion = game.settings.get("cyberpunk2020", "systemMigrationVersion");
+    const lastMigrateVersion = game.settings.get("cp2020", "systemMigrationVersion");
     // We do need to try migrating if we haven't run before - as it stands, previous worlds didn't use this setting, or by default had it set to current version
 
     // The version migrations need to begin - if you make a change from 0.1 to 0.2, this should be 0.2

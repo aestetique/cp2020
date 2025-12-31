@@ -2,7 +2,7 @@
   "id": "cp2020",
   "title": "Cyberpunk 2020",
   "description": "A system for playing the R. Talsorian Games' Cyberpunk 2020 in the Foundry Virtual Tabletop environment.",
-  "background": "systems/cyberpunk2020/img/cyberpunk2020-background.webp",
+  "background": "systems/cp2020/img/system-background.webp",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "13",
@@ -25,185 +25,8 @@
     }
   ],
   "scripts": [],
-  "esmodules": ["module/cyberpunk2020.js"],
-  "styles": ["css/cyberpunk2020.css"],
-  "packs": [
-    {
-      "name": "roll-tables",
-      "label": "Roll Tables",
-      "system": "cp2020",
-      "path": "./packs/roll-tables.db",
-      "type": "RollTable"
-    },
-    {
-      "name": "default-skills-en",
-      "label": "Default Skills EN",
-      "system": "cp2020",
-      "path": "./packs/default-skills-en.db",
-      "type": "Item"
-    },
-    {
-      "name": "default-skills-ru",
-      "label": "Default Skills RU",
-      "system": "cp2020",
-      "path": "./packs/default-skills-ru.db",
-      "type": "Item"
-    },
-    {
-      "name": "role-skills-en",
-      "label": "Role Skills EN",
-      "system": "cp2020",
-      "path": "./packs/role-skills-en.db",
-      "type": "Item"
-    },
-    {
-      "name": "role-skills-ru",
-      "label": "Role Skills RU",
-      "system": "cp2020",
-      "path": "./packs/role-skills-ru.db",
-      "type": "Item"
-    },
-    {
-      "name": "pistols",
-      "label": "Pistols",
-      "path": "./packs/pistols.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "rifles",
-      "label": "Rifles",
-      "path": "./packs/rifles.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "cyberware",
-      "label": "Cyberware",
-      "path": "./packs/cyberware.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "chipware",
-      "label": "Chipware",
-      "path": "./packs/chipware.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "communication",
-      "label": "Communication",
-      "path": "./packs/communication.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "electronics",
-      "label": "Electronics",
-      "path": "./packs/electronics.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "entertainment",
-      "label": "Entertainment",
-      "path": "./packs/entertainment.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "fashion",
-      "label": "Fashion",
-      "path": "./packs/fashion.db",
-      "system": "cyberpunk2020",
-      "type": "Item"
-    },
-    {
-      "name": "furnishing",
-      "label": "Furnishing",
-      "path": "./packs/furnishing.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "medical",
-      "label": "Medical",
-      "path": "./packs/medical.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {  
-      "name": "netrunningEquipment",
-      "label": "Netrunning Equipment",
-      "path": "./packs/netrunningEquipment.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "security",
-      "label": "Security",
-      "path": "./packs/security.db",
-      "system": "cyberpunk2020",
-      "type": "Item"
-    },
-    {
-      "name": "surveillance",
-      "label": "Surveillance",
-      "path": "./packs/surveillance.db",
-      "system": "cyberpunk2020",
-      "type": "Item"
-    },
-    {
-      "name": "tools",
-      "label": "Tools",
-      "path": "./packs/tools.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "rentalandservices",
-      "label": "Rental&Services",
-      "path": "./packs/rentalandservices.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "sellthedead",
-      "label": "Sell the Dead",
-      "path": "./packs/sellTheDead.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "armor",
-      "label": "Armor",
-      "path": "./packs/armor.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "vehicles",
-      "label": "Vehicles",
-      "path": "./packs/vehicles.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "smgs",
-      "label": "SMGs",
-      "path": "./packs/smgs.db",
-      "system": "cp2020",
-      "type": "Item"
-    },
-    {
-      "name": "programs",
-      "label": "Programs",
-      "system": "cp2020",
-      "path": "./packs/programs.db",
-      "type": "Item"
-    }
-  ],
+  "esmodules": ["module/cp2020.js"],
+  "styles": ["css/cp2020.css"],
   "languages": [
     {
       "lang": "en",
@@ -221,6 +44,6 @@
   "secondaryTokenAttribute": null,
   "url": "https://github.com/aestetique/cp2020",
   "manifest": "https://raw.githubusercontent.com/aestetique/cp2020/main/system.json",
-  "download": "https://github.com/aestetique/cp2020/archive/refs/tags/release-1.0.0.zip"
+  "download": "https://github.com/aestetique/cp2020/archive/refs/tags/release-1.0.1.zip"
 }
   

@@ -14,11 +14,11 @@ export class CyberpunkActor extends Actor {
   async _onCreate(data, options={}) {
     const updates = {_id: data._id};
     if (data.type === "character" ) {
-      updates["img"] = "systems/cyberpunk2020/img/edgerunner.svg";
-      updates["prototypeToken.texture.src"] = "systems/cyberpunk2020/img/edgerunner.svg";
+      updates["img"] = "systems/cp2020/img/edgerunner.svg";
+      updates["prototypeToken.texture.src"] = "systems/cp2020/img/edgerunner.svg";
       updates["prototypeToken.actorLink"] = true;
       updates["prototypeToken.sight.enabled"] = true;
-      updates["system.icon"] = "systems/cyberpunk2020/img/edgerunner.svg";
+      updates["system.icon"] = "systems/cp2020/img/edgerunner.svg";
     }
     
     // Check if we have skills already, don't wipe skill items if we do

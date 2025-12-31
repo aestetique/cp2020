@@ -1,5 +1,5 @@
 export const BaseDie = "1d10x10";
-export const DefaultRollTemplate = "systems/cyberpunk2020/templates/chat/default-roll.hbs";
+export const DefaultRollTemplate = "systems/cp2020/templates/chat/default-roll.hbs";
 
 export const formulaHasDice = function (formula) {
     return formula.match(/[0-9)][dD]/) || formula.match(/[dD][0-9(]/);
@@ -101,7 +101,7 @@ export function classifyRollDice(roll) {
     /**
      * Note: You should provide either unevaluated Rolls, or fulfilledrolls (not promises). As things stand, promises will break a multiroll.
      * @param {*} speaker The speaker on the card for this multiroll
-     * @param {string} templatePath Path to the template. eg systems/cyberpunk2020/templates/chat/weapon-roll.hbs
+     * @param {string} templatePath Path to the template. eg systems/cp2020/templates/chat/weapon-roll.hbs
      * Template provided should be one that loops through rolls.
      * Example data provided to the template:
      * {

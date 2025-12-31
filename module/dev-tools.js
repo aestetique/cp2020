@@ -1,5 +1,5 @@
 // Tools useful for using from Foundry's F12 console that don't particularly have a place elsewhere.
-// To use the below functions in console, run `const DevTools = await import("./systems/cyberpunk2020/module/dev-tools.js")`
+// To use the below functions in console, run `const DevTools = await import("./systems/cp2020/module/dev-tools.js")`
 // You can then run them with DevTools.functionName
 // It's entirely possible this file may be removed at some point, as it's kinda useful for development but not for the system itself.
 import { attackSkills } from "./lookups";
@@ -11,7 +11,7 @@ import { attackSkills } from "./lookups";
 *   console.log(doc.id);
 * }
 * ```
-* @param {*} packID The pack's ID - eg "cyberpunk2020.name"
+* @param {*} packID The pack's ID - eg "cp2020.name"
 */
 export async function* compendiumItems(packID) {
     let pack = game.packs.get(packID);
@@ -22,7 +22,7 @@ export async function* compendiumItems(packID) {
 
 /**
  * Return the first item in a compendium with the given ID. Useful for quickly seeing the "shape" of items in the compendium that you'll be changing
- * @param {string} packID ID of the compendium, eg cyberpunk2020.rifles 
+ * @param {string} packID ID of the compendium, eg cp2020.rifles 
  * @returns First item in the given compendium.
  */
 export async function exampleCompendiumItem(packID) {
