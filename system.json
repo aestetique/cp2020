@@ -2,7 +2,7 @@
   "id": "cyberpunk2020",
   "title": "Cyberpunk 2020",
   "description": "A system for playing the R. Talsorian Games' Cyberpunk 2020 in the Foundry Virtual Tabletop environment.",
-  "background": "systems/cyberpunk2020/img/official/cyberpunk2020-background.webp",
+  "background": "systems/cyberpunk2020/img/cyberpunk2020-background.webp",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "13",
