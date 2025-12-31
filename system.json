@@ -3,7 +3,7 @@
   "title": "Cyberpunk 2020",
   "description": "A system for playing the R. Talsorian Games' Cyberpunk 2020 in the Foundry Virtual Tabletop environment.",
   "background": "systems/cp2020/img/system-background.webp",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "compatibility": {
     "minimum": "13",
     "verified": "13",
@@ -221,6 +221,6 @@
   "secondaryTokenAttribute": null,
   "url": "https://github.com/aestetique/cp2020",
   "manifest": "https://raw.githubusercontent.com/aestetique/cp2020/main/system.json",
-  "download": "https://github.com/aestetique/cp2020/archive/refs/tags/release-1.0.3.zip"
+  "download": "https://github.com/aestetique/cp2020/archive/refs/tags/release-1.0.4.zip"
 }
   
