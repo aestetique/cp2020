@@ -220,6 +220,6 @@
   "secondaryTokenAttribute": null,
   "url": "https://github.com/aestetique/cyberpunk2020",
   "manifest": "https://raw.githubusercontent.com/aestetique/cyberpunk2020/main/system.json",
-  "download": "https://github.com/aestetique/cyberpunk2020/releases/download/v1.0.0/cyberpunk2020.zip"
+  "download": "https://github.com/aestetique/cyberpunk2020/archive/refs/tags/release-1.0.0.zip"
 }
   
