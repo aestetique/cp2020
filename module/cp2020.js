@@ -2,6 +2,7 @@ import { CyberpunkActor } from "./actor/actor.js";
 import { CyberpunkActorSheet } from "./actor/actor-sheet.js";
 import { CyberpunkItem } from "./item/item.js";
 import { CyberpunkItemSheet } from "./item/item-sheet.js";
+import { CyberpunkChatMessage } from "./chat-message.js";
 
 import { preloadHandlebarsTemplates } from "./templates.js";
 import { registerHandlebarsHelpers } from "./handlebars-helpers.js"
@@ -23,6 +24,7 @@ Hooks.once('init', async function () {
     // Define custom Document classes
     CONFIG.Actor.documentClass = CyberpunkActor;
     CONFIG.Item.documentClass = CyberpunkItem;
+    CONFIG.ChatMessage.documentClass = CyberpunkChatMessage;
 
     // Register sheets, unregister original core sheets
     Actors.unregisterSheet("core", ActorSheet);

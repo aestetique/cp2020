@@ -15,6 +15,32 @@ $transition-period: 0.25s;
 
 $field-border-width: 2px;
 
+// ============================================
+// Chat Card Design Tokens (from Figma)
+// ============================================
+:root {
+  // Core Colors
+  --chat-text: #FFFFFF;
+  --chat-back: #1A1A1A;
+  --chat-stroke: #252730;
+  --chat-accent: #26282F;
+  --chat-gray: #444856;
+
+  // Success States
+  --chat-green: #24563D;
+  --chat-green-text: #1A804D;
+  --chat-green-back: #1A2A25;
+
+  // Failure States
+  --chat-red: #632733;
+  --chat-red-text: #86223D;
+  --chat-red-back: #30161A;
+
+  // Typography - Using fallbacks until custom fonts are loaded
+  --font-blender: "Blender Pro", "Noto Sans", sans-serif;
+  --font-refinery: "Refinery 55", "Open Sans", sans-serif;
+}
+
 * {
     scrollbar-width: thin;
 }

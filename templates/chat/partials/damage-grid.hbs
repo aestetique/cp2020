@@ -1,0 +1,32 @@
+{{!-- Damage grid for body locations (3x2 grid) --}}
+{{!-- Expects: aggregatedDamage object with location keys and damage values --}}
+<div class="damage-grid">
+    {{!-- Row 1: Left Arm, Head, Right Arm --}}
+    <div class="damage-grid__row">
+        {{#bodyGridRow "row1"}}
+        <div class="damage-grid__cell {{#if (locationWasHit ../aggregatedDamage location)}}damage-grid__cell--hit{{else}}damage-grid__cell--empty{{/if}}">
+            {{#if (locationWasHit ../aggregatedDamage location)}}
+            <span class="damage-grid__value">{{getLocationDamage ../aggregatedDamage location}}</span>
+            {{else}}
+            <span class="damage-grid__icon damage-grid__icon--muted">
+                <img src="systems/cp2020/img/icons/chat/{{location}}.svg" alt="{{CPLocal location}}">
+            </span>
+            {{/if}}
+        </div>
+        {{/bodyGridRow}}
+    </div>
+    {{!-- Row 2: Left Leg, Torso, Right Leg --}}
+    <div class="damage-grid__row">
+        {{#bodyGridRow "row2"}}
+        <div class="damage-grid__cell {{#if (locationWasHit ../aggregatedDamage location)}}damage-grid__cell--hit{{else}}damage-grid__cell--empty{{/if}}">
+            {{#if (locationWasHit ../aggregatedDamage location)}}
+            <span class="damage-grid__value">{{getLocationDamage ../aggregatedDamage location}}</span>
+            {{else}}
+            <span class="damage-grid__icon damage-grid__icon--muted">
+                <img src="systems/cp2020/img/icons/chat/{{location}}.svg" alt="{{CPLocal location}}">
+            </span>
+            {{/if}}
+        </div>
+        {{/bodyGridRow}}
+    </div>
+</div>

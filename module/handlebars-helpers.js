@@ -205,4 +205,80 @@ export function registerHandlebarsHelpers() {
         }
         return "";
     });
+
+    /**
+     * Aggregate damage by body location for chat cards
+     * Converts { "Head": [{damage: 12}, {damage: 8}], "Torso": [{damage: 15}] }
+     * Into { "Head": 20, "Torso": 15 }
+     */
+    Handlebars.registerHelper("aggregateDamage", function(areaDamages) {
+        if (!areaDamages) return {};
+        const totals = {};
+        for (const [location, damages] of Object.entries(areaDamages)) {
+            if (Array.isArray(damages)) {
+                totals[location] = damages.reduce((sum, d) => sum + (d.damage || 0), 0);
+            } else {
+                totals[location] = damages;
+            }
+        }
+        return totals;
+    });
+
+    /**
+     * Get damage for a specific body location from aggregated damage
+     * Returns the damage value or 0 if not hit
+     */
+    Handlebars.registerHelper("getLocationDamage", function(aggregatedDamage, location) {
+        if (!aggregatedDamage) return 0;
+        return aggregatedDamage[location] || 0;
+    });
+
+    /**
+     * Check if a body location was hit (has damage > 0)
+     */
+    Handlebars.registerHelper("locationWasHit", function(aggregatedDamage, location) {
+        if (!aggregatedDamage) return false;
+        return (aggregatedDamage[location] || 0) > 0;
+    });
+
+    /**
+     * Body location grid for damage display
+     * Returns the grid structure for the 3x2 body location layout
+     */
+    Handlebars.registerHelper("bodyGridRow", function(row, options) {
+        const grid = {
+            row1: ['LeftArm', 'Head', 'RightArm'],
+            row2: ['LeftLeg', 'Torso', 'RightLeg']
+        };
+        const locations = grid[row] || [];
+        let result = '';
+        locations.forEach(location => {
+            result += options.fn({ location: location });
+        });
+        return result;
+    });
+
+    /**
+     * JSON stringify for passing data to data attributes
+     */
+    Handlebars.registerHelper("json", function(context) {
+        return JSON.stringify(context);
+    });
+
+    /**
+     * Clean dice formula for display
+     * Removes the x10 exploding notation from 1d10x10 -> 1d10
+     * Also cleans up @variable references to show cleaner formulas
+     */
+    Handlebars.registerHelper("cleanFormula", function(formula) {
+        if (!formula) return "";
+        // Replace 1d10x10 with 1d10 (exploding notation)
+        let cleaned = formula.replace(/1d10x10/gi, "1d10");
+        // Replace @variable.path references with their last segment
+        cleaned = cleaned.replace(/@[\w.]+/g, (match) => {
+            const parts = match.split(".");
+            return parts[parts.length - 1];
+        });
+        return cleaned;
+    });
 }
