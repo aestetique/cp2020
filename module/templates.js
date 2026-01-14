@@ -26,6 +26,18 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/chat/default-roll.hbs",
         "systems/cp2020/templates/chat/weapon-roll.hbs",
         "systems/cp2020/templates/chat/multi-hit.hbs",
+        "systems/cp2020/templates/chat/initiative.hbs",
+        "systems/cp2020/templates/chat/save-roll.hbs",
+        "systems/cp2020/templates/chat/suppressive.hbs",
+
+        // Chat card partials
+        "systems/cp2020/templates/chat/partials/card-header.hbs",
+        "systems/cp2020/templates/chat/partials/section-bar.hbs",
+        "systems/cp2020/templates/chat/partials/weapon-line.hbs",
+        "systems/cp2020/templates/chat/partials/formula-bar.hbs",
+        "systems/cp2020/templates/chat/partials/roll-details.hbs",
+        "systems/cp2020/templates/chat/partials/result-row.hbs",
+        "systems/cp2020/templates/chat/partials/damage-grid.hbs",
 
         // Item sheet
         "systems/cp2020/templates/item/item-sheet.hbs",

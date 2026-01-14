@@ -1,0 +1,53 @@
+<div class="cyberpunk-card cyberpunk-card--save cyberpunk-card--{{saveType}}">
+    {{!-- Header --}}
+    {{> "systems/cp2020/templates/chat/partials/card-header.hbs"}}
+
+    {{!-- Section Bar: Save Type (SHOCK SAVE or DEATH SAVE) --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon=saveType label=saveLabel}}
+
+    {{!-- Hint text --}}
+    {{#if hint}}
+    <div class="card-hint">{{hint}}</div>
+    {{/if}}
+
+    {{!-- Formula Bar --}}
+    {{#each rolls as |rollData|}}
+    {{> "systems/cp2020/templates/chat/partials/formula-bar.hbs" formula=rollData.roll.formula}}
+
+    {{!-- Roll Details --}}
+    <div class="roll-details">
+        <div class="roll-details__row">
+            <span class="roll-details__label">1d10</span>
+            <span class="roll-details__value">
+                <span class="roll-details__value-text">{{rollData.roll.total}}</span>
+            </span>
+        </div>
+        <div class="roll-details__row roll-details__row--dice">
+            {{#each rollData.diceInfo as |die|}}
+            {{#each die.subrolls as |subroll|}}
+            <div class="d10-badge {{subroll.classes}}">
+                <span class="d10-badge__value">{{subroll.result}}</span>
+            </div>
+            {{/each}}
+            {{/each}}
+        </div>
+    </div>
+    {{/each}}
+
+    {{!-- Result Row: Success/Failure --}}
+    <div class="result-row result-row--{{#if success}}success{{else}}failure{{/if}}">
+        <span class="result-row__icon">
+            {{#if success}}
+            <img src="systems/cp2020/img/icons/chat/success.svg" alt="Success">
+            {{else}}
+            <img src="systems/cp2020/img/icons/chat/failure.svg" alt="Failure">
+            {{/if}}
+        </span>
+        <span class="result-row__value">{{#each rolls}}{{this.roll.total}}{{/each}}</span>
+        <span class="result-row__target">
+            <div class="d10-badge d10-badge--target">
+                <span class="d10-badge__value">{{threshold}}</span>
+            </div>
+        </span>
+    </div>
+</div>

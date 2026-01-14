@@ -1,29 +1,770 @@
+// ============================================
+// Cyberpunk 2020 Chat Cards - Figma Design
+// ============================================
+
+// Legacy support for old cards
 $crit-color: #77b968b8;
 $fail-color: #d1502fb8;
 
+// ============================================
+// Foundry Message Wrapper Styling
+// ============================================
+.cp2020-message {
+  // Override Foundry's default message styling
+  &.message {
+    background-color: var(--chat-back);
+    border: 2px solid var(--chat-stroke);
+    border-radius: 4px;
+    padding: 10px;
+    color: var(--chat-text);
+
+    // Circuit board background pattern
+    background-image: url('../img/chat-background.png');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% auto;
+  }
+
+  .message-content {
+    // Remove any default padding/margin on message content
+    padding: 0;
+    margin: 0;
+  }
+}
+
+// Custom header styling (replaces Foundry's default)
+.cp2020-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.cp2020-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  border-radius: 4px;
+  border: 1px solid var(--chat-stroke);
+  background: var(--chat-gray);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+.cp2020-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+// Top row: Player name + timestamp + trash
+.cp2020-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.cp2020-player-name {
+  flex: 1 0 0;
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--chat-text);
+}
+
+.cp2020-timestamp {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--chat-text);
+  text-align: right;
+}
+
+.cp2020-delete {
+  width: 12px;
+  height: 12px;
+  aspect-ratio: 1/1;
+  color: var(--chat-gray);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--chat-red);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Bottom row: Actor name (full width)
+.cp2020-actor-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cp2020-actor-name {
+  font-family: var(--font-refinery);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--chat-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ============================================
+// Collapsible Roll Container
+// ============================================
+.roll-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.roll-expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease-out;
+}
+
+.roll-expandable__inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 0;
+  transition: padding-bottom 250ms ease-out;
+}
+
+.roll-container--collapsed .roll-expandable {
+  grid-template-rows: 0fr;
+}
+
+.roll-container--expanded .roll-expandable {
+  grid-template-rows: 1fr;
+
+  .roll-expandable__inner {
+    padding-bottom: 10px;
+  }
+}
+
+.roll-toggle {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+// ============================================
+// Card Container (inside message wrapper)
+// ============================================
 .cyberpunk-card {
-    h2 {
-        font-family: $font-primary;
-        font-variant: small-caps;
-        font-weight: bold;
-        border-bottom: 2px solid $text-colour;
-        // margin: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: var(--chat-text);
+  box-sizing: border-box;
+  // No padding, border, or background - the message wrapper handles that
+
+  // Legacy h2 styling for backwards compatibility
+  h2 {
+    font-family: var(--font-blender);
+    font-variant: small-caps;
+    font-weight: bold;
+    border-bottom: 2px solid var(--chat-stroke);
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding-bottom: 4px;
+  }
+
+  .roll-image {
+    margin-right: 5px;
+  }
+
+  .part-total.crit {
+    background-color: $crit-color;
+  }
+  .part-total.fumble {
+    background-color: $fail-color;
+  }
+}
+
+// ============================================
+// Card Header
+// ============================================
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.card-header__top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.card-header__portrait {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid var(--chat-stroke);
+  background: var(--chat-gray);
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.card-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.card-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.card-header__player {
+  flex: 1;
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--chat-text);
+}
+
+.card-header__timestamp {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--chat-text);
+  text-align: right;
+  opacity: 0.7;
+}
+
+.card-header__settings {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
+.card-header__actor {
+  font-family: var(--font-refinery);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--chat-text);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-header__hint,
+.card-hint {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--chat-text);
+  opacity: 0.7;
+  width: 100%;
+}
+
+// ============================================
+// Section Bar (Action Labels)
+// ============================================
+.section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 26px;
+  padding: 1px 0;
+  border-radius: 2px;
+  background: var(--chat-accent);
+}
+
+.section-bar__icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+}
+
+.section-bar__label {
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--chat-text);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// ============================================
+// Weapon Line
+// ============================================
+.weapon-line {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.weapon-line__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid var(--chat-stroke);
+  background: var(--chat-gray);
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.weapon-line__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  padding: 2px 0;
+}
+
+.weapon-line__name {
+  font-family: var(--font-refinery);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--chat-text);
+}
+
+.weapon-line__type {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: var(--chat-text);
+  opacity: 0.7;
+}
+
+// ============================================
+// Formula Bar
+// ============================================
+.formula-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 26px;
+  padding: 1px 0;
+  border-radius: 2px;
+  background: var(--chat-accent);
+}
+
+.formula-bar__text {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--chat-text);
+}
+
+// ============================================
+// Roll Details
+// ============================================
+.roll-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.roll-details__row {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding-left: 8px;
+  border-bottom: 1px solid var(--chat-accent);
+  border-radius: 2px 2px 0 0;
+
+  &:last-child {
+    border-bottom: none;
+    padding-left: 6px;
+  }
+
+  &--dice {
+    justify-content: flex-start;
+    gap: 4px;
+    padding-left: 6px;
+    border-bottom: none;
+  }
+}
+
+.roll-details__label {
+  flex: 1;
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--chat-text);
+}
+
+.roll-details__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 100%;
+  padding: 0 6px;
+  background: var(--chat-accent);
+}
+
+.roll-details__value-text {
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--chat-text);
+  text-align: center;
+}
+
+// ============================================
+// Dice Badge (number overlaid on dice background)
+// ============================================
+.dice-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  // Die type backgrounds - gray (ordinary), red (min), green (max)
+  &--d4 { background-image: url('../img/dice/d4gray.png'); }
+  &--d4.min { background-image: url('../img/dice/d4red.png'); }
+  &--d4.max, &--d4.exploded { background-image: url('../img/dice/d4green.png'); }
+
+  &--d6 { background-image: url('../img/dice/d6gray.png'); }
+  &--d6.min { background-image: url('../img/dice/d6red.png'); }
+  &--d6.max, &--d6.exploded { background-image: url('../img/dice/d6green.png'); }
+
+  &--d8 { background-image: url('../img/dice/d8gray.png'); }
+  &--d8.min { background-image: url('../img/dice/d8red.png'); }
+  &--d8.max, &--d8.exploded { background-image: url('../img/dice/d8green.png'); }
+
+  &--d10 { background-image: url('../img/dice/d10gray.png'); }
+  &--d10.min { background-image: url('../img/dice/d10red.png'); }
+  &--d10.max, &--d10.exploded { background-image: url('../img/dice/d10green.png'); }
+
+  &--d12 { background-image: url('../img/dice/d12gray.png'); }
+  &--d12.min { background-image: url('../img/dice/d12red.png'); }
+  &--d12.max, &--d12.exploded { background-image: url('../img/dice/d12green.png'); }
+
+  &--d20 { background-image: url('../img/dice/d20gray.png'); }
+  &--d20.min { background-image: url('../img/dice/d20red.png'); }
+  &--d20.max, &--d20.exploded { background-image: url('../img/dice/d20green.png'); }
+
+  &--d100 { background-image: url('../img/dice/d100gray.png'); }
+  &--d100.min { background-image: url('../img/dice/d100red.png'); }
+  &--d100.max, &--d100.exploded { background-image: url('../img/dice/d100green.png'); }
+
+  // Number overlaid on dice
+  &__value {
+    font-family: var(--font-blender);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--chat-text);
+    text-align: center;
+  }
+}
+
+// Legacy D10 Badge (backwards compatibility)
+.d10-badge {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--chat-accent);
+  border-radius: 4px;
+
+  &--target {
+    background: var(--chat-green);
+  }
+
+  &.max {
+    background: var(--chat-green);
+  }
+
+  &.min {
+    background: var(--chat-red);
+  }
+
+  &.exploded {
+    background: var(--chat-green);
+    box-shadow: 0 0 4px var(--chat-green-text);
+  }
+}
+
+.d10-badge__value {
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--chat-text);
+  text-align: center;
+}
+
+// ============================================
+// Result Row
+// ============================================
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 2px;
+  gap: 0;
+
+  &--success {
+    background: var(--chat-green-back);
+  }
+
+  &--failure {
+    background: var(--chat-red-back);
+  }
+
+  &--neutral {
+    background: var(--chat-accent);
+  }
+}
+
+.result-row__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
+}
+
+.result-row__value {
+  flex: 1;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 36px;
+  color: var(--chat-text);
+  text-align: center;
+}
+
+.result-row__target,
+.result-row__die {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+// ============================================
+// Damage Grid
+// ============================================
+.damage-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.damage-grid__row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.damage-grid__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 2px;
+  overflow: hidden;
+
+  &--hit {
+    background: var(--chat-green-back);
+  }
+
+  &--empty {
+    background: var(--chat-accent);
+  }
+}
+
+.damage-grid__icon {
+  width: 24px;
+  height: 24px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &--muted {
+    opacity: 0.5;
+
+    img {
+      filter: brightness(0) invert(0.5);
+    }
+  }
+}
+
+.damage-grid__value {
+  flex: 1;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 36px;
+  color: var(--chat-text);
+  text-align: center;
+}
+
+// ============================================
+// Hit Tally
+// ============================================
+.hit-tally {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--chat-text);
+  opacity: 0.7;
+}
+
+// ============================================
+// No Hits
+// ============================================
+.no-hits {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  background: var(--chat-accent);
+  border-radius: 2px;
+}
+
+.no-hits__text {
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--chat-text);
+  opacity: 0.7;
+}
+
+// ============================================
+// Legacy Damage Tally (backwards compatibility)
+// ============================================
+.damage-tally {
+  margin-left: 1em;
+  width: 100%;
+
+  > div {
+    margin-bottom: 4px;
+
+    label {
+      font-weight: 600;
+      color: var(--chat-text);
     }
 
-    .roll-image {
-        margin-right: 5px;
-    }
+    ul {
+      margin: 0;
+      padding-left: 1.5em;
+      list-style: disc;
 
-    .part-total.crit {
-        background-color: $crit-color;
+      li {
+        color: var(--chat-text);
+        opacity: 0.9;
+      }
     }
-    .part-total.fumble {
-        background-color: $fail-color;
-    }
-
-    &.autofire {
-        .damage-tally {
-            margin-left: 3em;
-        }
-    }
+  }
 }

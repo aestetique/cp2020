@@ -300,7 +300,7 @@ export class CyberpunkActor extends Actor {
 
         new Multiroll(skill.name)
           .addRoll(chosen)
-          .defaultExecute();
+          .defaultExecute({ statIcon: skill.system.stat }, this);
       });
       return;
     }
@@ -308,7 +308,7 @@ export class CyberpunkActor extends Actor {
     // normal roll
     new Multiroll(skill.name)
       .addRoll(makeRoll())
-      .defaultExecute();
+      .defaultExecute({ statIcon: skill.system.stat }, this);
   }
 
   rollStat(statName) {
@@ -318,7 +318,7 @@ export class CyberpunkActor extends Actor {
       [`@stats.${statName}.total`],
       this.system
     ));
-    roll.defaultExecute();
+    roll.defaultExecute({ statIcon: statName }, this);
   }
 
   /*
@@ -352,7 +352,7 @@ export class CyberpunkActor extends Actor {
 
   rollStunDeath(modificator) {
     let rolls = new Multiroll(localize("StunDeathSave"), localize("UnderThresholdMessage"));
-    
+
     const integerRegex = /^-?\d+$/;
     if(modificator && !integerRegex.test(modificator)){
       return
@@ -368,6 +368,71 @@ export class CyberpunkActor extends Actor {
     rolls.addRoll(new Roll(`${this.deathThreshold()}`), {
       name: "Death Threshold"
     });
-    rolls.defaultExecute();
+    rolls.defaultExecute({}, this);
+  }
+
+  /**
+   * Roll a Stun Save (Shock Save)
+   * Must roll UNDER the threshold to succeed
+   * @param {number} modifier - Optional modifier to the roll
+   */
+  async rollStunSave(modifier = 0) {
+    const threshold = this.stunThreshold();
+    const roll = await new Roll(modifier ? `1d10 + ${modifier}` : "1d10").evaluate();
+    const success = roll.total < threshold;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+
+    new Multiroll(localize("ShockSave"))
+      .addRoll(roll, { name: localize("Save") })
+      .execute(speaker, "systems/cp2020/templates/chat/save-roll.hbs", {
+        saveType: "shock",
+        saveLabel: localize("ShockSave"),
+        threshold: threshold,
+        success: success,
+        hint: localize("UnderThresholdMessage")
+      });
+  }
+
+  /**
+   * Roll a Death Save
+   * Must roll UNDER the threshold to succeed
+   * @param {number} modifier - Optional modifier to the roll
+   */
+  async rollDeathSave(modifier = 0) {
+    const threshold = this.deathThreshold();
+    const roll = await new Roll(modifier ? `1d10 + ${modifier}` : "1d10").evaluate();
+    const success = roll.total < threshold;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+
+    new Multiroll(localize("DeathSave"))
+      .addRoll(roll, { name: localize("Save") })
+      .execute(speaker, "systems/cp2020/templates/chat/save-roll.hbs", {
+        saveType: "death",
+        saveLabel: localize("DeathSave"),
+        threshold: threshold,
+        success: success,
+        hint: localize("UnderThresholdMessage")
+      });
+  }
+
+  /**
+   * Roll Initiative and display in chat
+   * Uses REF stat + 1d10
+   */
+  async rollInitiativeChat() {
+    const ref = this.system.stats.ref.total;
+    const roll = await new Roll(`1d10 + ${ref}`).evaluate();
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+
+    new Multiroll(localize("InitiativeRoll"))
+      .addRoll(roll, { name: localize("Initiative") })
+      .execute(speaker, "systems/cp2020/templates/chat/initiative.hbs", {
+        refValue: ref
+      });
+
+    return roll.total;
   }
 }

@@ -1,35 +1,51 @@
-<div class="cyberpunk cyberpunk-card">
-    <header>
-        <div class="flexrow">
-            {{#if img}}
-            <div class="roll-image" style="background-image: url({{img}})"></div>
-            {{/if}}
-            <h2>{{title}}</h2>
-        </div>
-        <p class="flavor">{{flavor}}</p>
-    </header>
-    <div class="dice-tooltip flexcol">
+<div class="cyberpunk-card cyberpunk-card--skill">
+    {{!-- Section Bar: Skill/Stat Name with Attribute Icon --}}
+    {{> (CPTemplate "chat/partials/section-bar.hbs") label=title icon=statIcon}}
+
+    {{!-- Roll Results --}}
     {{#each rolls}}
-        <header class="part-header flexrow">
-            {{#if name}}
-                <span class="part-formula">{{name}}:</span>
-            {{/if}}
-            <span class="part-flavor">{{roll._formula}}</span>
-            <span class="part-total {{#if isCrit}}crit {{/if}}{{#if isFumble}}fumble {{/if}}">{{roll.total}}</span>
-        </header>
-        <div class="dice-tooltip">
-        {{#each diceInfo}}
-            <section class="tooltip-part">
-                <div class="dice">
-                    <ol class="dice-rolls">
-                    {{#each this.subrolls}}
-                        <li class="roll {{this.classes}}">{{{this.result}}}</li>
-                    {{/each}}
-                    </ol>
+    {{!-- Collapsible Roll Container --}}
+    <div class="roll-container roll-container--collapsed">
+        {{!-- Expandable Details (hidden by default) --}}
+        <div class="roll-expandable">
+            <div class="roll-expandable__inner">
+                {{!-- Formula Bar --}}
+                <div class="formula-bar">
+                    <span class="formula-bar__text">{{cleanFormula roll._formula}}</span>
                 </div>
-            </section>
-        {{/each}}
+
+                {{!-- Roll Details --}}
+                <div class="roll-details">
+                    <div class="roll-details__row">
+                        <span class="roll-details__label">{{#if name}}{{name}}{{else}}1d10{{/if}}</span>
+                        <span class="roll-details__value">
+                            <span class="roll-details__value-text">{{roll.total}}</span>
+                        </span>
+                    </div>
+                    {{#if diceInfo}}
+                    <div class="roll-details__row roll-details__row--dice">
+                        {{#each diceInfo}}
+                        {{#each this.subrolls}}
+                        <div class="dice-badge dice-badge--d{{../faces}} {{this.classes}}">
+                            <span class="dice-badge__value">{{{this.result}}}</span>
+                        </div>
+                        {{/each}}
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
         </div>
-    {{/each}}
+
+        {{!-- Result Row (always visible, clickable to expand) --}}
+        <div class="result-row result-row--{{#if isCrit}}success{{else if isFumble}}failure{{else}}neutral{{/if}} roll-toggle">
+            <span class="result-row__value">{{roll.total}}</span>
+        </div>
     </div>
+    {{/each}}
+
+    {{!-- Flavor text if present --}}
+    {{#if flavor}}
+    <div class="card-hint">{{flavor}}</div>
+    {{/if}}
 </div>

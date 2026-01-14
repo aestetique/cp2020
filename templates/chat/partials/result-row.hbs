@@ -1,0 +1,21 @@
+{{!-- Result row for success/failure/neutral states --}}
+{{!-- Usage: {{> partials/result-row state="success" value=14 showIcon=true targetValue=10}} --}}
+<div class="result-row result-row--{{state}}">
+    {{#if showIcon}}
+    <span class="result-row__icon">
+        {{#if (equals state "success")}}
+        <img src="systems/cp2020/img/icons/chat/success.svg" alt="Success">
+        {{else if (equals state "failure")}}
+        <img src="systems/cp2020/img/icons/chat/failure.svg" alt="Failure">
+        {{/if}}
+    </span>
+    {{/if}}
+    <span class="result-row__value">{{value}}</span>
+    {{#if targetValue}}
+    <span class="result-row__die">
+        <div class="d10-badge d10-badge--target">
+            <span class="d10-badge__value">{{targetValue}}</span>
+        </div>
+    </span>
+    {{/if}}
+</div>

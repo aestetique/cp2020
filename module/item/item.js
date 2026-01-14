@@ -492,7 +492,7 @@ export class CyberpunkItem extends Item {
           .addRoll(attackRoll, {name: localize("Attack")})
           .addRoll(damageRoll, {name: localize("Damage")})
           .addRoll(locationRoll.roll, {name: localize("Location"), flavor: locationRoll.areaHit });
-      bigRoll.defaultExecute({img: this.img});
+      bigRoll.defaultExecute({img: this.img}, this.actor);
       return bigRoll;
   }
   async __martialBonk(attackMods) {
@@ -551,7 +551,7 @@ export class CyberpunkItem extends Item {
         martialDamageBonus: isMartial ? martialSkillLevel : 0
       }), {name: localize("Damage")});
     }
-    results.defaultExecute({img: this.img});
+    results.defaultExecute({img: this.img}, this.actor);
     return results;
   }
 

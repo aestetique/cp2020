@@ -1,0 +1,22 @@
+{{!-- Dice breakdown display --}}
+<div class="roll-details">
+    {{#each rolls as |rollData|}}
+    <div class="roll-details__row">
+        <span class="roll-details__label">{{rollData.name}}</span>
+        <span class="roll-details__value">
+            <span class="roll-details__value-text">{{rollData.roll.total}}</span>
+        </span>
+    </div>
+    {{#if rollData.diceInfo}}
+    <div class="roll-details__row roll-details__row--dice">
+        {{#each rollData.diceInfo as |die|}}
+        {{#each die.subrolls as |subroll|}}
+        <div class="d10-badge {{subroll.classes}}">
+            <span class="d10-badge__value">{{subroll.result}}</span>
+        </div>
+        {{/each}}
+        {{/each}}
+    </div>
+    {{/if}}
+    {{/each}}
+</div>

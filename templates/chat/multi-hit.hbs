@@ -1,61 +1,91 @@
-<div class="cyberpunk cyberpunk-card flexcol">
-    <h2>{{title}}</h2>
-    <div class="field-list one-col">
-        {{#if target}}
-        <div class="field">
-            <span>{{CPLocal "Target"}}: </span>
-            {{!-- TODO: Make clicking this open the appropriate token sheet --}}
-            <span class="flex-pad">{{target.name}}</span>
-        </div>        
-        {{/if}}
-        <div class="field">
-            <span>{{CPLocal "Range"}}: </span>
-            <span class="flex-pad">{{CPLocalParam range locals.range}}</span>
-        </div>
-        <div class="field">
-            <span>{{CPLocal "ToHit"}}: </span>
-            <span class="flex-pad">{{toHit}}</span>
-        </div>
+<div class="cyberpunk-card cyberpunk-card--attack">
+    {{!-- Header --}}
+    {{> "systems/cp2020/templates/chat/partials/card-header.hbs"}}
+
+    {{!-- Section Bar: Fire Mode (FULL AUTO, THREE-ROUND BURST, SEMI-AUTO) --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="gun" label=title}}
+
+    {{!-- Weapon Line --}}
+    {{#if weaponName}}
+    {{> "systems/cp2020/templates/chat/partials/weapon-line.hbs"}}
+    {{/if}}
+
+    {{!-- Formula Bar: Attack formula --}}
+    {{#if attackRoll}}
+    <div class="formula-bar">
+        <span class="formula-bar__text">
+            {{#each attackRoll.terms as |term|}}
+                {{#if term.results}}
+                    1d10
+                {{else}}
+                    {{#if term.operator}}{{term.operator}}{{else}}+ {{term.number}}{{/if}}
+                {{/if}}
+            {{/each}}
+        </span>
     </div>
-    <div class="field-list one-col">
-        <div class="field" style="grid-column-end: span 1">
-            <span>{{CPLocal "Attack"}}: </span>
-            <span>{{attackRoll._total}}</span>
-            <span class="flex-pad"></span>
-            <span class="roll-results">
-                {{#each attackRoll.terms as |term|}}
-                    {{#if term.results}}
-                        {{#each term.results as |die|}}
-                            <span class="roll-result roll die d{{term.faces}}">{{die.result}}</span>
-                        {{/each}}
-                    {{else}}
-                        <span class="roll-result inactive">{{compare term.operator "||" term.number}}</span>
-                    {{/if}}
-                {{/each}}
+
+    {{!-- Roll Details: Attack roll breakdown --}}
+    <div class="roll-details">
+        <div class="roll-details__row">
+            <span class="roll-details__label">1d10</span>
+            <span class="roll-details__value">
+                <span class="roll-details__value-text">{{attackRoll._total}}</span>
             </span>
         </div>
-    </div>
-    
-    <div>
-        {{!-- "X hit of y fired" Uses "hit" and "fired" fields respectively --}}
-        {{!-- They're separate so we can emphasise the hit --}}
-        <p><em>{{CPLocalParam "AutofireHitTally" this}}</em> {{CPLocalParam "AutofireFiredTally" this}}</p>
-    </div>
-    {{#if hit}}
-        <h3>{{CPLocal "Damage"}}</h3>
-            <div class="damage-tally">
-                {{#each areaDamages as |damages areaName|}}
-                    <div>
-                        <label>{{CPLocal areaName}}</label>
-                        <ul>
-                            {{#each damages as |damage|}}
-                                <li>{{CPLocal "Damage"}} {{damage.damage}}</li>
-                            {{/each}}
-                        </ul>
+        <div class="roll-details__row roll-details__row--dice">
+            {{#each attackRoll.terms as |term|}}
+                {{#if term.results}}
+                    {{#each term.results as |die|}}
+                    <div class="d10-badge {{#if (equals die.result 10)}}max{{/if}} {{#if (equals die.result 1)}}min{{/if}}">
+                        <span class="d10-badge__value">{{die.result}}</span>
                     </div>
-                {{/each}}
+                    {{/each}}
+                {{/if}}
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    {{!-- Section Bar: Range --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="range" label=(CPLocalParam range locals.range)}}
+
+    {{!-- Result Row: Hit or Miss --}}
+    <div class="result-row result-row--{{#if hit}}success{{else}}failure{{/if}}">
+        {{#if hit}}
+        <span class="result-row__icon">
+            <img src="systems/cp2020/img/icons/chat/success.svg" alt="Success">
+        </span>
+        {{else}}
+        <span class="result-row__icon">
+            <img src="systems/cp2020/img/icons/chat/failure.svg" alt="Failure">
+        </span>
+        {{/if}}
+        <span class="result-row__value">{{attackRoll._total}}</span>
+        <span class="result-row__target">
+            <div class="d10-badge d10-badge--target">
+                <span class="d10-badge__value">{{toHit}}</span>
             </div>
+        </span>
+    </div>
+
+    {{!-- Hit tally for autofire --}}
+    {{#if (compare hits ">" 0)}}
+    <div class="hit-tally">
+        <span class="hit-tally__text">{{CPLocalParam "AutofireHitTally" this}} {{CPLocalParam "AutofireFiredTally" this}}</span>
+    </div>
+    {{/if}}
+
+    {{!-- Damage Section (only if hit) --}}
+    {{#if hit}}
+    {{!-- Section Bar: Damage --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "Damage")}}
+
+    {{!-- Damage Grid --}}
+    {{> "systems/cp2020/templates/chat/partials/damage-grid.hbs" aggregatedDamage=(aggregateDamage areaDamages)}}
     {{else}}
-        <h3>{{CPLocal "NoHits"}}</h3>
+    {{!-- No Hits --}}
+    <div class="no-hits">
+        <span class="no-hits__text">{{CPLocal "NoHits"}}</span>
+    </div>
     {{/if}}
 </div>

@@ -1,0 +1,14 @@
+<div class="cyberpunk-card cyberpunk-card--initiative">
+    {{!-- Header --}}
+    {{> "systems/cp2020/templates/chat/partials/card-header.hbs"}}
+
+    {{!-- Section Bar: Initiative Roll --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="initiative" label=(CPLocal "InitiativeRoll")}}
+
+    {{!-- Result Row: Total --}}
+    {{#each rolls as |rollData|}}
+    <div class="result-row result-row--neutral">
+        <span class="result-row__value">{{rollData.roll.total}}</span>
+    </div>
+    {{/each}}
+</div>

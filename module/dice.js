@@ -1,6 +1,87 @@
 export const BaseDie = "1d10x10";
 export const DefaultRollTemplate = "systems/cp2020/templates/chat/default-roll.hbs";
 
+/**
+ * Get the best available image for an actor in chat cards.
+ * Fallback chain: selected token → actor portrait → user avatar → placeholder
+ * @param {Object} speaker - The ChatMessage speaker object
+ * @returns {string} URL to the actor image
+ */
+export function getActorImage(speaker) {
+    // 1. Try selected token's texture
+    if (speaker?.token) {
+        const token = canvas.tokens?.get(speaker.token);
+        if (token?.document?.texture?.src) {
+            return token.document.texture.src;
+        }
+    }
+
+    // 2. Try actor's portrait
+    if (speaker?.actor) {
+        const actor = game.actors.get(speaker.actor);
+        if (actor?.img && actor.img !== "icons/svg/mystery-man.svg") {
+            return actor.img;
+        }
+    }
+
+    // 3. Try user's avatar
+    if (speaker?.actor) {
+        const user = game.users.find(u => u.character?.id === speaker.actor);
+        if (user?.avatar) {
+            return user.avatar;
+        }
+    }
+
+    // 4. Fallback to placeholder
+    return "systems/cp2020/img/placeholder-actor.svg";
+}
+
+/**
+ * Get actor name with fallback chain
+ * @param {Object} speaker - The ChatMessage speaker object
+ * @returns {string} Actor/character name
+ */
+export function getActorName(speaker) {
+    // 1. Try actor name
+    if (speaker?.actor) {
+        const actor = game.actors.get(speaker.actor);
+        if (actor?.name) {
+            return actor.name;
+        }
+    }
+
+    // 2. Try speaker alias
+    if (speaker?.alias) {
+        return speaker.alias;
+    }
+
+    // 3. Try user name
+    const user = game.user;
+    if (user?.name) {
+        return user.name;
+    }
+
+    return "Unknown";
+}
+
+/**
+ * Get player/user name for the speaker
+ * @param {Object} speaker - The ChatMessage speaker object
+ * @returns {string} Player name
+ */
+export function getPlayerName(speaker) {
+    // Try to find user associated with this actor
+    if (speaker?.actor) {
+        const user = game.users.find(u => u.character?.id === speaker.actor);
+        if (user?.name) {
+            return user.name;
+        }
+    }
+
+    // Fall back to current user
+    return game.user?.name || "Player";
+}
+
 export const formulaHasDice = function (formula) {
     return formula.match(/[0-9)][dD]/) || formula.match(/[dD][0-9(]/);
 };
@@ -120,11 +201,31 @@ export function classifyRollDice(roll) {
                 return await r.evaluate();
             }
         }));
-        
+
+        // Ensure we always have a valid speaker
+        if (!speaker) {
+            speaker = ChatMessage.getSpeaker();
+        }
+
+        // Build actor info for card header
+        const actorInfo = {
+            image: getActorImage(speaker),
+            name: getActorName(speaker),
+            playerName: getPlayerName(speaker),
+            timestamp: new Date().toLocaleString(game.i18n.lang, {
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        };
+
         const fullTemplateData = foundry.utils.mergeObject({
             user: game.user.id,
             title: this.title,
             flavor: this.flavor,
+            actorInfo: actorInfo,
             rolls: this.rolls.map((roll, i) => {
                 let metaData = this.rollMetaData[i];
                 let firstDiceTerm = roll.terms.find(term => term instanceof foundry.dice.terms.Die) || roll.terms[0];
@@ -152,8 +253,34 @@ export function classifyRollDice(roll) {
         return this;
     }
 
-    async defaultExecute(extraTemplateData={}) {
-        return this.execute(undefined, DefaultRollTemplate, extraTemplateData);
+    async defaultExecute(extraTemplateData={}, actor=null) {
+        // Get speaker - if actor is provided, use it to get proper speaker data
+        let speaker;
+        if (actor) {
+            speaker = ChatMessage.getSpeaker({ actor: actor });
+        } else {
+            speaker = ChatMessage.getSpeaker();
+        }
+        return this.execute(speaker, DefaultRollTemplate, extraTemplateData);
+    }
+
+    /**
+     * Set the actor context for this roll. Used to ensure proper speaker data.
+     * @param {Actor} actor - The actor making this roll
+     * @returns {Multiroll} This instance for chaining
+     */
+    setActor(actor) {
+        this._actor = actor;
+        return this;
+    }
+
+    /**
+     * Execute the roll using the stored actor context
+     * @param {Object} extraTemplateData - Additional data for the template
+     * @returns {Promise<Multiroll>}
+     */
+    async defaultExecuteForActor(extraTemplateData={}) {
+        return this.defaultExecute(extraTemplateData, this._actor);
     }
 }
 

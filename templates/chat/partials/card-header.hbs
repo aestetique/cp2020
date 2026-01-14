@@ -1,0 +1,21 @@
+{{!-- Unified card header for all chat cards --}}
+<div class="card-header">
+    <div class="card-header__top">
+        <div class="card-header__portrait">
+            <img src="{{actorInfo.image}}" alt="{{actorInfo.name}}">
+        </div>
+        <div class="card-header__info">
+            <div class="card-header__meta">
+                <span class="card-header__player">{{actorInfo.playerName}}</span>
+                <span class="card-header__timestamp">{{actorInfo.timestamp}}</span>
+                <span class="card-header__settings">
+                    <i class="fas fa-cog"></i>
+                </span>
+            </div>
+            <div class="card-header__actor">{{actorInfo.name}}</div>
+        </div>
+    </div>
+    {{#if hint}}
+    <div class="card-header__hint">{{hint}}</div>
+    {{/if}}
+</div>
