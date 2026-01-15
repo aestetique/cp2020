@@ -62,15 +62,13 @@ Hooks.once("ready", function() {
 });
 
 /**
- * Intercept basic /roll commands and restyle them with our formula-roll template
+ * Intercept basic /roll commands and restyle them with our formula-roll template.
+ * Uses preCreateChatMessage to capture speaker from selected token before message is created.
  */
-Hooks.on("createChatMessage", async (message, options, userId) => {
+Hooks.on("preCreateChatMessage", async (message, data, options, userId) => {
     // Only process messages with rolls that don't already have our styling
     if (!message.rolls?.length) return;
-    if (message.content.includes("cyberpunk-card")) return;
-
-    // Only process messages from current user to avoid duplicates
-    if (message.author?.id !== game.user.id) return;
+    if (message.content?.includes("cyberpunk-card")) return;
 
     // Process the first roll (basic /roll commands only have one)
     const roll = message.rolls[0];
@@ -85,6 +83,12 @@ Hooks.on("createChatMessage", async (message, options, userId) => {
         templateData
     );
 
-    // Update the message with styled content
-    await message.update({ content: newContent });
+    // Get speaker from selected token - this captures selection at roll time
+    const speaker = ChatMessage.getSpeaker();
+
+    // Update the message data before it's created
+    message.updateSource({
+        content: newContent,
+        speaker: speaker
+    });
 });
