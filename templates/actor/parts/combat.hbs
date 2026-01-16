@@ -20,6 +20,18 @@
             <div class="field">
                 <input class="roll-death-modificator" value="{{deathSaveMod}}" placeholder="Modifier">
             </div>
+            <div class="field condition-toggle">
+                <label class="fillwidth">{{CPLocal "Stabilized"}}</label>
+                <input type="checkbox" class="toggle-condition" data-condition="stabilized" {{#if (hasStatus actor "stabilized")}}checked{{/if}}>
+            </div>
+            <div class="field condition-toggle">
+                <label class="fillwidth">{{CPLocal "FastDraw"}}</label>
+                <input type="checkbox" class="toggle-condition" data-condition="fast-draw" {{#if (hasStatus actor "fast-draw")}}checked{{/if}}>
+            </div>
+            <div class="field condition-toggle">
+                <label class="fillwidth">{{CPLocal "ActionSurge"}}</label>
+                <input type="checkbox" class="toggle-condition" data-condition="action-surge" {{#if (hasStatus actor "action-surge")}}checked{{/if}}>
+            </div>
         </div>
     </section>
     

@@ -384,6 +384,13 @@ export class CyberpunkActorSheet extends ActorSheet {
       this.actor.rollDeathSave(Number(rollModificatorInput.value) || 0);
     });
 
+    // Generic condition toggle (Stabilized, Fast Draw, Action Surge, etc.)
+    html.find(".toggle-condition").change(async (ev) => {
+      const conditionId = ev.target.dataset.condition;
+      const isChecked = ev.target.checked;
+      await this.actor.toggleStatusEffect(conditionId, { active: isChecked });
+    });
+
     // Damage
     html.find(".damage").click(ev => {
       let damage = Number(ev.currentTarget.dataset.damage);

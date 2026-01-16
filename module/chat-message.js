@@ -262,6 +262,50 @@ export class CyberpunkChatMessage extends ChatMessage {
             avatar.addEventListener("mouseenter", this._onPortraitHoverIn.bind(this));
             avatar.addEventListener("mouseleave", this._onPortraitHoverOut.bind(this));
         }
+
+        // Target selector tabs
+        const targetSelector = html.querySelector(".target-selector");
+        if (targetSelector) {
+            targetSelector.querySelectorAll(".target-selector__tab").forEach(tab => {
+                tab.addEventListener("click", (event) => this._onTargetTabClick(event, html));
+            });
+
+            // Apply damage button
+            const applyBtn = targetSelector.querySelector(".apply-damage-btn");
+            if (applyBtn) {
+                applyBtn.addEventListener("click", (event) => this._onApplyDamage(event, html));
+            }
+
+            // Initialize target info based on current mode
+            this._updateTargetInfo(html, "targeted");
+
+            // Subscribe to target/selection changes for reactive updates
+            Hooks.on("cp2020.targetChanged", () => {
+                // Check if this chat message is still in the DOM
+                if (!document.body.contains(html)) return;
+                const activeTab = html.querySelector(".target-selector__tab--active");
+                if (activeTab?.dataset.mode === "targeted") {
+                    this._updateTargetInfo(html, "targeted");
+                }
+            });
+
+            Hooks.on("cp2020.selectionChanged", () => {
+                // Check if this chat message is still in the DOM
+                if (!document.body.contains(html)) return;
+                const activeTab = html.querySelector(".target-selector__tab--active");
+                if (activeTab?.dataset.mode === "selected") {
+                    this._updateTargetInfo(html, "selected");
+                }
+            });
+        }
+
+        // Damage grid cell clicks for expandable details
+        const damageGrid = html.querySelector(".damage-grid");
+        if (damageGrid) {
+            damageGrid.querySelectorAll(".damage-grid__cell--hit").forEach(cell => {
+                cell.addEventListener("click", (event) => this._onDamageGridCellClick(event, damageGrid));
+            });
+        }
     }
 
     /* -------------------------------------------- */
@@ -287,6 +331,126 @@ export class CyberpunkChatMessage extends ChatMessage {
             container.classList.remove("roll-container--expanded");
             container.classList.add("roll-container--collapsed");
         }
+    }
+
+    /* -------------------------------------------- */
+
+    /**
+     * Handle clicking on a damage grid cell to show/hide hit details
+     * @param {Event} event - The click event
+     * @param {HTMLElement} damageGrid - The damage grid container
+     * @private
+     */
+    _onDamageGridCellClick(event, damageGrid) {
+        event.preventDefault();
+        const cell = event.currentTarget;
+        const location = cell.dataset.location;
+        const expandArea = damageGrid.querySelector(".damage-grid__expand");
+        const expandContent = damageGrid.querySelector(".damage-grid__expand-content");
+
+        if (!expandArea || !expandContent || !location) return;
+
+        // Get damage data from the grid's data attribute
+        let areaDamages;
+        try {
+            areaDamages = JSON.parse(damageGrid.dataset.damages || "{}");
+        } catch (e) {
+            return;
+        }
+
+        // Check if clicking same cell (toggle off)
+        const currentLocation = expandArea.dataset.activeLocation;
+        if (currentLocation === location && !expandArea.classList.contains("damage-grid__expand--hidden")) {
+            // Collapse the expand area
+            expandArea.classList.add("damage-grid__expand--hidden");
+            expandArea.dataset.activeLocation = "";
+            // Remove active state from all cells
+            damageGrid.querySelectorAll(".damage-grid__cell--active").forEach(c => {
+                c.classList.remove("damage-grid__cell--active");
+            });
+            return;
+        }
+
+        // Get hits for this location
+        const hits = areaDamages[location];
+        if (!Array.isArray(hits) || hits.length === 0) return;
+
+        // Build expand HTML - single roll-expandable for all hits
+        let contentHtml = '<div class="roll-expandable">';
+        contentHtml += '<div class="roll-expandable__inner">';
+
+        // Formula bar with all formulas combined
+        const formulas = hits.map(h => h.formula).filter(Boolean);
+        if (formulas.length > 0) {
+            contentHtml += '<div class="formula-bar">';
+            contentHtml += `<span class="formula-bar__text">${formulas.join(' + ')}</span>`;
+            contentHtml += '</div>';
+        }
+
+        // Each hit gets a roll-details section
+        hits.forEach((hit) => {
+            const damage = hit.damage || hit.dmg || 0;
+            const formula = hit.formula || '';
+            const dice = hit.dice || [];
+
+            contentHtml += '<div class="roll-details">';
+
+            // Row with formula label and total
+            contentHtml += '<div class="roll-details__row">';
+            contentHtml += `<span class="roll-details__label">${formula}</span>`;
+            contentHtml += '<span class="roll-details__value">';
+            contentHtml += `<span class="roll-details__value-text">${damage}</span>`;
+            contentHtml += '</span>';
+            contentHtml += '</div>';
+
+            // Dice row
+            if (dice.length > 0) {
+                contentHtml += '<div class="roll-details__row roll-details__row--dice">';
+                for (const term of dice) {
+                    for (const die of term.results) {
+                        const classes = [];
+                        if (die.result === 1) classes.push('min');
+                        if (die.result === term.faces) classes.push('max');
+                        if (die.exploded) classes.push('exploded');
+                        contentHtml += `<div class="dice-badge dice-badge--d${term.faces} ${classes.join(' ')}">`;
+                        contentHtml += `<span class="dice-badge__value">${die.result}</span>`;
+                        contentHtml += '</div>';
+                    }
+                }
+                contentHtml += '</div>';
+            }
+
+            contentHtml += '</div>'; // roll-details
+        });
+
+        contentHtml += '</div>'; // roll-expandable__inner
+        contentHtml += '</div>'; // roll-expandable
+
+        // Update content and show
+        expandContent.innerHTML = contentHtml;
+        expandArea.dataset.activeLocation = location;
+        expandArea.classList.remove("damage-grid__expand--hidden");
+
+        // Update active state on cells
+        damageGrid.querySelectorAll(".damage-grid__cell--active").forEach(c => {
+            c.classList.remove("damage-grid__cell--active");
+        });
+        cell.classList.add("damage-grid__cell--active");
+    }
+
+    /**
+     * Get CSS class for a die result (min, max, exploded)
+     * @param {Object} die - The die result object
+     * @param {number} faces - Number of faces on the die
+     * @returns {string} CSS class(es) to apply
+     * @private
+     */
+    _getDieClass(die, faces) {
+        const classes = [];
+        if (die.result === 1) classes.push("min");
+        if (die.result === faces) classes.push("max");
+        if (die.exploded) classes.push("exploded");
+        return classes.join(" ");
     }
 
     /* -------------------------------------------- */
@@ -347,5 +511,281 @@ export class CyberpunkChatMessage extends ChatMessage {
 
         const scene = game.scenes.get(sceneId);
         return scene?.tokens.get(tokenId) ?? null;
+    }
+
+    /* -------------------------------------------- */
+    /*  Target Selector Methods                      */
+    /* -------------------------------------------- */
+
+    /**
+     * Handle clicking on target selector tabs
+     * @param {Event} event - The click event
+     * @param {HTMLElement} html - The message HTML
+     * @private
+     */
+    _onTargetTabClick(event, html) {
+        event.preventDefault();
+        const tab = event.currentTarget;
+        const mode = tab.dataset.mode;
+
+        // Update tab active state
+        html.querySelectorAll(".target-selector__tab").forEach(t => {
+            t.classList.remove("target-selector__tab--active");
+        });
+        tab.classList.add("target-selector__tab--active");
+
+        // Update target info
+        this._updateTargetInfo(html, mode);
+    }
+
+    /**
+     * Update the target info display based on mode (targeted/selected)
+     * @param {HTMLElement} html - The message HTML
+     * @param {string} mode - "targeted" or "selected"
+     * @private
+     */
+    _updateTargetInfo(html, mode) {
+        const content = html.querySelector(".target-selector__content");
+        const applyBtn = html.querySelector(".apply-damage-btn");
+        const hintEl = html.querySelector(".target-selector__hint");
+        const targetSelector = html.querySelector(".target-selector");
+
+        if (!content || !targetSelector) return;
+
+        // Get damage data from the selector
+        let damageData;
+        try {
+            damageData = JSON.parse(targetSelector.dataset.damage || "{}");
+        } catch (e) {
+            damageData = {};
+        }
+
+        // Get targets based on mode
+        let targets = [];
+        if (mode === "targeted") {
+            targets = Array.from(game.user.targets);
+        } else {
+            targets = canvas.tokens?.controlled || [];
+        }
+
+        // If no targets, show empty state
+        if (targets.length === 0) {
+            content.innerHTML = `<div class="target-info target-info--empty">${game.i18n.localize("CYBERPUNK.SelectTarget")}</div>`;
+            if (applyBtn) applyBtn.disabled = true;
+            if (hintEl) hintEl.textContent = "";
+            return;
+        }
+
+        // Build target info HTML - simplified layout with portrait, name, total damage
+        let infoHtml = "";
+        let hintParts = [];
+
+        for (const token of targets) {
+            const actor = token.actor;
+            if (!actor) continue;
+
+            // Calculate damage preview for this target
+            const preview = this._calculateDamagePreview(actor, damageData);
+
+            // Simplified row: portrait | name | total damage
+            infoHtml += `
+                <div class="target-info__selected" data-token-id="${token.id}">
+                    <div class="target-info__portrait">
+                        <img src="${actor.img}" alt="${actor.name}">
+                    </div>
+                    <span class="target-info__name">${actor.name}</span>
+                    <span class="target-info__damage">${preview.total}</span>
+                </div>
+            `;
+
+            // Build hint text from calculation details
+            if (preview.hint) {
+                hintParts.push(preview.hint);
+            }
+        }
+
+        content.innerHTML = infoHtml;
+
+        // Set hint text below apply button
+        if (hintEl) {
+            hintEl.textContent = hintParts.join(" | ");
+        }
+
+        // Enable apply button if there are valid targets with damage
+        if (applyBtn) {
+            applyBtn.disabled = targets.length === 0;
+        }
+    }
+
+    /**
+     * Calculate damage preview for a target actor
+     * @param {Actor} actor - The target actor
+     * @param {Object} damageData - The damage data from the attack
+     * @returns {Object} Preview object with total damage, hint string, and per-location final damage
+     * @private
+     */
+    _calculateDamagePreview(actor, damageData) {
+        let total = 0;
+        const hintParts = [];
+        const byLocation = {}; // Track final damage per location for limb loss detection
+
+        for (const [location, hits] of Object.entries(damageData)) {
+            if (!Array.isArray(hits)) continue;
+
+            let locationTotal = 0;
+
+            for (const hit of hits) {
+                const rawDamage = hit.damage || 0;
+
+                // Get armor SP for this location
+                const hitLocations = actor.system?.hitLocations || {};
+                const locData = hitLocations[location] || {};
+                const armorSP = locData.stoppingPower || 0;
+
+                // Calculate damage after armor
+                const afterArmor = Math.max(0, rawDamage - armorSP);
+
+                // Apply BTM if damage penetrated
+                // BTM is stored as positive (0-5) but represents damage reduction
+                // So we SUBTRACT it from damage
+                let finalDamage = 0;
+                const btm = actor.system?.stats?.bt?.modifier || 0;
+
+                if (afterArmor > 0) {
+                    // BTM reduces damage (subtract it), minimum 1 damage if armor was penetrated
+                    finalDamage = Math.max(1, afterArmor - btm);
+                }
+
+                // Build hint string with location: "Torso: 8 - 4 SP - 2 BTM = 2"
+                // Display BTM as negative since it reduces damage
+                if (afterArmor > 0 && btm !== 0) {
+                    hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP - ${btm} BTM = ${finalDamage}`);
+                } else if (armorSP > 0) {
+                    hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP = ${finalDamage}`);
+                } else {
+                    hintParts.push(`${location}: ${rawDamage} = ${finalDamage}`);
+                }
+
+                total += finalDamage;
+                locationTotal += finalDamage;
+            }
+
+            // Store the total final damage for this location
+            byLocation[location] = { finalDamage: locationTotal };
+        }
+
+        // Each hit on its own line for clarity
+        const hint = hintParts.length > 0 ? hintParts.join("\n") : "";
+
+        return { total, hint, byLocation };
+    }
+
+    /**
+     * Handle clicking the Apply Damage button
+     * @param {Event} event - The click event
+     * @param {HTMLElement} html - The message HTML
+     * @private
+     */
+    async _onApplyDamage(event, html) {
+        event.preventDefault();
+
+        const targetSelector = html.querySelector(".target-selector");
+        if (!targetSelector) return;
+
+        // Get damage data
+        let damageData;
+        try {
+            damageData = JSON.parse(targetSelector.dataset.damage || "{}");
+        } catch (e) {
+            return;
+        }
+
+        // Get active tab mode
+        const activeTab = html.querySelector(".target-selector__tab--active");
+        const mode = activeTab?.dataset.mode || "targeted";
+
+        // Get targets based on mode
+        let targets = [];
+        if (mode === "targeted") {
+            targets = Array.from(game.user.targets);
+        } else {
+            targets = canvas.tokens?.controlled || [];
+        }
+
+        if (targets.length === 0) return;
+
+        // Limb location to condition ID mapping
+        const limbConditions = {
+            'lArm': 'lost-left-arm',
+            'rArm': 'lost-right-arm',
+            'lLeg': 'lost-left-leg',
+            'rLeg': 'lost-right-leg'
+        };
+
+        // Apply damage to each target
+        for (const token of targets) {
+            const actor = token.actor;
+            if (!actor) continue;
+
+            // Calculate total damage for this actor (includes per-location breakdown)
+            const preview = this._calculateDamagePreview(actor, damageData);
+            const totalDamage = preview.total;
+
+            if (totalDamage <= 0) continue;
+
+            // Get current damage and add new damage
+            const currentDamage = actor.system.damage || 0;
+            const newDamage = Math.min(currentDamage + totalDamage, 40);
+
+            // Check wound state before update
+            const previousWoundState = actor.woundState();
+
+            // Update actor damage
+            await actor.update({ "system.damage": newDamage });
+
+            // Get new wound state
+            const newWoundState = actor.woundState();
+
+            // Remove Stabilized if actor takes any damage
+            if (actor.statuses.has("stabilized")) {
+                await actor.toggleStatusEffect("stabilized", { active: false });
+            }
+
+            // Roll Shock Save only if actor is NOT already shocked
+            if (totalDamage > 0 && !actor.statuses.has("shocked")) {
+                const modifier = actor.system.stunSaveMod || 0;
+                await actor.rollStunSave(modifier);
+            }
+
+            // Track if we need to roll Death Save (only once per apply)
+            let needsDeathSave = false;
+
+            // Check for limb loss (8+ final damage to a limb)
+            for (const [location, conditionId] of Object.entries(limbConditions)) {
+                const locationDamage = preview.byLocation[location]?.finalDamage || 0;
+                if (locationDamage >= 8 && !actor.statuses.has(conditionId)) {
+                    await actor.toggleStatusEffect(conditionId, { active: true });
+                    needsDeathSave = true;
+                }
+            }
+
+            // Check for entering Mortal state (woundState 4+)
+            if (newWoundState >= 4 && previousWoundState < 4) {
+                needsDeathSave = true;
+            }
+
+            // Roll Death Save once if needed (limb loss or entering mortal state)
+            if (needsDeathSave) {
+                const modifier = actor.system.deathSaveMod || 0;
+                await actor.rollDeathSave(modifier);
+            }
+        }
+
+        // Update the apply button to show it was used
+        const applyBtn = html.querySelector(".apply-damage-btn");
+        if (applyBtn) {
+            applyBtn.textContent = "APPLIED";
+            applyBtn.disabled = true;
+        }
     }
 }

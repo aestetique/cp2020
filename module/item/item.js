@@ -248,6 +248,38 @@ export class CyberpunkItem extends Item {
     return [fireModes.semiAuto];
   }
 
+  /**
+   * Get the localized label for a fire mode
+   * @param {string} fireMode - The fire mode key (e.g., "FullAuto", "ThreeRoundBurst")
+   * @returns {string} The localized label
+   */
+  static getFireModeLabel(fireMode) {
+    const labels = {
+      [fireModes.fullAuto]: localize("FullAutoLabel"),
+      [fireModes.threeRoundBurst]: localize("ThreeRoundBurstLabel"),
+      [fireModes.semiAuto]: localize("SemiAutoLabel"),
+      [fireModes.suppressive]: localize("SuppressiveLabel")
+    };
+    return labels[fireMode] || fireMode;
+  }
+
+  /**
+   * Get the localized label for a range bracket
+   * @param {string} range - The range key (e.g., "RangePointBlank", "RangeClose")
+   * @param {number} actualRange - The actual range value in meters
+   * @returns {string} The localized label
+   */
+  static getRangeLabel(range, actualRange) {
+    const labels = {
+      [ranges.pointBlank]: localize("RangePointBlankLabel"),
+      [ranges.close]: localizeParam("RangeCloseLabel", { range: actualRange }),
+      [ranges.medium]: localizeParam("RangeMediumLabel", { range: actualRange }),
+      [ranges.long]: localizeParam("RangeLongLabel", { range: actualRange }),
+      [ranges.extreme]: localizeParam("RangeExtremeLabel", { range: actualRange })
+    };
+    return labels[range] || range;
+  }
+
   // Roll just the attack roll of a weapon, return it
   async attackRoll(attackMods) {
     let system = this.system;
@@ -267,6 +299,16 @@ export class CyberpunkItem extends Item {
       attackTerms.push(system.accuracy);
     }
 
+    // Fast Draw: -3 penalty on attack rolls
+    if(this.actor.statuses.has("fast-draw")) {
+      attackTerms.push(-3);
+    }
+
+    // Action Surge: -3 penalty on all weapon rolls
+    if(this.actor.statuses.has("action-surge")) {
+      attackTerms.push(-3);
+    }
+
     return await makeD10Roll(attackTerms, {
       stats: this.actor.system.stats,
       attackSkill: this.actor.getSkillVal(this.system.attackSkill)
@@ -276,7 +318,7 @@ export class CyberpunkItem extends Item {
   /**
    * Fire an automatic weapon at full auto
    * @param {*} attackMods The modifiers for an attack. fireMode, ambush, etc - look in lookups.js for the specification of these
-   * @returns 
+   * @returns
    */
   async __fullAuto(attackMods, targetTokens) {
       let system = this.system;
@@ -284,11 +326,17 @@ export class CyberpunkItem extends Item {
       let actualRangeBracket = rangeResolve[attackMods.range](system.range);
       let DC = rangeDCs[attackMods.range];
       let targetCount = targetTokens.length || attackMods.targetsCount || 1;
-      
+
       // This is a somewhat flawed multi-target thing - given target tokens, we could calculate distance (& therefore penalty) for each, and apply damage to them
       let rolls = [];
       for (let i = 0; i < targetCount; i++) {
           let attackRoll = await this.attackRoll(attackMods);
+
+          // Trigger Dice So Nice for attack roll
+          if (game.dice3d) {
+              await game.dice3d.showForRoll(attackRoll, game.user, true);
+          }
+
           let roundsFired = Math.min(system.shotsLeft, system.rof / targetCount);
           await this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
           let roundsHit = Math.min(roundsFired, attackRoll.total - DC);
@@ -297,14 +345,23 @@ export class CyberpunkItem extends Item {
           }
           let areaDamages = {};
           // Roll damage for each of the bullets that hit
-          for (let i = 0; i < roundsHit; i++) {
+          for (let j = 0; j < roundsHit; j++) {
               let damageRoll = await new Roll(system.damage).evaluate();
+              // Trigger Dice So Nice for damage roll
+              if (game.dice3d) {
+                  await game.dice3d.showForRoll(damageRoll, game.user, true);
+              }
               let location = (await rollLocation(attackMods.targetActor, attackMods.targetArea)).areaHit;
               if (!areaDamages[location]) {
                   areaDamages[location] = [];
               }
               areaDamages[location].push({
-                  damage: damageRoll.total
+                  damage: damageRoll.total,
+                  formula: damageRoll.formula,
+                  dice: damageRoll.terms.filter(t => t.results).map(term => ({
+                      faces: term.faces,
+                      results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
+                  }))
               });
           }
           let templateData = {
@@ -316,11 +373,13 @@ export class CyberpunkItem extends Item {
               hits: roundsHit,
               hit: roundsHit > 0,
               areaDamages: areaDamages,
-              locals: {
-                  range: { range: actualRangeBracket }
-              }
+              fireModeLabel: CyberpunkItem.getFireModeLabel(fireModes.fullAuto),
+              rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
+              weaponName: this.name,
+              weaponImage: this.img,
+              weaponType: this.system.attackType
           };
-          let roll = new Multiroll(`${localize("Autofire")}`, `${localize("Range")}: ${localizeParam(attackMods.range, {range: actualRangeBracket})}`);
+          let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.fullAuto));
           roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
           rolls.push(roll);
       }
@@ -334,6 +393,11 @@ export class CyberpunkItem extends Item {
       let DC = rangeDCs[attackMods.range];
       let attackRoll = await this.attackRoll(attackMods);
 
+      // Trigger Dice So Nice for attack roll
+      if (game.dice3d) {
+          await game.dice3d.showForRoll(attackRoll, game.user, true);
+      }
+
       let roundsFired = Math.min(system.shotsLeft, system.rof, 3);
       let attackHits = attackRoll.total >= DC;
       let areaDamages = {};
@@ -343,12 +407,21 @@ export class CyberpunkItem extends Item {
           roundsHit = await new Roll("1d3").evaluate();
           for (let i = 0; i < roundsHit.total; i++) {
               let damageRoll = await new Roll(system.damage).evaluate();
+              // Trigger Dice So Nice for damage roll
+              if (game.dice3d) {
+                  await game.dice3d.showForRoll(damageRoll, game.user, true);
+              }
               let location = (await rollLocation(attackMods.targetActor, attackMods.targetArea)).areaHit;
               if (!areaDamages[location]) {
                   areaDamages[location] = [];
               }
               areaDamages[location].push({
-                  damage: damageRoll.total
+                  damage: damageRoll.total,
+                  formula: damageRoll.formula,
+                  dice: damageRoll.terms.filter(t => t.results).map(term => ({
+                      faces: term.faces,
+                      results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
+                  }))
               });
           }
       }
@@ -360,11 +433,13 @@ export class CyberpunkItem extends Item {
           hits: attackHits ? roundsHit.total : 0,
           hit: attackHits,
           areaDamages: areaDamages,
-          locals: {
-              range: { range: actualRangeBracket }
-          }
+          fireModeLabel: CyberpunkItem.getFireModeLabel(fireModes.threeRoundBurst),
+          rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
+          weaponName: this.name,
+          weaponImage: this.img,
+          weaponType: this.system.attackType
       };
-      let roll = new Multiroll(localize("ThreeRoundBurst"));
+      let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.threeRoundBurst));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
       this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
       return roll;
@@ -411,12 +486,23 @@ export class CyberpunkItem extends Item {
 
   async __semiAuto(attackMods) {
       let system = this.system;
-      console.log("System:", system);
-      
+
       // The range we're shooting at
       let DC = rangeDCs[attackMods.range];
       let attackRoll = await this.attackRoll(attackMods);
+
+      // Trigger Dice So Nice for attack roll
+      if (game.dice3d) {
+          await game.dice3d.showForRoll(attackRoll, game.user, true);
+      }
+
       let damageRoll = await new Roll(system.damage).evaluate();
+
+      // Trigger Dice So Nice for damage roll
+      if (game.dice3d) {
+          await game.dice3d.showForRoll(damageRoll, game.user, true);
+      }
+
       let locationRoll = await rollLocation(attackMods.targetActor, attackMods.targetArea);
       let actualRangeBracket = rangeResolve[attackMods.range](system.range);
       let attackHits = attackRoll.total >= DC;
@@ -424,24 +510,20 @@ export class CyberpunkItem extends Item {
       let location = locationRoll.areaHit;
       let areaDamages = {};
 
-      // let bigRoll = new Multiroll(this.name, this.system.flavor)
-      //   .addRoll(new Roll(`${DC}`), {name: localize("ToHit")})
-      //   .addRoll(attackRoll, {name: localize("Attack")})
-      //   .addRoll(damageRoll, {name: localize("Damage")})
-      //   .addRoll(locationRoll.roll, {name: localize("Location"), flavor: locationRoll.areaHit });
-      // bigRoll.defaultExecute({img:this.img});
-      // this.update({"system.shotsLeft": system.shotsLeft - 1})
-      // return bigRoll;
-      
       if (attackHits) {
           if (!areaDamages[location]) {
               areaDamages[location] = [];
           }
           areaDamages[location].push({
               damage: damageRoll.total,
+              formula: damageRoll.formula,
+              dice: damageRoll.terms.filter(t => t.results).map(term => ({
+                  faces: term.faces,
+                  results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
+              }))
           });
       }
-      
+
       let templateData = {
           range: attackMods.range,
           toHit: DC,
@@ -450,12 +532,14 @@ export class CyberpunkItem extends Item {
           hits: attackHits ? 1 : 0,
           hit: attackHits,
           areaDamages: areaDamages,
-          locals: {
-              range: { range: actualRangeBracket }
-          }
+          fireModeLabel: CyberpunkItem.getFireModeLabel(fireModes.semiAuto),
+          rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
+          weaponName: this.name,
+          weaponImage: this.img,
+          weaponType: this.system.attackType
       };
 
-      let roll = new Multiroll(localize("SemiAuto"));
+      let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.semiAuto));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
 
       this.update({"system.shotsLeft": system.shotsLeft - roundsFired});

@@ -5,6 +5,7 @@ import { CyberpunkItemSheet } from "./item/item-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
+import { CP2020_CONDITIONS } from "./conditions.js";
 
 import { preloadHandlebarsTemplates } from "./templates.js";
 import { registerHandlebarsHelpers } from "./handlebars-helpers.js"
@@ -28,6 +29,9 @@ Hooks.once('init', async function () {
     CONFIG.Item.documentClass = CyberpunkItem;
     CONFIG.ChatMessage.documentClass = CyberpunkChatMessage;
     CONFIG.Combat.documentClass = CyberpunkCombat;
+
+    // Register system conditions (status effects)
+    CONFIG.statusEffects = CP2020_CONDITIONS;
 
     // Register sheets, unregister original core sheets
     Actors.unregisterSheet("core", ActorSheet);
@@ -62,6 +66,23 @@ Hooks.once("ready", function() {
 });
 
 /**
+ * Broadcast target changes to chat messages for reactive UI updates
+ */
+Hooks.on("targetToken", (user, token, targeted) => {
+    // Only react to current user's targeting
+    if (user.id === game.user.id) {
+        Hooks.callAll("cp2020.targetChanged");
+    }
+});
+
+/**
+ * Broadcast token selection changes to chat messages for reactive UI updates
+ */
+Hooks.on("controlToken", (token, controlled) => {
+    Hooks.callAll("cp2020.selectionChanged");
+});
+
+/**
  * Intercept basic /roll commands and restyle them with our formula-roll template.
  * Uses preCreateChatMessage to capture speaker from selected token before message is created.
  */
@@ -91,4 +112,57 @@ Hooks.on("preCreateChatMessage", async (message, data, options, userId) => {
         content: newContent,
         speaker: speaker
     });
+});
+
+/**
+ * Handle combat turn changes - auto-roll saves for Shocked and Mortally Wounded combatants
+ * When a combatant's turn starts:
+ * - If Shocked: roll Shock Save to determine if they recover
+ * - If Mortally Wounded (woundState >= 4) and NOT Stabilized and NOT Dead: roll Death Save
+ * When a combatant's turn ends:
+ * - Remove Fast Draw and Action Surge conditions (they only last one turn)
+ */
+Hooks.on("combatTurnChange", async (combat, prior, current) => {
+    // Only run for GM to avoid duplicate rolls/updates
+    if (!game.user.isGM) return;
+
+    // Handle turn END for the previous combatant
+    if (prior?.combatantId) {
+        const previousCombatant = combat.combatants.get(prior.combatantId);
+        if (previousCombatant?.actor) {
+            const prevActor = previousCombatant.actor;
+
+            // Remove Fast Draw at turn end
+            if (prevActor.statuses.has("fast-draw")) {
+                await prevActor.toggleStatusEffect("fast-draw", { active: false });
+            }
+
+            // Remove Action Surge at turn end
+            if (prevActor.statuses.has("action-surge")) {
+                await prevActor.toggleStatusEffect("action-surge", { active: false });
+            }
+        }
+    }
+
+    // Handle turn START for the current combatant
+    const combatant = combat.combatants.get(current.combatantId);
+    if (!combatant?.actor) return;
+
+    const actor = combatant.actor;
+
+    // Check if the actor has the Shocked condition (and is not Dead)
+    if (actor.statuses.has("shocked") && !actor.statuses.has("dead")) {
+        // Get the modifier from the character sheet
+        const modifier = actor.system.stunSaveMod || 0;
+        // Auto-roll Shock Save at the start of their turn
+        await actor.rollStunSave(modifier);
+    }
+
+    // Check if Mortally Wounded (woundState >= 4) and NOT Stabilized and NOT Dead
+    if (actor.woundState() >= 4 &&
+        !actor.statuses.has("stabilized") &&
+        !actor.statuses.has("dead")) {
+        const modifier = actor.system.deathSaveMod || 0;
+        await actor.rollDeathSave(modifier);
+    }
 });

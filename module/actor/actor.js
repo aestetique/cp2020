@@ -2,6 +2,7 @@ import { makeD10Roll, Multiroll } from "../dice.js";
 import { SortOrders, sortSkills } from "./skill-sort.js";
 import { btmFromBT } from "../lookups.js";
 import { properCase, localize, getDefaultSkills } from "../utils.js"
+import { WOUND_CONDITION_IDS, WOUND_STATE_TO_CONDITION } from "../conditions.js"
 
 /**
  * Extend the base Actor document by defining a custom roll data structure which is ideal for the Simple system.
@@ -185,7 +186,18 @@ export class CyberpunkActor extends Actor {
   }
 
   /**
-   * 
+   * Override getRollData to add condition-based modifiers
+   * @override
+   */
+  getRollData() {
+    const data = super.getRollData();
+    // Fast Draw: +3 to initiative
+    data.fastDrawMod = this.statuses.has("fast-draw") ? 3 : 0;
+    return data;
+  }
+
+  /**
+   *
    * @param {string} sortOrder The order to sort skills by. Options are in skill-sort.js's SortOrders. "Name" or "Stat". Default "Name".
    */
   sortSkills(sortOrder = "Name") {
@@ -210,24 +222,86 @@ export class CyberpunkActor extends Actor {
     
   }
 
-  // Current wound state. 0 for uninjured, going up by 1 for each new one. 1 for Light, 2 Serious, 3 Critical etc.
+  /**
+   * Maximum health points (40 = 10 wound states × 4 boxes)
+   * @type {number}
+   */
+  get maxHealth() {
+    return 40;
+  }
+
+  /**
+   * Current health points (maxHealth - damage)
+   * @type {number}
+   */
+  get currentHealth() {
+    return Math.max(0, this.maxHealth - (this.system.damage || 0));
+  }
+
+  /**
+   * Current wound state. 0 for uninjured, going up by 1 for each new wound level.
+   * 1 = Light, 2 = Serious, 3 = Critical, 4-10 = Mortal 0-6
+   * @returns {number} Wound state from 0 (uninjured) to 10 (Mortal 6)
+   */
   woundState() {
     const damage = this.system.damage;
-    if(damage == 0) return 0;
-    // Wound slots are 4 wide, so divide by 4, ceil the result
-    return Math.ceil(damage/4);
+    if (damage === 0) return 0;
+    // Wound slots are 4 wide, so divide by 4, ceil the result, cap at 10
+    return Math.min(Math.ceil(damage / 4), 10);
   }
 
 
   stunThreshold() {
     const body = this.system.stats.bt.total;
     // +1 as Light has no penalty, but is 1 from woundState()
-    return body - this.woundState() + 1; 
+    return body - this.woundState() + 1;
   }
 
   deathThreshold() {
     // The first wound state to penalise is Mortal 1 instead of Serious.
     return this.stunThreshold() + 3;
+  }
+
+  /**
+   * Synchronize the wound condition on this actor's token(s) based on current damage.
+   * Removes any existing wound condition and applies the appropriate one.
+   * Called automatically when damage changes.
+   */
+  async syncWoundCondition() {
+    const state = this.woundState();
+    const newConditionId = WOUND_STATE_TO_CONDITION[state] || null;
+
+    // Get current wound condition (if any)
+    let currentWoundCondition = null;
+    for (const id of WOUND_CONDITION_IDS) {
+      if (this.statuses.has(id)) {
+        currentWoundCondition = id;
+        break;
+      }
+    }
+
+    // If wound state hasn't changed, do nothing
+    if (currentWoundCondition === newConditionId) return;
+
+    // Remove current wound condition if present
+    if (currentWoundCondition) {
+      await this.toggleStatusEffect(currentWoundCondition, { active: false });
+    }
+
+    // Apply new wound condition if wounded
+    if (newConditionId) {
+      await this.toggleStatusEffect(newConditionId, { active: true });
+    }
+  }
+
+  /** @override */
+  async _onUpdate(changed, options, userId) {
+    await super._onUpdate(changed, options, userId);
+
+    // Sync wound condition when damage changes
+    if (changed.system?.damage !== undefined) {
+      await this.syncWoundCondition();
+    }
   }
 
   trainedMartials() {
@@ -272,12 +346,16 @@ export class CyberpunkActor extends Actor {
     const skill = this.items.get(skillId);
     if (!skill) return;
 
+    // Action Surge: -3 penalty on all skill rolls
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
     // generate the list of modifiers
     const parts = [
       CyberpunkActor.realSkillValue(skill),
       skill.system.stat ? `@stats.${skill.system.stat}.total` : null,
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
-      extraMod || null
+      extraMod || null,
+      actionSurgePenalty || null
     ].filter(Boolean);
 
     const makeRoll = () => makeD10Roll(parts, this.system);   // d10 + parts
@@ -313,11 +391,15 @@ export class CyberpunkActor extends Actor {
 
   rollStat(statName) {
     let fullStatName = localize(properCase(statName) + "Full");
+
+    // Action Surge: -3 penalty on all stat rolls
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    const parts = [`@stats.${statName}.total`];
+    if (actionSurgePenalty) parts.push(actionSurgePenalty);
+
     let roll = new Multiroll(fullStatName);
-    roll.addRoll(makeD10Roll(
-      [`@stats.${statName}.total`],
-      this.system
-    ));
+    roll.addRoll(makeD10Roll(parts, this.system));
     roll.defaultExecute({ statIcon: statName }, this);
   }
 
@@ -353,6 +435,8 @@ export class CyberpunkActor extends Actor {
   /**
    * Roll a Stun Save (Shock Save)
    * Must roll UNDER the threshold to succeed
+   * On failure, applies the Shocked condition
+   * On success, removes the Shocked condition if present
    * @param {number} modifier - Optional modifier to the roll
    */
   async rollStunSave(modifier = 0) {
@@ -371,11 +455,23 @@ export class CyberpunkActor extends Actor {
         success: success,
         hint: localize("UnderThresholdMessage")
       });
+
+    // Apply or remove Shocked condition based on result
+    if (success) {
+      // Remove Shocked condition on success
+      if (this.statuses.has("shocked")) {
+        await this.toggleStatusEffect("shocked", { active: false });
+      }
+    } else {
+      // Apply Shocked condition on failure
+      await this.toggleStatusEffect("shocked", { active: true });
+    }
   }
 
   /**
    * Roll a Death Save
    * Must roll UNDER the threshold to succeed
+   * On failure, applies the Dead condition
    * @param {number} modifier - Optional modifier to the roll
    */
   async rollDeathSave(modifier = 0) {
@@ -394,6 +490,11 @@ export class CyberpunkActor extends Actor {
         success: success,
         hint: localize("UnderThresholdMessage")
       });
+
+    // Apply Dead condition on failure
+    if (!success) {
+      await this.toggleStatusEffect("dead", { active: true });
+    }
   }
 
   /**
