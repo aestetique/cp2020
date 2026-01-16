@@ -273,11 +273,25 @@ export class CyberpunkChatMessage extends ChatMessage {
             // Apply damage button
             const applyBtn = targetSelector.querySelector(".apply-damage-btn");
             if (applyBtn) {
-                applyBtn.addEventListener("click", (event) => this._onApplyDamage(event, html));
+                // Check if damage was already applied (persisted in flags)
+                if (this.getFlag("cp2020", "damageApplied")) {
+                    applyBtn.textContent = "APPLIED";
+                    applyBtn.disabled = true;
+
+                    // Hide the tabs and content for already-applied messages
+                    const tabs = targetSelector.querySelector(".target-selector__tabs");
+                    const content = targetSelector.querySelector(".target-selector__content");
+                    if (tabs) tabs.style.display = "none";
+                    if (content) content.style.display = "none";
+                } else {
+                    applyBtn.addEventListener("click", (event) => this._onApplyDamage(event, html));
+                }
             }
 
-            // Initialize target info based on current mode
-            this._updateTargetInfo(html, "targeted");
+            // Initialize target info based on current mode (only if not already applied)
+            if (!this.getFlag("cp2020", "damageApplied")) {
+                this._updateTargetInfo(html, "targeted");
+            }
 
             // Subscribe to target/selection changes for reactive updates
             Hooks.on("cp2020.targetChanged", () => {
@@ -781,11 +795,20 @@ export class CyberpunkChatMessage extends ChatMessage {
             }
         }
 
-        // Update the apply button to show it was used
+        // Update the apply button to show it was used and hide the selector UI
         const applyBtn = html.querySelector(".apply-damage-btn");
         if (applyBtn) {
             applyBtn.textContent = "APPLIED";
             applyBtn.disabled = true;
         }
+
+        // Hide the tabs and content after applying
+        const tabs = html.querySelector(".target-selector__tabs");
+        const content = html.querySelector(".target-selector__content");
+        if (tabs) tabs.style.display = "none";
+        if (content) content.style.display = "none";
+
+        // Persist the applied state in message flags
+        await this.setFlag("cp2020", "damageApplied", true);
     }
 }
