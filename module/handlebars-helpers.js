@@ -225,12 +225,29 @@ export function registerHandlebarsHelpers() {
     });
 
     /**
+     * Normalize location key to match damage data keys
+     * Grid uses display names, damage data uses abbreviated keys
+     */
+    function normalizeLocationKey(location) {
+        const mapping = {
+            'LeftArm': 'lArm',
+            'RightArm': 'rArm',
+            'LeftLeg': 'lLeg',
+            'RightLeg': 'rLeg',
+            'Head': 'Head',
+            'Torso': 'Torso'
+        };
+        return mapping[location] || location;
+    }
+
+    /**
      * Get damage for a specific body location from aggregated damage
      * Returns the damage value or 0 if not hit
      */
     Handlebars.registerHelper("getLocationDamage", function(aggregatedDamage, location) {
         if (!aggregatedDamage) return 0;
-        return aggregatedDamage[location] || 0;
+        const key = normalizeLocationKey(location);
+        return aggregatedDamage[key] || 0;
     });
 
     /**
@@ -238,22 +255,42 @@ export function registerHandlebarsHelpers() {
      */
     Handlebars.registerHelper("locationWasHit", function(aggregatedDamage, location) {
         if (!aggregatedDamage) return false;
-        return (aggregatedDamage[location] || 0) > 0;
+        const key = normalizeLocationKey(location);
+        return (aggregatedDamage[key] || 0) > 0;
+    });
+
+    /**
+     * Get the data key for a location (for data attributes)
+     */
+    Handlebars.registerHelper("locationDataKey", function(location) {
+        return normalizeLocationKey(location);
     });
 
     /**
      * Body location grid for damage display
      * Returns the grid structure for the 3x2 body location layout
+     * Provides both dataKey (for damage data lookup) and iconName (for SVG files)
      */
     Handlebars.registerHelper("bodyGridRow", function(row, options) {
         const grid = {
-            row1: ['LeftArm', 'Head', 'RightArm'],
-            row2: ['LeftLeg', 'Torso', 'RightLeg']
+            row1: [
+                { dataKey: 'lArm', iconName: 'LeftArm' },
+                { dataKey: 'Head', iconName: 'Head' },
+                { dataKey: 'rArm', iconName: 'RightArm' }
+            ],
+            row2: [
+                { dataKey: 'lLeg', iconName: 'LeftLeg' },
+                { dataKey: 'Torso', iconName: 'Torso' },
+                { dataKey: 'rLeg', iconName: 'RightLeg' }
+            ]
         };
         const locations = grid[row] || [];
         let result = '';
-        locations.forEach(location => {
-            result += options.fn({ location: location });
+        locations.forEach(loc => {
+            result += options.fn({
+                location: loc.dataKey,
+                iconName: loc.iconName
+            });
         });
         return result;
     });
@@ -266,9 +303,20 @@ export function registerHandlebarsHelpers() {
     });
 
     /**
+     * Check if an actor has a specific status effect
+     * @param {Actor} actor - The actor to check
+     * @param {string} statusId - The status ID to check for
+     * @returns {boolean} True if the actor has the status
+     */
+    Handlebars.registerHelper("hasStatus", function(actor, statusId) {
+        return actor?.statuses?.has(statusId) || false;
+    });
+
+    /**
      * Clean dice formula for display
      * Removes the x10 exploding notation from 1d10x10 -> 1d10
      * Also cleans up @variable references to show cleaner formulas
+     * Fixes double operators (++ -> +) and removes + 0 terms
      */
     Handlebars.registerHelper("cleanFormula", function(formula) {
         if (!formula) return "";
@@ -279,6 +327,15 @@ export function registerHandlebarsHelpers() {
             const parts = match.split(".");
             return parts[parts.length - 1];
         });
+        // Fix double operators (e.g., "+ +" -> "+", "- -" -> "-")
+        cleaned = cleaned.replace(/\+\s*\+/g, "+");
+        cleaned = cleaned.replace(/-\s*-/g, "-");
+        cleaned = cleaned.replace(/\+\s*-/g, "-");
+        cleaned = cleaned.replace(/-\s*\+/g, "-");
+        // Remove "+ 0" or "- 0" terms
+        cleaned = cleaned.replace(/[+-]\s*0(?=\s*[+-]|$)/g, "");
+        // Clean up extra whitespace
+        cleaned = cleaned.replace(/\s+/g, " ").trim();
         return cleaned;
     });
 }

@@ -699,6 +699,12 @@ $fail-color: #d1502fb8;
 
   &--hit {
     background: var(--chat-green-back);
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
   }
 
   &--empty {
@@ -733,6 +739,40 @@ $fail-color: #d1502fb8;
   line-height: 36px;
   color: var(--chat-text);
   text-align: center;
+}
+
+// Expandable damage details
+.damage-grid__expand {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 250ms ease-out, margin-top 250ms ease-out;
+  width: 100%;
+  margin-top: 0;
+
+  &--hidden {
+    grid-template-rows: 0fr;
+    margin-top: -10px; // Compensate for parent gap when hidden
+  }
+}
+
+.damage-grid__expand-content {
+  overflow: hidden;
+  min-height: 0;
+
+  // Force roll-expandable to be expanded (it defaults to 0fr)
+  .roll-expandable {
+    grid-template-rows: 1fr;
+  }
+
+  .roll-expandable__inner {
+    padding: 0;
+    margin-top: 0;
+  }
+}
+
+// Active state for clicked cell (brighter background)
+.damage-grid__cell--active {
+  background: var(--chat-green);
 }
 
 // ============================================
@@ -794,4 +834,214 @@ $fail-color: #d1502fb8;
       }
     }
   }
+}
+
+// ============================================
+// Target Selector (Damage Application)
+// ============================================
+.target-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+// Switch component (TARGETED / SELECTED)
+.target-selector__switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 28px;
+  border: 1px solid var(--chat-stroke);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.target-selector__option {
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &--active {
+    background: var(--chat-stroke);
+    color: var(--chat-text);
+  }
+
+  &:not(.target-selector__option--active) {
+    background: transparent;
+    color: var(--chat-gray);
+  }
+}
+
+.target-selector__divider {
+  width: 1px;
+  height: 100%;
+  background: var(--chat-stroke);
+  flex-shrink: 0;
+}
+
+// Legacy tab support (for backwards compatibility)
+.target-selector__tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 28px;
+  border: 1px solid var(--chat-stroke);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.target-selector__tab {
+  flex: 1;
+  height: 100%;
+  border: none;
+  padding: 0;
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+
+  &:focus,
+  &:active {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &--active {
+    background: var(--chat-stroke);
+    color: var(--chat-text);
+  }
+
+  &:not(.target-selector__tab--active) {
+    background: transparent;
+    color: var(--chat-gray);
+  }
+}
+
+.target-selector__content {
+  width: 100%;
+}
+
+// Empty state (no target selected)
+.target-info--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border: 1px dashed var(--chat-stroke);
+  border-radius: 2px;
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--chat-gray);
+  text-align: center;
+}
+
+// Selected target row
+.target-info__selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 6px;
+  border: 1px solid var(--chat-stroke);
+  border-radius: 2px;
+}
+
+.target-info__portrait {
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.target-info__name {
+  flex: 1;
+  font-family: var(--font-refinery);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--chat-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.target-info__damage {
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 24px;
+  color: var(--chat-text);
+}
+
+// Apply damage button
+.apply-damage-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: 2px;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  --button-focus-outline-color: transparent;
+
+  &:focus,
+  &:active {
+    outline: none;
+    box-shadow: none;
+    --button-focus-outline-color: transparent;
+  }
+
+  // Disabled state (no target)
+  &:disabled {
+    border: 1px solid var(--chat-stroke);
+    background: transparent;
+    color: var(--chat-gray);
+    cursor: not-allowed;
+  }
+
+  // Enabled state (target selected)
+  &:not(:disabled) {
+    border: none;
+    background: var(--chat-red);
+    color: var(--chat-text);
+
+    &:hover {
+      background: var(--chat-red-text);
+    }
+  }
+}
+
+// Calculation hint below apply button
+.target-selector__hint {
+  text-align: left;
+  margin-top: 8px;
+  white-space: pre-line;
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--chat-gray);
 }
