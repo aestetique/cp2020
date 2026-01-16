@@ -737,7 +737,6 @@ div.statderive .value.rightborder {
   line-height: 16px;
   color: var(--chat-text);
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
