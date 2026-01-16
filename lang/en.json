@@ -290,7 +290,7 @@
     "CYBERPUNK.FullAuto": "Full Auto",
     "CYBERPUNK.ThreeRoundBurst": "Three-round Burst",
     "CYBERPUNK.Suppressive": "Suppressive Fire",
-    "CYBERPUNK.SemiAuto": "Semi-Auto",
+    "CYBERPUNK.SingleShot": "Single Shot",
     "CYBERPUNK.AttackModifiers": "Attack Modifiers",
     "CYBERPUNK.ModifiersSkillTitle": "Skill Modifiers",
     "CYBERPUNK.ExtraModifiers": "Extra Modifiers",
@@ -451,7 +451,7 @@
 
     "CYBERPUNK.FullAutoLabel": "FULL AUTO",
     "CYBERPUNK.ThreeRoundBurstLabel": "THREE-ROUND BURST",
-    "CYBERPUNK.SemiAutoLabel": "SEMI-AUTO",
+    "CYBERPUNK.SingleShotLabel": "SINGLE SHOT",
     "CYBERPUNK.SuppressiveLabel": "SUPPRESSIVE FIRE",
     "CYBERPUNK.RangePointBlankLabel": "POINT BLANK / 1 M",
     "CYBERPUNK.RangeCloseLabel": "CLOSE / {range} M",

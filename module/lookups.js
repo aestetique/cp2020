@@ -114,8 +114,8 @@ export let fireModes = {
     fullAuto: "FullAuto",
     threeRoundBurst: "ThreeRoundBurst",
     suppressive: "Suppressive",
-    // Really semi auto is any none auto with RoF with more than 1
-    semiAuto: "SemiAuto"
+    // Single shot is any non-auto fire with RoF of 1 or more
+    singleShot: "SingleShot"
 }
 
 export let martialActions = {

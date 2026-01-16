@@ -229,8 +229,8 @@ export class CyberpunkItem extends Item {
     else if(attackMods.fireMode === fireModes.threeRoundBurst) {
       return this.__threeRoundBurst(attackMods);
     }
-    else if(attackMods.fireMode === fireModes.semiAuto) {
-      return this.__semiAuto(attackMods);
+    else if(attackMods.fireMode === fireModes.singleShot) {
+      return this.__singleShot(attackMods);
     }
     else if(attackMods.fireMode === fireModes.suppressive) {
       return this.__suppressiveFire(attackMods);
@@ -243,9 +243,9 @@ export class CyberpunkItem extends Item {
       return [];
     }
     if (this.system.attackType === rangedAttackTypes.auto || this.system.attackType === rangedAttackTypes.autoshotgun){
-      return [fireModes.fullAuto, fireModes.suppressive, fireModes.threeRoundBurst, fireModes.semiAuto];
+      return [fireModes.fullAuto, fireModes.suppressive, fireModes.threeRoundBurst, fireModes.singleShot];
     }
-    return [fireModes.semiAuto];
+    return [fireModes.singleShot];
   }
 
   /**
@@ -257,7 +257,7 @@ export class CyberpunkItem extends Item {
     const labels = {
       [fireModes.fullAuto]: localize("FullAutoLabel"),
       [fireModes.threeRoundBurst]: localize("ThreeRoundBurstLabel"),
-      [fireModes.semiAuto]: localize("SemiAutoLabel"),
+      [fireModes.singleShot]: localize("SingleShotLabel"),
       [fireModes.suppressive]: localize("SuppressiveLabel")
     };
     return labels[fireMode] || fireMode;
@@ -484,7 +484,7 @@ export class CyberpunkItem extends Item {
     });
   }
 
-  async __semiAuto(attackMods) {
+  async __singleShot(attackMods) {
       let system = this.system;
 
       // The range we're shooting at
@@ -532,14 +532,14 @@ export class CyberpunkItem extends Item {
           hits: attackHits ? 1 : 0,
           hit: attackHits,
           areaDamages: areaDamages,
-          fireModeLabel: CyberpunkItem.getFireModeLabel(fireModes.semiAuto),
+          fireModeLabel: CyberpunkItem.getFireModeLabel(fireModes.singleShot),
           rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
           weaponName: this.name,
           weaponImage: this.img,
           weaponType: this.system.attackType
       };
 
-      let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.semiAuto));
+      let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.singleShot));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
 
       this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
