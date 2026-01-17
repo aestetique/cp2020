@@ -644,6 +644,16 @@ div.statderive .value.rightborder {
   margin: 0;
 }
 
+.cp2020-message .message-content {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  line-height: 1.1;
+}
+.cp2020-message .message-content h1, .cp2020-message .message-content h2, .cp2020-message .message-content h3, .cp2020-message .message-content h4, .cp2020-message .message-content h5, .cp2020-message .message-content h6 {
+  font-family: inherit;
+  color: currentColor;
+}
+
 .cp2020-header {
   display: flex;
   align-items: center;
