@@ -37,6 +37,20 @@ $fail-color: #d1502fb8;
   }
 }
 
+// Foundry Message Typography
+.cp2020-message {
+  .message-content {
+    font-family: var(--font-blender);
+    font-size: 16px;
+    line-height: 1.1;
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: inherit;
+      color: currentColor;
+    }
+  }
+}
+
 // Custom header styling (replaces Foundry's default)
 .cp2020-header {
   display: flex;
