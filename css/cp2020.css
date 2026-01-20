@@ -631,7 +631,7 @@ div.statderive .value.rightborder {
   border-radius: 4px;
   padding: 10px;
   color: var(--chat-text);
-  background-image: url("../img/chat-background.png");
+  background-image: url("../img/ui/chat-background.png");
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;

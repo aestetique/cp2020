@@ -42,7 +42,7 @@
                 {{!-- Range Bar --}}
                 <div class="section-bar">
                     <span class="section-bar__icon">
-                        <img src="systems/cp2020/img/icons/chat/range.svg" alt="Range">
+                        <img src="systems/cp2020/img/chat/range.svg" alt="Range">
                     </span>
                     <span class="section-bar__label">{{rangeLabel}}</span>
                 </div>
@@ -52,7 +52,7 @@
         {{!-- Result Row: Hit or Miss (clickable to toggle) --}}
         <div class="result-row result-row--{{#if hit}}success{{else}}failure{{/if}} roll-toggle">
             <span class="result-row__icon">
-                <img src="systems/cp2020/img/icons/chat/{{#if hit}}success{{else}}failure{{/if}}.png" alt="{{#if hit}}Hit{{else}}Miss{{/if}}">
+                <img src="systems/cp2020/img/chat/{{#if hit}}success{{else}}failure{{/if}}.png" alt="{{#if hit}}Hit{{else}}Miss{{/if}}">
             </span>
             <span class="result-row__value">{{attackRoll._total}}</span>
             <span class="result-row__target">
