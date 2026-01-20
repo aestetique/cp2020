@@ -644,6 +644,16 @@ div.statderive .value.rightborder {
   margin: 0;
 }
 
+.cp2020-message .message-content {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  line-height: 1.1;
+}
+.cp2020-message .message-content h1, .cp2020-message .message-content h2, .cp2020-message .message-content h3, .cp2020-message .message-content h4, .cp2020-message .message-content h5, .cp2020-message .message-content h6 {
+  font-family: inherit;
+  color: currentColor;
+}
+
 .cp2020-header {
   display: flex;
   align-items: center;
@@ -736,8 +746,6 @@ div.statderive .value.rightborder {
   font-size: 16px;
   line-height: 16px;
   color: var(--chat-text);
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -917,8 +925,7 @@ div.statderive .value.rightborder {
   justify-content: center;
   gap: 6px;
   width: 100%;
-  height: 26px;
-  padding: 1px 0;
+  padding: 5px 3px;
   border-radius: 2px;
   background: var(--chat-accent);
 }
@@ -939,10 +946,10 @@ div.statderive .value.rightborder {
   font-family: var(--font-blender);
   font-weight: 500;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 16px;
   color: var(--chat-text);
   text-transform: uppercase;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .weapon-line {

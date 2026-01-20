@@ -13,12 +13,8 @@ export class CyberpunkChatMessage extends ChatMessage {
     async renderHTML(options = {}) {
         const html = await super.renderHTML(options);
 
-        // Only customize messages that have our cyberpunk-card class
-        const card = html.querySelector(".cyberpunk-card");
-        if (card) {
-            await this._enrichChatCard(html);
-            this._activateListeners(html);
-        }
+        await this._enrichChatCard(html);
+        this._activateListeners(html);
 
         // Call system hook for further customization by modules
         Hooks.callAll("cp2020.renderChatMessageHTML", this, html);
