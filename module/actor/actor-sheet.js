@@ -4,42 +4,95 @@ import { ModifiersDialog } from "../dialog/modifiers.js"
 import { SortOrders } from "./skill-sort.js";
 
 /**
- * Extend the basic ActorSheet with some very simple modifications
+ * Extend the basic ActorSheet with custom character sheet layout
  * @extends {ActorSheet}
  */
 export class CyberpunkActorSheet extends ActorSheet {
 
+  /**
+   * Lock state for the sheet (locked = view mode, unlocked = edit mode)
+   * @type {boolean}
+   */
+  _isLocked = true;
+
+  /**
+   * Static map to remember sheet heights per actor
+   * @type {Map<string, number>}
+   */
+  static _sheetHeights = new Map();
+
   /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      // Css classes
-      classes: ["cyberpunk", "sheet", "actor"],
+      classes: ["cyberpunk", "sheet", "actor", "character-sheet"],
       template: "systems/cp2020/templates/actor/actor-sheet.hbs",
-      // Default window dimensions
-      width: 590,
-      height: 600,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "skills" }]
+      width: 930,
+      height: 624,
+      resizable: true,
+      tabs: [{ navSelector: ".tab-selector", contentSelector: ".sheet-details", initial: "skills" }]
     });
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Override setPosition to remember the sheet height
+   * @override
+   */
+  setPosition(position = {}) {
+    // If height is being set (from resize), remember it
+    if (position.height) {
+      CyberpunkActorSheet._sheetHeights.set(this.actor.id, position.height);
+    }
+    return super.setPosition(position);
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Override _getHeaderButtons to use remembered height or minimum
+   * @override
+   */
+  async _render(force = false, options = {}) {
+    // On first render, use remembered height or default minimum
+    if (!this.rendered) {
+      const rememberedHeight = CyberpunkActorSheet._sheetHeights.get(this.actor.id);
+      if (rememberedHeight) {
+        options.height = rememberedHeight;
+      } else {
+        // First time opening - use minimum height
+        options.height = this.constructor.defaultOptions.height;
+      }
+    }
+    return super._render(force, options);
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Toggle the lock state of the sheet
+   */
+  toggleLock() {
+    this._isLocked = !this._isLocked;
+    this.render(false);
   }
 
   /* -------------------------------------------- */
 
   /** @override */
   getData(options) {
-    // Call the parent getData method, which provides the base sheetData
     const sheetData = super.getData(options);
-
-    // Extract the actor and system references for convenience
     const actor = this.actor;
     const system = actor.system;
 
-    // Store a reference to the system data for easier access in templates and other methods
     sheetData.system = system;
 
-    // Only proceed with character or NPC types
-    if (actor.type === 'character' || actor.type === 'npc') {
-      // If transient data doesn't exist, initialize it.
-      // Transient data is used for temporary things like skill search filters.
+    // Lock state for template
+    sheetData.isLocked = this._isLocked;
+
+    // Only proceed with character type
+    if (actor.type === 'character') {
+      // Initialize transient data for skill filtering
       if (system.transient == null) {
         system.transient = { skillFilter: "" };
       }
@@ -49,42 +102,198 @@ export class CyberpunkActorSheet extends ActorSheet {
       this._addWoundTrack(sheetData);
       this._prepareSkills(sheetData);
 
-      // Reference to weapon types for the template
-      // This is needed because we can't directly store a list of entities in the system data
       sheetData.weaponTypes = weaponTypes;
 
-      // Retrieve the initiative modifier from system data
-      // Ensure that you have defined `initiativeMod` in your system data schema
+      // Role data for template - now uses compendium reference
+      sheetData.roleLabel = system.role?.name || game.i18n.localize("CYBERPUNK.NoRoleSelected");
+      sheetData.roleUuid = system.role?.uuid || "";
+
+      // Calculate totals for the action buttons
+      const refTotal = system.stats?.ref?.total || system.stats?.ref?.base || 0;
+      const btTotal = system.stats?.bt?.total || system.stats?.bt?.base || 0;
+      const combatSenseMod = system.CombatSenseMod || 0;
+      const fastDrawMod = actor.statuses?.has("fast-draw") ? 3 : 0;
+
+      // Initiative total: REF + Combat Sense + Initiative Mod + Fast Draw
       const initiativeMod = foundry.utils.getProperty(system, "initiativeMod") || 0;
       sheetData.initiativeMod = initiativeMod;
+      sheetData.initiativeTotal = refTotal + combatSenseMod + initiativeMod + fastDrawMod;
 
+      // Stun Save total: BT + Stun Save Mod
       const stunSaveMod = foundry.utils.getProperty(system, "stunSaveMod") || 0;
       sheetData.stunSaveMod = stunSaveMod;
+      sheetData.stunSaveTotal = btTotal + stunSaveMod;
 
+      // Death Save total: BT + Death Save Mod
       const deathSaveMod = foundry.utils.getProperty(system, "deathSaveMod") || 0;
       sheetData.deathSaveMod = deathSaveMod;
+      sheetData.deathSaveTotal = btTotal + deathSaveMod;
+
+      // Stat buttons data for attributes row
+      const stats = system.stats || {};
+      sheetData.statButtons = [
+        { key: 'int', label: game.i18n.localize('CYBERPUNK.Int'), total: stats.int?.total ?? stats.int?.base ?? 0, base: stats.int?.base ?? 0, path: 'system.stats.int.base' },
+        { key: 'ref', label: game.i18n.localize('CYBERPUNK.Ref'), total: stats.ref?.total ?? stats.ref?.base ?? 0, base: stats.ref?.base ?? 0, path: 'system.stats.ref.base' },
+        { key: 'tech', label: game.i18n.localize('CYBERPUNK.Tech'), total: stats.tech?.total ?? stats.tech?.base ?? 0, base: stats.tech?.base ?? 0, path: 'system.stats.tech.base' },
+        { key: 'cool', label: game.i18n.localize('CYBERPUNK.Cool'), total: stats.cool?.total ?? stats.cool?.base ?? 0, base: stats.cool?.base ?? 0, path: 'system.stats.cool.base' },
+        { key: 'attr', label: game.i18n.localize('CYBERPUNK.Attr'), total: stats.attr?.total ?? stats.attr?.base ?? 0, base: stats.attr?.base ?? 0, path: 'system.stats.attr.base' },
+        { key: 'bt', label: game.i18n.localize('CYBERPUNK.Body'), total: stats.bt?.total ?? stats.bt?.base ?? 0, base: stats.bt?.base ?? 0, path: 'system.stats.bt.base' },
+        { key: 'emp', label: game.i18n.localize('CYBERPUNK.Emp'), total: stats.emp?.total ?? stats.emp?.base ?? 0, base: stats.emp?.base ?? 0, path: 'system.stats.emp.base' },
+        { key: 'ma', label: game.i18n.localize('CYBERPUNK.Move'), total: stats.ma?.total ?? stats.ma?.base ?? 0, base: stats.ma?.base ?? 0, path: 'system.stats.ma.base' },
+        { key: 'luck', label: game.i18n.localize('CYBERPUNK.Luck'), total: stats.luck?.total ?? stats.luck?.base ?? 0, base: stats.luck?.base ?? 0, path: 'system.stats.luck.base' }
+      ];
+
+      // Wound blocks data for template
+      const damage = system.damage || 0;
+      const woundLabels = ['light', 'serious', 'critical', 'mortal0', 'mortal1', 'mortal2', 'mortal3', 'mortal4', 'mortal5', 'mortal6'];
+
+      sheetData.woundBlocks = woundLabels.map((label, blockIndex) => {
+        const blockStart = blockIndex * 4 + 1; // 1-4, 5-8, 9-12, etc.
+        const hasWound = damage >= blockStart; // At least one dot filled in this block
+
+        const dots = [];
+        for (let i = 0; i < 4; i++) {
+          const dotDamage = blockStart + i;
+          dots.push({
+            damage: dotDamage,
+            state: damage >= dotDamage ? 'taken' : 'fresh'
+          });
+        }
+
+        return { label, hasWound, dots };
+      });
+
+      // Humanity blocks data for template
+      const emp = stats.emp || {};
+      const humanityBase = (emp.base || 0) * 10; // EMP * 10 = max humanity
+      const humanityTotal = emp.humanity?.total ?? humanityBase;
+      const humanityLimit = humanityBase; // Max humanity based on EMP
+
+      sheetData.humanityBlocks = [];
+      for (let blockIndex = 0; blockIndex < 10; blockIndex++) {
+        const blockLabel = (blockIndex + 1) * 10; // 10, 20, 30, ... 100
+        const blockStart = blockIndex * 10; // 0, 10, 20, ... 90
+        const active = humanityTotal > blockStart && blockStart < humanityLimit;
+        const disabled = blockStart >= humanityLimit;
+
+        const dots = [];
+        for (let i = 0; i < 4; i++) {
+          const dotValue = blockStart + (i + 1) * 2.5; // 2.5, 5, 7.5, 10 within each block
+          let image;
+
+          if (dotValue > humanityLimit) {
+            image = 'off';
+          } else if (humanityTotal >= dotValue) {
+            image = '100'; // Full dot
+          } else if (humanityTotal >= dotValue - 0.5) {
+            image = '80';
+          } else if (humanityTotal >= dotValue - 1) {
+            image = '60';
+          } else if (humanityTotal >= dotValue - 1.5) {
+            image = '40';
+          } else if (humanityTotal >= dotValue - 2) {
+            image = '20';
+          } else {
+            image = '0'; // Empty/lost
+          }
+
+          dots.push({
+            value: dotValue,
+            image,
+            disabled: dotValue > humanityLimit
+          });
+        }
+
+        sheetData.humanityBlocks.push({
+          label: blockLabel,
+          active,
+          disabled,
+          dots
+        });
+      }
+
+      // Info blocks data for template
+      const ma = stats.ma || {};
+      const bt = stats.bt || {};
+      const info = system.info || {};
+
+      sheetData.infoBlocks = [
+        { key: 'walk', label: 'Walk', displayValue: `${ma.total ?? 0} m`, editable: false },
+        { key: 'run', label: 'Run', displayValue: `${ma.run ?? 0} m`, editable: false },
+        { key: 'leap', label: 'Leap', displayValue: `${ma.leap ?? 0} m`, editable: false },
+        { key: 'carry', label: 'Carry', displayValue: `${bt.carry ?? 0} kg`, editable: false },
+        { key: 'lift', label: 'Lift', displayValue: `${bt.lift ?? 0} kg`, editable: false },
+        { key: 'weight', label: 'Weight', displayValue: `${info.weight ?? 70} kg`, rawValue: info.weight ?? 70, path: 'system.info.weight', editable: true },
+        { key: 'height', label: 'Height', displayValue: `${info.height ?? 170} cm`, rawValue: info.height ?? 170, path: 'system.info.height', editable: true },
+        { key: 'age', label: 'Age', displayValue: `${info.age ?? 25}`, rawValue: info.age ?? 25, path: 'system.info.age', editable: true }
+      ];
+
+      // Armor blocks data for template
+      const hitLocs = system.hitLocations || {};
+      const armorState = system.armorState || {};
+      const cyberlimbs = system.cyberlimbs || {};
+      const btm = stats.bt?.modifier || 0;
+
+      sheetData.armorBlocks = {
+        lArm: {
+          key: 'larm',
+          sp: hitLocs.lArm?.stoppingPower || 0,
+          sdp: cyberlimbs.lArm?.sdp || 0,
+          hasCyber: cyberlimbs.lArm?.hasCyberlimb || false,
+          state: armorState.lArm?.state || 'exposed',
+          isLost: armorState.lArm?.state === 'lost'
+        },
+        lLeg: {
+          key: 'lleg',
+          sp: hitLocs.lLeg?.stoppingPower || 0,
+          sdp: cyberlimbs.lLeg?.sdp || 0,
+          hasCyber: cyberlimbs.lLeg?.hasCyberlimb || false,
+          state: armorState.lLeg?.state || 'exposed',
+          isLost: armorState.lLeg?.state === 'lost'
+        },
+        Head: {
+          key: 'head',
+          sp: hitLocs.Head?.stoppingPower || 0,
+          state: armorState.Head?.state || 'exposed'
+        },
+        Torso: {
+          key: 'torso',
+          sp: hitLocs.Torso?.stoppingPower || 0,
+          state: armorState.Torso?.state || 'exposed'
+        },
+        btm: btm,
+        rArm: {
+          key: 'rarm',
+          sp: hitLocs.rArm?.stoppingPower || 0,
+          sdp: cyberlimbs.rArm?.sdp || 0,
+          hasCyber: cyberlimbs.rArm?.hasCyberlimb || false,
+          state: armorState.rArm?.state || 'exposed',
+          isLost: armorState.rArm?.state === 'lost'
+        },
+        rLeg: {
+          key: 'rleg',
+          sp: hitLocs.rLeg?.stoppingPower || 0,
+          sdp: cyberlimbs.rLeg?.sdp || 0,
+          hasCyber: cyberlimbs.rLeg?.hasCyberlimb || false,
+          state: armorState.rLeg?.state || 'exposed',
+          isLost: armorState.rLeg?.state === 'lost'
+        }
+      };
     }
 
-    // Collect all programs that belong to this actor.
+    // Collect all programs
     const allPrograms = this.actor.items.filter(i => i.type === "program");
     allPrograms.sort((a, b) => a.name.localeCompare(b.name));
     sheetData.netrunPrograms = allPrograms;
+    sheetData.programsTotalCost = allPrograms.reduce((sum, p) => sum + Number(p.system.cost || 0), 0);
 
-    sheetData.programsTotalCost = allPrograms
-    .reduce((sum, p) => sum + Number(p.system.cost || 0), 0);
-
-    /**
-     * Collect the list of active programs based on the ID array
-     *   actor.system.activePrograms: string[]
-     */
+    // Active programs
     const activeProgIds = this.actor.system.activePrograms || [];
-    // Filter out the ones the actor actually has.
     const activePrograms = allPrograms.filter(p => activeProgIds.includes(p.id));
-    // Put them in sheetData so netrun-tab.hbs can output them
     sheetData.netrunActivePrograms = activePrograms;
 
+    // Interface skill
     const allSkills = this.actor.items.filter(i => i.type === "skill");
-
     const interfaceName = game.i18n.localize("CYBERPUNK.SkillInterface");
     let interfaceItem = allSkills.find(i => i.name === interfaceName);
 
@@ -110,7 +319,6 @@ export class CyberpunkActorSheet extends ActorSheet {
     sheetData.skillDisplayList = sheetData.filteredSkillIDs.map(id => this.actor.items.get(id));
   }
 
-  // Handle searching skills
   _filterSkills(sheetData) {
     let id = sheetData.actor._id;
 
@@ -120,16 +328,14 @@ export class CyberpunkActorSheet extends ActorSheet {
     let upperSearch = sheetData.system.transient.skillFilter.toUpperCase();
     let listToFilter = sheetData.system.sortedSkillIDs || game.actors.get(id).itemTypes.skill.map(skill => skill.id);
 
-    // Only filter if we need to
     if(upperSearch === "") {
       return listToFilter;
     }
     else {
-      // If we searched previously and the old search had results, we can filter those instead of the whole lot
-      if(sheetData.system.transient.oldSearch != null 
+      if(sheetData.system.transient.oldSearch != null
         && sheetData.filteredSkillIDs != null
         && upperSearch.startsWith(oldSearch)) {
-        listToFilter = sheetData.filteredSkillIDs; 
+        listToFilter = sheetData.filteredSkillIDs;
       }
       return listToFilter.filter(id => {
         let skillName = this.actor.items.get(id).name;
@@ -139,18 +345,12 @@ export class CyberpunkActorSheet extends ActorSheet {
   }
 
   _addWoundTrack(sheetData) {
-    // Add localized wound states, excluding uninjured. All non-mortal, plus mortal
     const nonMortals = ["Light", "Serious", "Critical"].map(e => game.i18n.localize("CYBERPUNK."+e));
     const mortals = Array(7).fill().map((_,index) => game.i18n.format("CYBERPUNK.Mortal", {mortality: index}));
     sheetData.woundStates = nonMortals.concat(mortals);
   }
 
-  /**
-   * Items that aren't actually cyberware or skills - everything that should be shown in the gear tab. 
-   */
   _gearTabItems(allItems) {
-    // As per https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator
-    // Compares locale-compatibly, and pretty fast too apparently.
     let hideThese = new Set(["cyberware", "skill", "program"]);
     let nameSorter = new Intl.Collator();
     let showItems = allItems
@@ -159,20 +359,11 @@ export class CyberpunkActorSheet extends ActorSheet {
     return showItems;
   }
 
-  /**
-   * Organize and classify Items for Character sheets.
-   *
-   * @param {Object} actorData The actor to prepare.
-   *
-   * @return {undefined}
-   */
   _prepareCharacterItems(sheetData) {
     let sortedItems = sheetData.actor.itemTypes;
 
     sheetData.gearTabItems = this._gearTabItems(sheetData.actor.items);
 
-    // Convenience copy of itemTypes tab, makes things a little less long-winded in the templates
-    // TODO: Does this copy need to be done with itemTypes being a thing?
     sheetData.gear = {
       weapons: sortedItems.weapon,
       armor: sortedItems.armor,
@@ -180,22 +371,39 @@ export class CyberpunkActorSheet extends ActorSheet {
       misc: sortedItems.misc,
       cyberCost: sortedItems.cyberware.reduce((a,b) => a + b.system.cost, 0)
     };
-
   }
 
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
 
-    /**
-     * Get an owned item from a click event, for any event trigger with a data-item-id property
-     * @param {*} ev 
-    */
+    // ----- Custom Window Dragging -----
+    // Set up draggable for our custom header since we're hiding Foundry's default window chrome
+    // Must recreate each render since DOM elements change
+    const sheetHeader = html[0].querySelector('.sheet-header');
+    if (sheetHeader) {
+      // Get the app element (parent of html content)
+      const appElement = html.closest('.app');
+      if (appElement.length) {
+        // Create new Draggable instance each time (DOM elements are new after re-render)
+        this._customDraggable = new Draggable(this, appElement, sheetHeader, this.options.resizable);
+
+        // Hook up our custom resize handle
+        const resizeHandle = html[0].querySelector('.sheet-resize');
+        if (resizeHandle) {
+          resizeHandle.addEventListener('mousedown', (ev) => {
+            ev.preventDefault();
+            this._customDraggable._onResizeMouseDown(ev);
+          });
+        }
+      }
+    }
+
     function getEventItem(sheet, ev) {
       let itemId = ev.currentTarget.dataset.itemId;
       return sheet.actor.items.get(itemId);
     }
-    // TODO: Check if shift is held to skip dialog?
+
     function deleteItemDialog(ev) {
       ev.stopPropagation();
       let item = getEventItem(this, ev);
@@ -214,30 +422,159 @@ export class CyberpunkActorSheet extends ActorSheet {
       confirmDialog.render(true);
     }
 
+    // ----- Header Controls -----
+
+    // Lock/Unlock toggle
+    html.find('.lock-toggle').click(ev => {
+      ev.preventDefault();
+      this.toggleLock();
+    });
+
+    // Copy UUID
+    html.find('[data-action="copyUuid"]').click(ev => {
+      ev.preventDefault();
+      const uuid = this.actor.uuid;
+      game.clipboard.copyPlainText(uuid);
+      ui.notifications.info(`Copied UUID: ${uuid}`);
+    });
+
+    // Configure Sheet
+    html.find('[data-action="configureSheet"]').click(ev => {
+      ev.preventDefault();
+      this._onConfigureSheet(ev);
+    });
+
+    // Configure Token
+    html.find('[data-action="configureToken"]').click(ev => {
+      ev.preventDefault();
+      this._onConfigureToken(ev);
+    });
+
+    // Close Sheet
+    html.find('[data-action="closeSheet"]').click(ev => {
+      ev.preventDefault();
+      this.close();
+    });
+
+    // ----- Portrait Click -----
+    // When locked: show full-screen image popup
+    // When unlocked: open FilePicker to change image
+    html.find('.portrait-frame').click(ev => {
+      ev.preventDefault();
+      if (this._isLocked) {
+        // Show full-screen image popup
+        new ImagePopout(this.actor.img, {
+          title: this.actor.name,
+          uuid: this.actor.uuid
+        }).render(true);
+      } else {
+        // Open FilePicker to change image
+        const fp = new FilePicker({
+          type: "image",
+          current: this.actor.img,
+          callback: (path) => {
+            this.actor.update({ img: path });
+          },
+          top: this.position.top + 40,
+          left: this.position.left + 10
+        });
+        fp.render(true);
+      }
+    });
+
+    // ----- Action Buttons (Initiative, Death Save, Stun Save) -----
+
+    // Initiative roll (simplified - no modifier input in new design)
+    html.find(".roll-initiative").click(ev => {
+      ev.preventDefault();
+      const modifier = this.actor.system.initiativeMod || 0;
+      this.actor.addToCombatAndRollInitiative(modifier);
+    });
+
+    // Stun Save roll
+    html.find(".stun-save").click(ev => {
+      ev.preventDefault();
+      const modifier = this.actor.system.stunSaveMod || 0;
+      this.actor.rollStunSave(modifier);
+    });
+
+    // Death Save roll
+    html.find(".death-save").click(ev => {
+      ev.preventDefault();
+      const modifier = this.actor.system.deathSaveMod || 0;
+      this.actor.rollDeathSave(modifier);
+    });
+
     // If not editable, do nothing further
     if (!this.options.editable) return;
+
+    // ----- Existing Listeners (preserved from original) -----
 
     // Stat roll
     html.find('.stat-roll').click(ev => {
       let statName = ev.currentTarget.dataset.statName;
       this.actor.rollStat(statName);
     });
-    // TODO: Refactor these skill interactivity stuff into their own methods
+
+    // Wound dot clicks - set damage to clicked dot value
+    html.find('.wound-dot').click(ev => {
+      const damage = Number(ev.currentTarget.dataset.damage);
+      const currentDamage = this.actor.system.damage || 0;
+      // Clicking filled dot decrements, clicking unfilled fills up to that point
+      const newDamage = damage === currentDamage ? damage - 1 : damage;
+      this.actor.update({ "system.damage": Math.max(0, newDamage) });
+    });
+
+    // Wound dot hover preview - bidirectional (adding and restoring wounds)
+    const self = this;
+    html.find('.wound-dot').hover(
+      function() { // mouseenter
+        const hoverDamage = Number(this.dataset.damage);
+        const currentDamage = self.actor.system.damage || 0;
+
+        if (hoverDamage <= currentDamage) {
+          // Hovering on a taken dot - show darkened hover for dots that would be restored
+          html.find('.wound-dot').each(function() {
+            const dotDamage = Number(this.dataset.damage);
+            // Show darkened hover for taken dots from hoverDamage+1 to currentDamage
+            if (dotDamage > hoverDamage && dotDamage <= currentDamage) {
+              $(this).attr('src', 'systems/cp2020/img/ui/wounds-hover-dark.svg');
+            }
+          });
+        } else {
+          // Hovering on a fresh dot - show hover for dots that would be filled
+          html.find('.wound-dot').each(function() {
+            const dotDamage = Number(this.dataset.damage);
+            if (dotDamage <= hoverDamage && dotDamage > currentDamage) {
+              $(this).attr('src', 'systems/cp2020/img/ui/wounds-hover.svg');
+            }
+          });
+        }
+      },
+      function() { // mouseleave - restore all dots to their actual state
+        const currentDamage = self.actor.system.damage || 0;
+        html.find('.wound-dot').each(function() {
+          const dotDamage = Number(this.dataset.damage);
+          const state = currentDamage >= dotDamage ? 'taken' : 'fresh';
+          $(this).attr('src', `systems/cp2020/img/ui/wounds-${state}.svg`);
+        });
+      }
+    );
+
     // Skill level changes
     html.find(".skill-level").click((event) => event.target.select()).change(async (event) => {
       let skill = this.actor.items.get(event.currentTarget.dataset.skillId);
       let target = skill.system.isChipped ? "system.chipLevel" : "system.level";
       let updateData = { _id: skill.id };
       updateData[target] = parseInt(event.target.value, 10);
-      // Mild hack to make sheet refresh and re-sort: the ability to do that should just be put in 
       await this.actor.updateEmbeddedDocuments("Item", [updateData]);
-      // let combatSenseItemFind = this.actor.items.find(item => item.type === 'skill' && item.name.includes('Combat'))?.system.level || 0;
-      let combatSenseItemFind = 
+      let combatSenseItemFind =
         this.actor.items.find(item => item.type === 'skill' && item.name.includes('Combat'))?.system.level
         ?? this.actor.items.find(item => item.type === 'skill' && item.name.includes('Боя'))?.system.level
         ?? 0;
       await this.actor.update({ "system.CombatSenseMod": Number(combatSenseItemFind) });
     });
+
     // Toggle skill chipped
     html.find(".chip-toggle").click(async ev => {
       const skill = this.actor.items.get(ev.currentTarget.dataset.skillId);
@@ -249,7 +586,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         "system.-=chipped": null
       }]);
     });
-    
+
     // Skill sorting
     html.find(".skill-sort > select").change(ev => {
       let sort = ev.currentTarget.value;
@@ -262,7 +599,6 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     const toggleClear = () => $skillClear.toggleClass('is-visible', !!$skillSearch.val());
 
-    // Restore caret position after re-render (so typing continues without jumping)
     if (this._restoreSkillCaret != null) {
       const el = $skillSearch[0];
       if (el) {
@@ -275,19 +611,12 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     toggleClear();
 
-    // Auto-search while typing
     let searchTypingTimer;
     $skillSearch.on('input', (ev) => {
       const val = ev.currentTarget.value || "";
       toggleClear();
-
-      // Remember cursor position before re-render
       this._restoreSkillCaret = ev.currentTarget.selectionStart ?? val.length;
-
-      // Update the "transient" filter in memory (without actor.update)
       foundry.utils.setProperty(this.actor.system, "transient.skillFilter", val);
-
-      // Soft re-render of the sheet
       clearTimeout(searchTypingTimer);
       searchTypingTimer = setTimeout(() => this.render(false), 120);
     });
@@ -297,11 +626,9 @@ export class CyberpunkActorSheet extends ActorSheet {
       ev.stopPropagation();
     });
 
-    // Clear the field and instantly reset the filter
     html.on('click', '[data-action="clear-skill-search"]', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-
       $skillSearch.val('');
       this._restoreSkillCaret = 0;
       foundry.utils.setProperty(this.actor.system, "transient.skillFilter", "");
@@ -313,12 +640,10 @@ export class CyberpunkActorSheet extends ActorSheet {
       .on("click",  ev => ev.stopPropagation())
       .on("change", async ev => {
         ev.stopPropagation();
-
         const cb = ev.currentTarget;
         const skillId = cb.dataset.skillId;
         const skill = this.actor.items.get(skillId);
         if (!skill) return ui.notifications.warn(localize("SkillNotFound"));
-
         try {
           await skill.update({ "system.askMods": cb.checked });
         } catch (err) {
@@ -354,36 +679,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       this.actor.rollSkill(id);
     });
 
-    // Initiative
-    html.find(".roll-initiative").click(ev => {
-      const rollInitiativeModificatorInput = html.find(".roll-initiative-modificator")[0];
-      this.actor.addToCombatAndRollInitiative(rollInitiativeModificatorInput.value);
-    });
-    html.find(".roll-initiative-modificator").change(ev => {
-      const value = ev.target.value;
-      this.actor.update({"system.initiativeMod": Number(value)});
-    });
-
-    // Stun Save
-    html.find(".roll-stun-modificator").change(ev => {
-      const value = ev.target.value;
-      this.actor.update({"system.stunSaveMod": Number(value)});
-    });
-    html.find(".stun-save").click(ev => {
-      const rollModificatorInput = html.find(".roll-stun-modificator")[0];
-      this.actor.rollStunSave(Number(rollModificatorInput.value) || 0);
-    });
-
-    // Death Save
-    html.find(".roll-death-modificator").change(ev => {
-      const value = ev.target.value;
-      this.actor.update({"system.deathSaveMod": Number(value)});
-    });
-    html.find(".death-save").click(ev => {
-      const rollModificatorInput = html.find(".roll-death-modificator")[0];
-      this.actor.rollDeathSave(Number(rollModificatorInput.value) || 0);
-    });
-
     // Generic condition toggle (Stabilized, Fast Draw, Action Surge, etc.)
     html.find(".toggle-condition").change(async (ev) => {
       const conditionId = ev.target.dataset.condition;
@@ -399,9 +694,8 @@ export class CyberpunkActorSheet extends ActorSheet {
       });
     });
 
-    // Generic item roll (calls item.roll())
+    // Generic item roll
     html.find('.item-roll').click(ev => {
-      // Roll is often within child events, don't bubble please
       ev.stopPropagation();
       let item = getEventItem(this, ev);
       item.roll();
@@ -416,7 +710,7 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     // Delete item
     html.find('.item-delete').click(deleteItemDialog.bind(this));
-    html.find('.rc-item-delete').bind("contextmenu", deleteItemDialog.bind(this)); 
+    html.find('.rc-item-delete').bind("contextmenu", deleteItemDialog.bind(this));
 
     // "Fire" button for weapons
     html.find('.fire-weapon').click(ev => {
@@ -427,12 +721,10 @@ export class CyberpunkActorSheet extends ActorSheet {
       let modifierGroups = undefined;
       let targetTokens = Array.from(game.users.current.targets.values()).map(target => {
         return {
-          name: target.document.name, 
+          name: target.document.name,
           id: target.id};
       });
       if(isRanged) {
-        // For now just look at the names.
-        // We have to get the values as an iterator; else if multiple targets share names, it'd turn a set with size 2 to one with size 1
         modifierGroups = rangedModifiers(item, targetTokens);
       }
       else if (item.system.attackType === meleeAttackTypes.martial){
@@ -479,40 +771,31 @@ export class CyberpunkActorSheet extends ActorSheet {
       confirmDialog.render(true);
     });
 
-    // Make each .netrun-program the “source” of the drag and drop operation
+    // Netrun program drag and drop
     html.find('.netrun-program').each((_, programElem) => {
-      // An attribute telling the browser and Foundry that this element can be “dragged”
       programElem.setAttribute("draggable", true);
 
-      // Process dragstart
       programElem.addEventListener("dragstart", ev => {
-        // Find the corresponding Item
         const itemId = programElem.dataset.itemId;
         const item = this.actor.items.get(itemId);
         if ( !item ) return;
 
-        // Form dragData - object to be read in _onDropItem(event, data)
         const dragData = {
           type: "Item",
           actorId: this.actor.id,
           data: item.toObject()
         };
 
-        // Write dragData to the event
         ev.dataTransfer.setData("text/plain", JSON.stringify(dragData));
-
-        // You can add an “is-dragging” class or any visual highlighting class
         programElem.classList.add("is-dragging");
       });
 
-      // When the dragging is finished, remove the class
       programElem.addEventListener("dragend", ev => {
         programElem.classList.remove("is-dragging");
       });
     });
 
-    // Auto-save changes for all fields that have data-edit=”...”
-    // This will allow writing new values to this.actor at once.
+    // Auto-save changes for fields with data-edit
     html.find('input[data-edit], select[data-edit], textarea[data-edit]').on('change', ev => {
       ev.preventDefault();
       const input = ev.currentTarget;
@@ -531,9 +814,8 @@ export class CyberpunkActorSheet extends ActorSheet {
       this.actor.update({ [path]: value });
     });
 
-    // Click on .interface-skill-roll to make a roll (if itemId is not null)
+    // Interface skill roll
     const interfaceSkillElems = html.find('.interface-skill-roll');
-
     interfaceSkillElems.on('click', ev => {
       ev.preventDefault();
       const skillId = ev.currentTarget.dataset.skillId;
@@ -544,7 +826,7 @@ export class CyberpunkActorSheet extends ActorSheet {
       this.actor.rollSkill(skillId);
     });
 
-    // When clicking (contextmenu) on the icon of the active program - remove it from the list
+    // Active program context menu removal
     html.find('.netrun-active-icon').on('contextmenu', async ev => {
       ev.preventDefault();
       const div = ev.currentTarget;
@@ -571,10 +853,11 @@ export class CyberpunkActorSheet extends ActorSheet {
       ui.notifications.info(localize("ProgramDeactivated"));
     });
 
+    // File picker for netrun icon
     html.find('.filepicker').on('click', async (ev) => {
       ev.preventDefault();
       const currentPath = this.actor.system.icon || "";
-      
+
       const fp = new FilePicker({
         type: "image",
         current: currentPath,
@@ -592,30 +875,110 @@ export class CyberpunkActorSheet extends ActorSheet {
   }
 
   /**
-   * Overridden method of Drag&Drop processing
-   * When dropping, we check where exactly we dropped to (data-drop-target).
-   * If on “program-list” - add program to inventory.
-   * If on “active-programs” - activate the program.
+   * Apply career skills from a role to the actor
+   * Fetches skills by UUID and adds them to the character
+   * @param {string} roleUUID - The UUID of the role item
+   */
+  async applyCareerSkills(roleUUID) {
+    // Get role from compendium or item
+    const role = await fromUuid(roleUUID);
+    if (!role) return;
+
+    const careerSkills = role.system?.careerSkills || [];
+    if (careerSkills.length === 0) return;
+
+    // Get existing skill names on actor (lowercase for comparison)
+    const existingSkillNames = this.actor.items
+      .filter(i => i.type === "skill")
+      .map(s => s.name.toLowerCase());
+
+    // Find skills to add
+    const skillsToAdd = [];
+    for (const skillEntry of careerSkills) {
+      // Support both old format (string) and new format (object with uuid/name)
+      const skillName = typeof skillEntry === 'string' ? skillEntry : skillEntry.name;
+      const skillUUID = typeof skillEntry === 'object' ? skillEntry.uuid : null;
+
+      // Skip if actor already has this skill
+      if (existingSkillNames.includes(skillName.toLowerCase())) continue;
+
+      let skillData = null;
+
+      // Try to fetch by UUID first (new format)
+      if (skillUUID) {
+        const skill = await fromUuid(skillUUID);
+        if (skill) {
+          skillData = skill.toObject();
+        }
+      }
+
+      // Fallback to name-based search in compendiums (old format)
+      if (!skillData) {
+        const lang = game.i18n.lang;
+        const packName = lang === "ru" ? "cp2020.default-skills-ru" : "cp2020.default-skills-en";
+        const rolePackName = lang === "ru" ? "cp2020.role-skills-ru" : "cp2020.role-skills-en";
+
+        const defaultPack = game.packs.get(packName);
+        const rolePack = game.packs.get(rolePackName);
+
+        const defaultSkills = await defaultPack?.getDocuments() || [];
+        const roleSkills = await rolePack?.getDocuments() || [];
+        const allSkills = [...defaultSkills, ...roleSkills];
+
+        const foundSkill = allSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase());
+        if (foundSkill) {
+          skillData = foundSkill.toObject();
+        }
+      }
+
+      if (skillData) {
+        skillData.system.isRoleSkill = true;
+        // Remove the _id so Foundry generates a new one
+        delete skillData._id;
+        skillsToAdd.push(skillData);
+      }
+    }
+
+    // Add skills to actor
+    if (skillsToAdd.length > 0) {
+      await this.actor.createEmbeddedDocuments("Item", skillsToAdd);
+      ui.notifications.info(localize("CareerSkillsAdded", { count: skillsToAdd.length }));
+    }
+  }
+
+  /**
+   * Overridden Drag&Drop processing
    */
   async _onDropItem(event, data) {
     event.preventDefault();
 
-    // Search for the parent element with the data-drop-target attribute
+    // Get dropped item first to check its type
+    const item = await Item.implementation.fromDropData(data);
+    if (!item) return;
+
+    // Handle role drops - works anywhere on the sheet
+    if (item.type === "role") {
+      // Update actor's role
+      await this.actor.update({
+        "system.role.uuid": item.uuid,
+        "system.role.name": item.name
+      });
+
+      // Add career skills from the role
+      await this.applyCareerSkills(item.uuid);
+      return;
+    }
+
     const dropTarget = event.target.closest("[data-drop-target]");
-    // If not found, then let the standard Foundry logic work
     if (!dropTarget) return super._onDropItem(event, data);
 
-    // 1. Drop to “program-list”.
     if (dropTarget.dataset.dropTarget === "program-list") {
-      let itemData = await Item.implementation.fromDropData(data);
+      const itemData = item;
 
-      // If it is not a program, skip it
       if (itemData.type !== "program") {
         return ui.notifications.warn(localize("NotAProgram", { name: itemData.name }));
       }
 
-      // If a person pulls a program that the same actor already has,
-      // and drops it in the program-list, - do nothing (to avoid duplicating)
       const sameActor = (data.actorId === this.actor.id);
       const existingItem = sameActor ? this.actor.items.get(itemData._id) : null;
       if (existingItem) {
@@ -623,31 +986,25 @@ export class CyberpunkActorSheet extends ActorSheet {
         return;
       }
 
-      // Otherwise (pulling from another actor, or from compendium, or it's another program) - create a copy
       return this.actor.createEmbeddedDocuments("Item", [ itemData ]);
     }
 
-    // 2. Drop in “active-programs”
     if (dropTarget.dataset.dropTarget === "active-programs") {
-      // Get Item from drag data
-      let itemData = await Item.implementation.fromDropData(data);
+      const itemData = item;
 
       if (itemData.type !== "program") {
         return ui.notifications.warn(localize("OnlyProgramsCanBeActivated", { name: itemData.name }));
       }
 
-      // Check if the item is already in your inventory; if not, copy it
-      let item = this.actor.items.get(itemData._id);
-      if (!item) {
+      let programItem = this.actor.items.get(itemData._id);
+      if (!programItem) {
         const [created] = await this.actor.createEmbeddedDocuments("Item", [itemData]);
-        item = created;
+        programItem = created;
       }
 
-      // Current list of active programs (ID)
       const currentActive = this.actor.system.activePrograms || [];
-      const newMu = Number(item.system.mu) || 0;
+      const newMu = Number(programItem.system.mu) || 0;
 
-      // Count the already occupied MU
       const usedMu = currentActive.reduce((sum, id) => {
         const p = this.actor.items.get(id);
         return sum + (Number(p?.system.mu) || 0);
@@ -655,16 +1012,14 @@ export class CyberpunkActorSheet extends ActorSheet {
 
       const ramMax = Number(this.actor.system.ramMax) || 0;
 
-      // If we exceed the limit after adding, we reject it
       if (ramMax && (usedMu + newMu) > ramMax) {
         return ui.notifications.warn(
-          localize("NotEnoughRAM", { name: item.name, used: usedMu, max: ramMax })
+          localize("NotEnoughRAM", { name: programItem.name, used: usedMu, max: ramMax })
         );
       }
 
-      // Add to active, if not already there
-      if (!currentActive.includes(item.id)) {
-        currentActive.push(item.id);
+      if (!currentActive.includes(programItem.id)) {
+        currentActive.push(programItem.id);
 
         const totalMu = usedMu + newMu;
         await this.actor.update({
@@ -677,7 +1032,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       return;
     }
 
-    // If not “program-list” and not “active-programs”, then execute the standard Foundry mechanism
     return super._onDropItem(event, data);
   }
 }

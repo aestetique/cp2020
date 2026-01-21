@@ -202,6 +202,13 @@
       "system": "cp2020",
       "path": "./packs/programs.db",
       "type": "Item"
+    },
+    {
+      "name": "roles",
+      "label": "Roles",
+      "system": "cp2020",
+      "path": "./packs/roles.db",
+      "type": "Item"
     }
   ],
   "languages": [

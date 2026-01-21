@@ -183,6 +183,57 @@ export class CyberpunkActor extends Actor {
     // calculate current Humanity and current EMP
     emp.humanity.total = emp.humanity.base - emp.humanity.loss;
     emp.total = emp.base + emp.tempMod - Math.floor(emp.humanity.loss/10);
+
+    // Determine armor state per location (for visual display)
+    const armorState = {};
+    const locations = ['Head', 'Torso', 'lArm', 'rArm', 'lLeg', 'rLeg'];
+    const limbConditionMap = {
+      lArm: 'lost-left-arm',
+      rArm: 'lost-right-arm',
+      lLeg: 'lost-left-leg',
+      rLeg: 'lost-right-leg'
+    };
+
+    for (const loc of locations) {
+      const hitLoc = system.hitLocations[loc];
+      const sp = hitLoc?.stoppingPower || 0;
+      const isLimb = ['lArm', 'rArm', 'lLeg', 'rLeg'].includes(loc);
+
+      // Check for limb loss condition
+      const isLost = isLimb && this.statuses?.has(limbConditionMap[loc]);
+
+      // Check for cyberlimb (only for limbs)
+      const cyberlimb = system.cyberlimbs?.[loc];
+      const hasCyber = isLimb && cyberlimb?.hasCyberlimb;
+
+      // Determine highest armor type covering this location
+      let hasHardArmor = false;
+      equippedItems.filter(i => i.type === "armor").forEach(armor => {
+        const coverage = armor.system.coverage?.[loc];
+        if (coverage?.stoppingPower > 0 && armor.system.armorType === "hard") {
+          hasHardArmor = true;
+        }
+      });
+
+      // Determine state for background image
+      let state;
+      if (isLost) {
+        state = 'lost';
+      } else if (hasCyber) {
+        state = sp === 0 ? 'cyber-exposed' : (hasHardArmor ? 'cyber-hard' : 'cyber-soft');
+      } else {
+        state = sp === 0 ? 'exposed' : (hasHardArmor ? 'hard' : 'soft');
+      }
+
+      armorState[loc] = {
+        sp,
+        state,
+        hasCyber,
+        cyberSdp: cyberlimb?.sdp || 0
+      };
+    }
+
+    system.armorState = armorState;
   }
 
   /**

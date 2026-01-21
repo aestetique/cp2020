@@ -69,7 +69,12 @@ export const preloadHandlebarsTemplates = async function() {
         // Program
         "systems/cp2020/templates/item/parts/program/summary.hbs",
         "systems/cp2020/templates/item/parts/program/settings.hbs",
-        
+
+        // Role
+        "systems/cp2020/templates/item/role-sheet.hbs",
+        "systems/cp2020/templates/item/parts/role/summary.hbs",
+        "systems/cp2020/templates/item/parts/role/settings.hbs",
+
     ]);
   };
   

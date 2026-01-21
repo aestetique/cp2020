@@ -90,7 +90,10 @@ export class CyberpunkItemSheet extends ItemSheet {
   }
 
   _prepareArmor(sheet) {
-    
+    sheet.armorTypeChoices = [
+      { value: "soft", localKey: "CYBERPUNK.ArmorTypeSoft" },
+      { value: "hard", localKey: "CYBERPUNK.ArmorTypeHard" }
+    ];
   }
 
   /* -------------------------------------------- */

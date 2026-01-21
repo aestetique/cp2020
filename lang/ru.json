@@ -443,5 +443,20 @@
     "CYBERPUNK.ProgramTypeLabel": "Класс",
     "CYBERPUNK.ProgramStrength": "Сила",
     "CYBERPUNK.ActionThrow": "Бросок действия",
-    "CYBERPUNK.NetProgramsCost": "Стоимость программ"
+    "CYBERPUNK.NetProgramsCost": "Стоимость программ",
+
+    "CYBERPUNK.SpecialAbility": "Особая способность",
+    "CYBERPUNK.CareerSkills": "Карьерные навыки",
+    "CYBERPUNK.AddCareerSkill": "Добавить навык",
+    "CYBERPUNK.RemoveCareerSkill": "Удалить",
+    "CYBERPUNK.NoCareerSkills": "Карьерные навыки не определены",
+    "CYBERPUNK.DropSkillsHere": "Перетащите навыки сюда",
+    "CYBERPUNK.CareerSkillsAdded": "Добавлено карьерных навыков: {count}",
+    "CYBERPUNK.OnlySkillsCanBeAdded": "Только навыки могут быть добавлены в карьерные навыки",
+    "CYBERPUNK.SkillAlreadyInRole": "{name} уже есть в карьерных навыках",
+    "CYBERPUNK.DropRoleHere": "Перетащите роль сюда",
+    "CYBERPUNK.SearchRoles": "Поиск ролей...",
+    "CYBERPUNK.NoRoleSelected": "Роль не выбрана",
+    "CYBERPUNK.SelectRole": "Выберите роль",
+    "CYBERPUNK.RoleSheet": "Карточка роли"
 }

@@ -2,6 +2,7 @@ import { CyberpunkActor } from "./actor/actor.js";
 import { CyberpunkActorSheet } from "./actor/actor-sheet.js";
 import { CyberpunkItem } from "./item/item.js";
 import { CyberpunkItemSheet } from "./item/item-sheet.js";
+import { CyberpunkRoleSheet } from "./item/role-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
@@ -38,6 +39,11 @@ Hooks.once('init', async function () {
     Actors.registerSheet("cp2020", CyberpunkActorSheet, { makeDefault: true });
     Items.unregisterSheet("core", ItemSheet);
     Items.registerSheet("cp2020", CyberpunkItemSheet, { makeDefault: true });
+    Items.registerSheet("cp2020", CyberpunkRoleSheet, {
+        types: ["role"],
+        makeDefault: true,
+        label: "CYBERPUNK.RoleSheet"
+    });
 
     // Register System Settings
     registerSystemSettings();

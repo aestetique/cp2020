@@ -1,7 +1,7 @@
 {
 	"Actor": {
 		"types": [
-			"character", "npc"
+			"character"
 		],
 		"templates": {
 			"stats": {
@@ -674,22 +674,19 @@
 			"info": {
 				"points": 75,
 				"role": {
-					"value": "rocker",
-					"choices": [
-						"solo",
-						"rocker",
-						"netrunner",
-						"media",
-						"nomad",
-						"fixer",
-						"cop",
-						"corp",
-						"techie",
-						"medtechie"
-					]
+					"uuid": "",
+					"name": ""
 				},
-				"age": 35,
+				"age": 25,
+				"weight": 70,
+				"height": 170,
 				"humanity": 50
+			},
+			"cyberlimbs": {
+				"lArm": { "sdp": 0, "hasCyberlimb": false },
+				"rArm": { "sdp": 0, "hasCyberlimb": false },
+				"lLeg": { "sdp": 0, "hasCyberlimb": false },
+				"rLeg": { "sdp": 0, "hasCyberlimb": false }
 			},
 			"lifepath": {
 				"events": "",
@@ -771,22 +768,10 @@
 				"netrun"
 			],
 			"damage": 0
-		},
-		"npc": {
-			"templates": [
-				"info",
-				"lifepath",
-				"stats",
-				"skills",
-				"hitLocations",
-				"gear",
-				"netrun"
-			],
-			"damage": 0
 		}
 	},
 	"Item": {
-		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program"],
+		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role"],
 		"templates": {
 			"common": {
 				"flavor": "",
@@ -841,6 +826,7 @@
 		},
 		"armor": {
 			"templates": ["common"],
+			"armorType": "soft",
 			"coverage": {
 				"Head": {
 					"stoppingPower": 0,
@@ -907,6 +893,14 @@
 		},
 		"misc": {
 			"templates": ["common"]
+		},
+		"role": {
+			"templates": ["common"],
+			"specialAbility": {
+				"name": "",
+				"description": ""
+			},
+			"careerSkills": []
 		}
 	}
 }

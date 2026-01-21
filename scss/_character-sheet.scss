@@ -1,0 +1,753 @@
+// ============================================
+// Character Sheet Layout
+// ============================================
+
+// Borderless window styling - hide Foundry's default chrome
+.cyberpunk.character-sheet {
+  // Hide the outer Foundry window styling
+  &.app {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+  }
+
+  // Hide Foundry's default window header
+  > .window-header {
+    display: none;
+  }
+
+  // Make window content fill properly with no padding
+  > .window-content {
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  // Hide Foundry's default resize handle - we position our own
+  > .window-resizable-handle {
+    display: none;
+  }
+
+  // Global reset for Foundry button styles within character sheet
+  button, .tab-btn, a {
+    --button-focus-outline-color: transparent;
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  // Remove Foundry's default image border styling
+  img {
+    border: none;
+  }
+
+  // Remove Foundry's default h1 styling (red underline)
+  h1 {
+    border: none;
+    border-bottom: none;
+  }
+}
+
+.character-sheet {
+  display: flex;
+  width: 930px;
+  min-height: 624px;
+  height: 100%;
+}
+
+// Sheet Frame (880px)
+.sheet-frame {
+  width: 880px;
+  min-height: 624px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  border: 2px solid var(--chat-stroke); // #252730
+  background-color: var(--chat-back);   // #1A1A1A
+  background-image: url('../img/ui/sheet-background.png');
+  background-size: 100% auto;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+// Sheet Header (38px) - Custom draggable header
+.sheet-header {
+  height: 38px;
+  padding: 8px 10px 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  cursor: move; // Visual indicator for dragging
+
+  .lock-toggle {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+    img { width: 100%; height: 100%; }
+    &:hover, &:focus { box-shadow: none; outline: none; }
+  }
+
+  .actor-name {
+    flex: 1;
+    color: var(--chat-text);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+    text-decoration: none;
+  }
+
+  .header-control {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--chat-text);
+    opacity: 0.6;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+
+    &:hover {
+      opacity: 1;
+      box-shadow: none;
+    }
+
+    &.close:hover {
+      color: var(--chat-red-text);
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+// Sheet Content (flex, min 566px)
+.sheet-content {
+  flex: 1;
+  min-height: 566px;
+  padding: 0 20px;
+  display: flex;
+  gap: 20px;
+}
+
+// Left Sidebar (200px)
+.left-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Portrait Section (290px)
+.portrait-section {
+  height: 290px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.portrait-frame {
+  width: 200px;
+  height: 220px;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  .portrait-img {
+    width: 188px;
+    height: 200px;
+    position: absolute;
+    top: 10px;
+    left: 6px; // (200 - 188) / 2 = 6px for centering
+    object-fit: cover;
+    border: none;
+    outline: none;
+  }
+
+  .portrait-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  width: 60px;
+  height: 50px;
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none;
+  transition: filter 0.15s ease;
+
+  &:hover, &:focus {
+    box-shadow: none;
+    outline: none;
+    filter: brightness(1.2);
+  }
+
+  > img {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .btn-value {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 60px;
+    height: 30px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    color: var(--chat-text);
+  }
+}
+
+// Sidebar Header (reusable for Armor, Cyberware, etc.)
+.sidebar-header {
+  width: 200px;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #B9B29D;
+}
+
+.sidebar-title {
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 36px;
+  color: #B9B29D;
+}
+
+.sidebar-badge {
+  width: 16px;
+  height: 16px;
+}
+
+// Armor Block (200px × 260px)
+.armor-block {
+  width: 200px;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.armor-content {
+  width: 200px;
+  height: 208px;
+  display: flex;
+}
+
+.armor-column {
+  width: 74px;
+  height: 208px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.armor-column-center {
+  margin-left: -11px;
+  margin-right: -11px;
+
+  // Center column has 3 items with specific heights
+  .armor-slot {
+    height: 64px;
+  }
+}
+
+.armor-slot {
+  width: 74px;
+  height: 100px;
+  position: relative;
+}
+
+.armor-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+// SP values - positioned at top (for Head, Torso, BTM)
+.armor-sp {
+  position: absolute;
+  width: 74px;
+  height: 42px;
+  font-family: var(--font-blender);
+  font-weight: bold;
+  font-size: 32px;
+  line-height: 42px;
+  text-align: center;
+  color: #FFFFFF;
+  top: 0;
+  left: 0;
+}
+
+// Arms: SDP on top (40px), SP below (34px)
+.armor-arm {
+  .armor-sdp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 74px;
+    height: 40px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 40px;
+    text-align: center;
+    color: #FFFFFF;
+  }
+
+  .armor-sp-arm {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 74px;
+    height: 34px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 34px;
+    text-align: center;
+    color: #FFFFFF;
+    transform: none;
+  }
+}
+
+// Legs: SP on top (42px), SDP below (43px)
+.armor-leg {
+  .armor-sp-leg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 74px;
+    height: 42px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 42px;
+    text-align: center;
+    color: #FFFFFF;
+    transform: none;
+  }
+
+  .armor-sdp-leg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 74px;
+    height: 43px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 43px;
+    text-align: center;
+    color: #FFFFFF;
+  }
+}
+
+// Head, Torso, BTM blocks (center column - 64px height)
+.armor-head,
+.armor-torso,
+.armor-btm {
+  height: 64px;
+
+  .armor-sp {
+    height: 42px;
+  }
+}
+
+// Sheet Details (620px)
+.sheet-details {
+  width: 620px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Character Identity (66px)
+.character-identity {
+  height: 66px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.character-name {
+  height: 44px;
+  margin: 0;
+  font-family: var(--font-refinery);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 500;
+  color: var(--chat-text);
+  border: none;
+  border-bottom: none;
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  vertical-align: bottom;
+
+  &.selectable {
+    user-select: text;
+    cursor: text;
+  }
+}
+
+// Character name is always an input (readonly when locked)
+input.character-name {
+  background: transparent;
+  border: none;
+  padding: 0 4px;
+
+  &[readonly] {
+    cursor: default;
+    user-select: text;
+  }
+}
+
+// Role Display (drag-drop target)
+.role-display {
+  height: 22px;
+  padding: 2px 4px 2px 5px;
+
+  .role-label {
+    font-family: var(--font-refinery);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 16px;
+    color: var(--chat-text);
+    letter-spacing: 0.05em;
+  }
+
+  // Empty state placeholder
+  &:not(:has(.role-label:not(:empty))) .role-label,
+  .role-label:empty::before {
+    content: attr(data-placeholder);
+    color: var(--chat-gray);
+    font-family: var(--font-blender);
+    font-size: 12px;
+  }
+}
+
+// Attributes Row (620px, 60px height, 16px gap handled by parent flex)
+.attributes-row {
+  width: 620px;
+  height: 60px;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+// Stat Button (60x60px)
+.stat-btn {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none;
+  transition: filter 0.15s ease;
+
+  &:hover, &:focus {
+    box-shadow: none;
+    outline: none;
+    filter: brightness(1.2);
+  }
+
+  > img {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .stat-value {
+    position: absolute;
+    top: 17px;
+    left: 0;
+    width: 60px;
+    height: 36px;
+    font-family: var(--font-blender);
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 36px;
+    text-align: center;
+    color: var(--chat-text);
+    pointer-events: none;
+  }
+
+  // Edit mode (unlocked)
+  &.stat-edit {
+    cursor: default;
+
+    &:hover, &:focus {
+      filter: none;
+    }
+
+    .stat-value {
+      pointer-events: auto;
+    }
+  }
+}
+
+// Stat input styling (unlocked edit mode)
+input.stat-value.stat-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: text;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+// Wounds + Humanity Block (620px, 66px)
+.wounds-humanity-block {
+  width: 620px;
+  height: 66px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.tracker-row {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tracker-badge {
+  width: 20px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.tracker-block {
+  width: 54px;
+  height: 26px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.dot-row {
+  width: 54px;
+  height: 12px;
+  padding: 1px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.wound-dot {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.humanity-dot {
+  width: 10px;
+  height: 10px;
+  // Read-only, no cursor change or hover
+}
+
+.tracker-indicator {
+  width: 54px;
+  height: 14px;
+}
+
+// Indicator colors now use separate SVG files:
+// - wounds-*-active.svg for active wound blocks (#B60F3C)
+// - humanity-label-*-disabled.svg for disabled humanity blocks (#444856)
+
+// Info Row (620px, 50px)
+.info-row {
+  width: 620px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.info-block {
+  width: 60px;
+  height: 50px;
+  position: relative;
+}
+
+.info-bg {
+  width: 60px;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.info-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 27px;
+  font-family: var(--font-blender);
+  font-weight: 300; // Book weight
+  font-size: 14px;
+  line-height: 27px;
+  text-align: center;
+  color: var(--chat-text);
+}
+
+// Editable input styling
+input.info-value.info-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  -moz-appearance: textfield; // Hide spinner in Firefox
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+// Custom Resize Handle (inside sheet-frame)
+.sheet-resize {
+  height: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: ns-resize;
+  flex-shrink: 0;
+
+  img {
+    opacity: 0.5;
+    pointer-events: none;
+    &:hover { opacity: 0.8; }
+  }
+}
+
+// Tab Selector (50px, right side)
+.tab-selector {
+  width: 50px;
+  margin-top: 396px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  overflow: hidden; // Hide tabs when they slide left
+}
+
+.tab-btn {
+  width: 44px;
+  height: 40px;
+  position: relative;
+  left: -10px;
+  transition: left 0.15s ease;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  &:hover, &:focus {
+    box-shadow: none;
+    outline: none;
+  }
+
+  img {
+    width: 44px;
+    height: 40px;
+    border: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  // Default: show empty, hide filled
+  .tab-empty {
+    opacity: 1;
+  }
+
+  .tab-filled {
+    opacity: 0;
+  }
+
+  &:hover {
+    left: -5px;
+  }
+
+  // Active: show filled, hide empty
+  &.active {
+    left: 0;
+
+    .tab-empty {
+      opacity: 0;
+    }
+
+    .tab-filled {
+      opacity: 1;
+    }
+  }
+}

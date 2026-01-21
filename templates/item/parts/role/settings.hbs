@@ -1,0 +1,19 @@
+{{!-- Role settings - fallback for generic item sheet --}}
+<div class="field-list">
+  <div class="field">
+    <label>{{localize "CYBERPUNK.SpecialAbility"}}</label>
+    <input type="text" name="system.specialAbility.name" value="{{system.specialAbility.name}}" placeholder="Ability Name">
+  </div>
+</div>
+<div class="field-list one-col">
+  <div class="field">
+    <label>{{localize "CYBERPUNK.CareerSkills"}}</label>
+    <span class="career-skills-display">
+      {{#each system.careerSkills}}
+        <span class="career-skill-tag">{{this}}</span>
+      {{else}}
+        <span class="no-skills">{{localize "CYBERPUNK.NoCareerSkills"}}</span>
+      {{/each}}
+    </span>
+  </div>
+</div>

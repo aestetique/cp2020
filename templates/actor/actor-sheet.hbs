@@ -1,68 +1,274 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
-    {{!-- Sheet Header --}}
-    <header class="cyberheader">
-        <div class="fieldrow">
-            <h1 class="title">
-                <input type="text" class="field-value" name="name"  value="{{actor.name}}"/>
-            </h1>
-            {{#if (equals actor.type "npc")}}
-                <div class="field">
-                    <label>{{CPLocal "NPC"}}</label>
+<form class="{{cssClass}}" autocomplete="off">
+  <div class="character-sheet">
+    {{!-- Sheet Frame (880px) --}}
+    <div class="sheet-frame">
+      {{!-- Header (38px) - Custom borderless header --}}
+      <header class="sheet-header">
+        <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+          <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+        </button>
+        <span class="actor-name">{{actor.name}}</span>
+        <a class="header-control" data-action="copyUuid" title="Copy Document UUID">
+          <i class="fas fa-passport"></i>
+        </a>
+        <a class="header-control" data-action="configureSheet" title="Sheet">
+          <i class="fas fa-cog"></i>
+        </a>
+        <a class="header-control" data-action="configureToken" title="Token">
+          <i class="fas fa-user-circle"></i>
+        </a>
+        <a class="header-control close" data-action="closeSheet" title="Close">
+          <i class="fas fa-times"></i>
+        </a>
+      </header>
+
+      {{!-- Content --}}
+      <section class="sheet-content">
+        {{!-- Left Sidebar (200px) --}}
+        <aside class="left-sidebar">
+          <div class="portrait-section">
+            <div class="portrait-frame">
+              <img class="portrait-img" src="{{actor.img}}" title="{{actor.name}}">
+              <img class="portrait-overlay" src="systems/cp2020/img/ui/portrait-frame.svg" alt="">
+            </div>
+            <div class="action-buttons">
+              <button class="action-btn roll-initiative" type="button" title="Roll Initiative">
+                <img src="systems/cp2020/img/ui/button-initiative.svg" alt="Initiative">
+                <span class="btn-value">{{initiativeTotal}}</span>
+              </button>
+              <button class="action-btn death-save" type="button" title="Roll Death Save">
+                <img src="systems/cp2020/img/ui/button-deathsave.svg" alt="Death Save">
+                <span class="btn-value">{{deathSaveTotal}}</span>
+              </button>
+              <button class="action-btn stun-save" type="button" title="Roll Stun Save">
+                <img src="systems/cp2020/img/ui/button-stunsave.svg" alt="Stun Save">
+                <span class="btn-value">{{stunSaveTotal}}</span>
+              </button>
+            </div>
+          </div>
+
+          {{!-- Armor Block (200px × 260px) --}}
+          <div class="armor-block">
+            <header class="sidebar-header">
+              <span class="sidebar-title">ARMOR</span>
+              <img class="sidebar-badge" src="systems/cp2020/img/ui/badge-armor.svg" alt="">
+            </header>
+
+            <div class="armor-content">
+              {{!-- Column 1: Left Arm, Left Leg --}}
+              <div class="armor-column">
+                <div class="armor-slot armor-arm">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/larm-{{armorBlocks.lArm.state}}.svg" alt="Left Arm">
+                  {{#unless armorBlocks.lArm.isLost}}
+                    {{#if armorBlocks.lArm.sdp}}
+                      <span class="armor-sdp">{{armorBlocks.lArm.sdp}}</span>
+                    {{/if}}
+                    {{#if armorBlocks.lArm.sp}}
+                      <span class="armor-sp armor-sp-arm">{{armorBlocks.lArm.sp}}</span>
+                    {{/if}}
+                  {{/unless}}
                 </div>
-            {{/if}}
-            {{> (template "fields/string") label="Role" edit="system.role.value"}}
-            {{> (template "fields/number") label="Age" edit="system.age" isNum=true}}
-            {{> (template "fields/number") label="Points" edit="system.points"}}
-            </div>
-        </div>
-        
-        <div class="flexrow">
-            <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}"/>
-            <div class="flexcol">
-                {{> "systems/cp2020/templates/actor/parts/statsrow.hbs"}}
-                {{> "systems/cp2020/templates/actor/parts/woundtracker.hbs"}}
-            </div>
-        </div>
-    </header>
+                <div class="armor-slot armor-leg">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/lleg-{{armorBlocks.lLeg.state}}.svg" alt="Left Leg">
+                  {{#unless armorBlocks.lLeg.isLost}}
+                    {{#if armorBlocks.lLeg.sp}}
+                      <span class="armor-sp armor-sp-leg">{{armorBlocks.lLeg.sp}}</span>
+                    {{/if}}
+                    {{#if armorBlocks.lLeg.sdp}}
+                      <span class="armor-sdp armor-sdp-leg">{{armorBlocks.lLeg.sdp}}</span>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+              </div>
 
-    {{!-- Sheet Tab Navigation --}}
-    <nav class="sheet-tabs tabs" data-group="primary">
-        <a class="item" data-tab="skills">{{localize 'CYBERPUNK.TabSkills'}}</a>
-        <a class="item" data-tab="combat">{{localize 'CYBERPUNK.TabCombat'}}</a>
-        <a class="item" data-tab="gear">{{localize 'CYBERPUNK.TabGear'}}</a>
-        <a class="item" data-tab="cyber">{{localize 'CYBERPUNK.TabCyber'}}</a>
-        <a class="item" data-tab="life">{{localize 'CYBERPUNK.Life'}}</a>
-        <a class="item" data-tab="netrun">{{localize 'CYBERPUNK.NetRun'}}</a>
-    </nav>
+              {{!-- Column 2: Head, Torso, BTM --}}
+              <div class="armor-column armor-column-center">
+                <div class="armor-slot armor-head">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/head-{{armorBlocks.Head.state}}.svg" alt="Head">
+                  {{#if armorBlocks.Head.sp}}
+                    <span class="armor-sp">{{armorBlocks.Head.sp}}</span>
+                  {{/if}}
+                </div>
+                <div class="armor-slot armor-torso">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/torso-{{armorBlocks.Torso.state}}.svg" alt="Torso">
+                  {{#if armorBlocks.Torso.sp}}
+                    <span class="armor-sp">{{armorBlocks.Torso.sp}}</span>
+                  {{/if}}
+                </div>
+                <div class="armor-slot armor-btm">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/btm.svg" alt="BTM">
+                  {{#if armorBlocks.btm}}
+                    <span class="armor-sp">{{armorBlocks.btm}}</span>
+                  {{/if}}
+                </div>
+              </div>
 
-    {{!-- Sheet Body --}}
-    <section class="sheet-body">
-        <div class="tab skills flexcol" data-group="primary" data-tab="skills">
+              {{!-- Column 3: Right Arm, Right Leg --}}
+              <div class="armor-column">
+                <div class="armor-slot armor-arm">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/rarm-{{armorBlocks.rArm.state}}.svg" alt="Right Arm">
+                  {{#unless armorBlocks.rArm.isLost}}
+                    {{#if armorBlocks.rArm.sdp}}
+                      <span class="armor-sdp">{{armorBlocks.rArm.sdp}}</span>
+                    {{/if}}
+                    {{#if armorBlocks.rArm.sp}}
+                      <span class="armor-sp armor-sp-arm">{{armorBlocks.rArm.sp}}</span>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+                <div class="armor-slot armor-leg">
+                  <img class="armor-bg" src="systems/cp2020/img/armor/rleg-{{armorBlocks.rLeg.state}}.svg" alt="Right Leg">
+                  {{#unless armorBlocks.rLeg.isLost}}
+                    {{#if armorBlocks.rLeg.sp}}
+                      <span class="armor-sp armor-sp-leg">{{armorBlocks.rLeg.sp}}</span>
+                    {{/if}}
+                    {{#if armorBlocks.rLeg.sdp}}
+                      <span class="armor-sdp armor-sdp-leg">{{armorBlocks.rLeg.sdp}}</span>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {{!-- Details (620px) --}}
+        <div class="sheet-details" data-group="primary">
+          <div class="character-identity">
+            <input type="text" class="character-name" name="name" value="{{actor.name}}" {{#if isLocked}}readonly{{/if}}>
+            <div class="role-display" data-drop-target="role">
+              <span class="role-label">{{#if roleLabel}}{{roleLabel}}{{else}}{{localize 'CYBERPUNK.DropRoleHere'}}{{/if}}</span>
+            </div>
+          </div>
+
+          {{!-- Attributes Row (620px, 16px gap from identity) --}}
+          <div class="attributes-row">
+            {{#each statButtons as |stat|}}
+              {{#if ../isLocked}}
+              <button class="stat-btn stat-roll" type="button" data-stat-name="{{stat.key}}" title="{{stat.label}}">
+                <img src="systems/cp2020/img/ui/button-{{stat.key}}.svg" alt="{{stat.label}}">
+                <span class="stat-value">{{stat.total}}</span>
+              </button>
+              {{else}}
+              <div class="stat-btn stat-edit">
+                <img src="systems/cp2020/img/ui/button-{{stat.key}}.svg" alt="{{stat.label}}">
+                <input type="number" class="stat-value stat-input" name="{{stat.path}}" value="{{stat.base}}" min="1" max="10">
+              </div>
+              {{/if}}
+            {{/each}}
+          </div>
+
+          {{!-- Wounds + Humanity Block (620px, 66px, 16px gap from attributes) --}}
+          <div class="wounds-humanity-block">
+            {{!-- Wounds Row --}}
+            <div class="tracker-row wounds-row">
+              <img class="tracker-badge" src="systems/cp2020/img/ui/badge-wounds.svg" alt="Wounds">
+              {{#each woundBlocks as |block|}}
+              <div class="tracker-block {{#if block.hasWound}}active{{/if}}">
+                <div class="dot-row">
+                  {{#each block.dots as |dot|}}
+                  <img class="wound-dot"
+                       src="systems/cp2020/img/ui/wounds-{{dot.state}}.svg"
+                       data-damage="{{dot.damage}}"
+                       alt="">
+                  {{/each}}
+                </div>
+                <img class="tracker-indicator" src="systems/cp2020/img/ui/wounds-{{block.label}}{{#if block.hasWound}}-active{{/if}}.svg" alt="{{block.label}}">
+              </div>
+              {{/each}}
+            </div>
+
+            {{!-- Humanity Row (read-only) --}}
+            <div class="tracker-row humanity-row">
+              <img class="tracker-badge" src="systems/cp2020/img/ui/badge-humanity.svg" alt="Humanity">
+              {{#each humanityBlocks as |block|}}
+              <div class="tracker-block {{#if block.active}}active{{/if}} {{#if block.disabled}}disabled{{/if}}">
+                <div class="dot-row">
+                  {{#each block.dots as |dot|}}
+                  <img class="humanity-dot"
+                       src="systems/cp2020/img/ui/humanity-{{dot.image}}.svg"
+                       alt="">
+                  {{/each}}
+                </div>
+                <img class="tracker-indicator"
+                     src="systems/cp2020/img/ui/humanity-label-{{block.label}}{{#if block.disabled}}-disabled{{/if}}.svg"
+                     alt="{{block.label}}">
+              </div>
+              {{/each}}
+            </div>
+          </div>
+
+          {{!-- Info Row (620px, 50px, 16px gap from trackers) --}}
+          <div class="info-row">
+            {{#each infoBlocks as |info|}}
+            <div class="info-block">
+              <img class="info-bg" src="systems/cp2020/img/ui/info-{{info.key}}.svg" alt="{{info.label}}">
+              {{#if info.editable}}
+                {{#if ../isLocked}}
+                  <span class="info-value">{{info.displayValue}}</span>
+                {{else}}
+                  <input type="number" class="info-value info-input" name="{{info.path}}" value="{{info.rawValue}}">
+                {{/if}}
+              {{else}}
+                <span class="info-value">{{info.displayValue}}</span>
+              {{/if}}
+            </div>
+            {{/each}}
+          </div>
+
+          {{!-- Tab content areas --}}
+          <div class="tab skills" data-group="primary" data-tab="skills">
             {{> "systems/cp2020/templates/actor/parts/skills.hbs"}}
-        </div>
+          </div>
 
-        <div class="tab combat flexcol" data-group="primary" data-tab="combat">
-            {{> "systems/cp2020/templates/actor/parts/combat.hbs"}}
-        </div>
-
-        <div class="tab gear flexcol" data-group="primary" data-tab="gear">
+          <div class="tab gear" data-group="primary" data-tab="gear">
             {{> "systems/cp2020/templates/actor/parts/gear.hbs"}}
-        </div>
-        
-        <div class="tab gear flexcol" data-group="primary" data-tab="cyber">
+          </div>
+
+          <div class="tab cyber" data-group="primary" data-tab="cyber">
             {{> "systems/cp2020/templates/actor/parts/cyberware.hbs"}}
-        </div>
+          </div>
 
-        {{!-- Biography Tab --}}
-        <div class="tab life flexcol" data-group="primary" data-tab="life">
-            <div class="biography">
-                {{editor system.notes target="system.notes" button=true owner=owner editable=options.editable}}
-            </div>
-        </div>
-
-        <div class="tab gear flexcol" data-group="primary" data-tab="netrun">
+          <div class="tab net" data-group="primary" data-tab="net">
             {{> "systems/cp2020/templates/actor/parts/netrunning.hbs"}}
-        </div>
-    </section>
-</form>
+          </div>
 
+          <div class="tab life" data-group="primary" data-tab="life">
+            <div class="biography">
+              {{editor system.notes target="system.notes" button=true owner=owner editable=options.editable}}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {{!-- Resize Handle (20px) --}}
+      <div class="sheet-resize">
+        <img src="systems/cp2020/img/ui/resize.svg" alt="">
+      </div>
+    </div>
+
+    {{!-- Tab Selector (50px) --}}
+    <nav class="tab-selector" data-group="primary">
+      <a class="tab-btn" data-tab="skills" title="Skills">
+        <img class="tab-empty" src="systems/cp2020/img/ui/tabs-skills-empty.svg" alt="Skills">
+        <img class="tab-filled" src="systems/cp2020/img/ui/tabs-skills.svg" alt="Skills">
+      </a>
+      <a class="tab-btn" data-tab="gear" title="Gear">
+        <img class="tab-empty" src="systems/cp2020/img/ui/tabs-gear-empty.svg" alt="Gear">
+        <img class="tab-filled" src="systems/cp2020/img/ui/tabs-gear.svg" alt="Gear">
+      </a>
+      <a class="tab-btn" data-tab="cyber" title="Cyberware">
+        <img class="tab-empty" src="systems/cp2020/img/ui/tabs-cyber-empty.svg" alt="Cyberware">
+        <img class="tab-filled" src="systems/cp2020/img/ui/tabs-cyber.svg" alt="Cyberware">
+      </a>
+      <a class="tab-btn" data-tab="net" title="Netrunning">
+        <img class="tab-empty" src="systems/cp2020/img/ui/tabs-net-empty.svg" alt="Netrunning">
+        <img class="tab-filled" src="systems/cp2020/img/ui/tabs-net.svg" alt="Netrunning">
+      </a>
+      <a class="tab-btn" data-tab="life" title="Life">
+        <img class="tab-empty" src="systems/cp2020/img/ui/tabs-life-empty.svg" alt="Life">
+        <img class="tab-filled" src="systems/cp2020/img/ui/tabs-life.svg" alt="Life">
+      </a>
+    </nav>
+  </div>
+</form>

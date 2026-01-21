@@ -1,0 +1,99 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <div class="role-sheet-container">
+    {{!-- Custom Header (inspired by character sheet) --}}
+    <header class="role-header">
+      <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+        <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+      </button>
+
+      {{#if isLocked}}
+        <h1 class="role-name">{{item.name}}</h1>
+      {{else}}
+        <input type="text" class="role-name" name="name" value="{{item.name}}" placeholder="Role Name">
+      {{/if}}
+
+      <a class="header-control close" data-action="closeSheet" title="Close">
+        <i class="fas fa-times"></i>
+      </a>
+    </header>
+
+    {{!-- Role Card Content --}}
+    <section class="role-card">
+      {{!-- Role Image --}}
+      <div class="role-portrait">
+        <img class="role-img" src="{{item.img}}" data-edit="img" title="{{item.name}}">
+      </div>
+
+      {{!-- Tabs --}}
+      <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="details">{{localize "CYBERPUNK.Description"}}</a>
+        <a class="item" data-tab="skills">{{localize "CYBERPUNK.CareerSkills"}}</a>
+        <a class="item" data-tab="notes">{{localize "CYBERPUNK.Notes"}}</a>
+      </nav>
+
+      {{!-- Tab Content --}}
+      <section class="sheet-body">
+        {{!-- Details Tab --}}
+        <div class="tab details" data-group="primary" data-tab="details">
+          {{!-- Flavor Description --}}
+          <div class="role-field">
+            <label>{{localize "CYBERPUNK.Flavor"}}</label>
+            {{#if isLocked}}
+              <p class="field-value flavor-text">{{system.flavor}}</p>
+            {{else}}
+              <textarea name="system.flavor" placeholder="Role description...">{{system.flavor}}</textarea>
+            {{/if}}
+          </div>
+
+          {{!-- Special Ability --}}
+          <div class="role-field special-ability">
+            <label>{{localize "CYBERPUNK.SpecialAbility"}}</label>
+            {{#if isLocked}}
+              <h3 class="ability-name">{{system.specialAbility.name}}</h3>
+              <p class="field-value ability-description">{{system.specialAbility.description}}</p>
+            {{else}}
+              <input type="text" name="system.specialAbility.name"
+                     value="{{system.specialAbility.name}}"
+                     placeholder="Ability Name">
+              <textarea name="system.specialAbility.description"
+                        placeholder="Ability description...">{{system.specialAbility.description}}</textarea>
+            {{/if}}
+          </div>
+
+          {{!-- Source --}}
+          <div class="role-field">
+            <label>{{localize "CYBERPUNK.Source"}}</label>
+            {{#if isLocked}}
+              <span class="field-value">{{system.source}}</span>
+            {{else}}
+              <input type="text" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX">
+            {{/if}}
+          </div>
+        </div>
+
+        {{!-- Career Skills Tab --}}
+        <div class="tab skills" data-group="primary" data-tab="skills">
+          <ul class="career-skills-list" data-drop-target="career-skill">
+            {{#each careerSkillsList as |skill index|}}
+              <li class="career-skill-item" data-uuid="{{skill.uuid}}">
+                <span class="skill-name">{{skill.name}}</span>
+                {{#unless ../isLocked}}
+                  <button type="button" class="remove-career-skill" data-index="{{index}}" title="{{localize 'CYBERPUNK.RemoveCareerSkill'}}">
+                    <i class="fas fa-times"></i>
+                  </button>
+                {{/unless}}
+              </li>
+            {{else}}
+              <li class="no-skills">{{localize "CYBERPUNK.DropSkillsHere"}}</li>
+            {{/each}}
+          </ul>
+        </div>
+
+        {{!-- Notes Tab --}}
+        <div class="tab notes" data-group="primary" data-tab="notes">
+          {{editor system.notes target="system.notes" button=true owner=owner editable=(not isLocked)}}
+        </div>
+      </section>
+    </section>
+  </div>
+</form>

@@ -1,0 +1,367 @@
+// ============================================
+// Role Sheet Styling
+// ============================================
+
+// Hide Foundry's default window chrome for role sheet
+.cyberpunk.role-sheet {
+  &.app {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+  }
+
+  > .window-header {
+    display: none;
+  }
+
+  > .window-content {
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  > .window-resizable-handle {
+    display: none;
+  }
+
+  // Reset button styles
+  button, a {
+    --button-focus-outline-color: transparent;
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  img {
+    border: none;
+  }
+}
+
+.role-sheet-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// Role Header (inspired by character sheet)
+.role-header {
+  height: 38px;
+  padding: 8px 10px 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  background: var(--chat-back);
+  border: 2px solid var(--chat-stroke);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: move;
+
+  .lock-toggle {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover, &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  .role-name {
+    flex: 1;
+    font-family: var(--font-refinery);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--chat-text);
+    margin: 0;
+    border: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  input.role-name {
+    background: transparent;
+    border: 1px solid var(--chat-stroke);
+    padding: 0 4px;
+    height: 24px;
+  }
+
+  .header-control {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--chat-text);
+    opacity: 0.6;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+
+    &:hover {
+      opacity: 1;
+      box-shadow: none;
+    }
+
+    &.close:hover {
+      color: var(--chat-red-text);
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
+// Role Card Body
+.role-card {
+  flex: 1;
+  background: var(--chat-back);
+  border: 2px solid var(--chat-stroke);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+// Role Portrait
+.role-portrait {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .role-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    border: 2px solid var(--chat-stroke);
+    object-fit: cover;
+    cursor: pointer;
+  }
+}
+
+// Tabs styling
+.role-sheet .sheet-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--chat-stroke);
+  flex-shrink: 0;
+
+  .item {
+    flex: 1;
+    padding: 6px 10px;
+    text-align: center;
+    font-family: var(--font-blender);
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--chat-text);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+
+    &:hover {
+      background: var(--chat-accent);
+    }
+
+    &.active {
+      background: var(--chat-stroke);
+    }
+  }
+}
+
+// Sheet body with tabs
+.role-sheet .sheet-body {
+  flex: 1;
+  overflow-y: auto;
+
+  .tab {
+    display: none;
+    padding: 10px 0;
+
+    &.active {
+      display: block;
+    }
+  }
+}
+
+// Content fields
+.role-field {
+  margin-bottom: 12px;
+
+  label {
+    display: block;
+    font-family: var(--font-blender);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--chat-gray);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    background: var(--chat-accent);
+    border: 1px solid var(--chat-stroke);
+    color: var(--chat-text);
+    font-family: var(--font-blender);
+    font-size: 13px;
+    padding: 6px;
+    border-radius: 2px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--chat-accent);
+    border: 1px solid var(--chat-stroke);
+    color: var(--chat-text);
+    font-family: var(--font-blender);
+    font-size: 13px;
+    padding: 6px;
+    height: auto;
+    border-radius: 2px;
+  }
+
+  .field-value {
+    font-family: var(--font-blender);
+    font-size: 13px;
+    color: var(--chat-text);
+    line-height: 1.4;
+
+    &.flavor-text {
+      font-style: italic;
+    }
+  }
+}
+
+// Special Ability Section
+.special-ability {
+  .ability-name {
+    font-family: var(--font-refinery);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--chat-text);
+    margin: 0 0 4px 0;
+    border: none;
+    text-transform: uppercase;
+  }
+
+  .ability-description {
+    margin-top: 4px;
+  }
+
+  input[type="text"] {
+    margin-bottom: 6px;
+  }
+}
+
+// Career Skills List
+.career-skills-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  .career-skill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: var(--chat-accent);
+    border-radius: 2px;
+    margin-bottom: 4px;
+
+    .skill-name {
+      font-family: var(--font-blender);
+      font-size: 13px;
+      color: var(--chat-text);
+    }
+
+    .remove-career-skill {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--chat-gray);
+      cursor: pointer;
+
+      &:hover {
+        color: var(--chat-red-text);
+      }
+    }
+  }
+
+  .no-skills {
+    padding: 10px;
+    text-align: center;
+    color: var(--chat-gray);
+    font-style: italic;
+    font-family: var(--font-blender);
+    font-size: 13px;
+  }
+}
+
+.add-skill-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+
+  input {
+    flex: 1;
+    background: var(--chat-accent);
+    border: 1px solid var(--chat-stroke);
+    color: var(--chat-text);
+    font-family: var(--font-blender);
+    font-size: 13px;
+    padding: 6px;
+    height: auto;
+    border-radius: 2px;
+  }
+
+  button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: var(--chat-stroke);
+    color: var(--chat-text);
+    cursor: pointer;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--chat-green);
+    }
+  }
+}
+
+// Notes tab editor
+.role-sheet .tab.notes {
+  .editor {
+    height: 200px;
+  }
+}

@@ -1,4 +1,5 @@
 {{> (template "actor/parts/armor-display") hitLocations=system.coverage edit=true hitLocsName="coverage"}}
 <div class="field-list one-col">
+    {{> (template "fields/select") label="CYBERPUNK.ArmorType" edit="system.armorType" choices=armorTypeChoices}}
     {{> (template "fields/number") label="Encumbrance" edit="system.encumbrance"}}
 </div>
