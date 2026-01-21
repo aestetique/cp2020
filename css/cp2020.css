@@ -2588,6 +2588,212 @@ input.skill-value.skill-level-input:focus {
   border: none;
 }
 
+.gear-container {
+  width: 620px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gear-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gear-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.gear-row.gear-empty {
+  justify-content: center;
+}
+
+.gear-empty-text {
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 12px;
+  color: #808090;
+  text-align: center;
+}
+
+.gear-row {
+  width: 100%;
+  height: 48px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px dashed #26282F;
+}
+
+.gear-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px #252730;
+  overflow: hidden;
+}
+.gear-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+}
+.gear-icon.gear-fire-weapon {
+  cursor: pointer;
+}
+
+.gear-info {
+  height: 30px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.gear-info.gear-fire-weapon {
+  cursor: pointer;
+}
+
+.gear-name {
+  height: 16px;
+  font-family: var(--font-refinery);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  color: #FFFFFF;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gear-context {
+  height: 12px;
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 12px;
+  color: #808090;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gear-price {
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.gear-price .price-value {
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF;
+  text-align: right;
+}
+.gear-price img {
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+
+.gear-field {
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.gear-field .field-top {
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 16px;
+  color: #FFFFFF;
+  text-align: center;
+}
+.gear-field .field-bottom {
+  font-family: var(--font-blender);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #808090;
+  text-align: center;
+}
+
+.gear-action-btn {
+  width: 40px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.gear-action-btn img {
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+.gear-action-btn[data-can-reload=false] {
+  cursor: default;
+}
+.gear-action-btn[data-can-reload=true] {
+  cursor: pointer;
+}
+
+.gear-spacer {
+  width: 176px;
+  flex-shrink: 0;
+}
+
+.gear-actions {
+  width: 16px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gear-view,
+.gear-delete {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  outline: none;
+  box-shadow: none;
+}
+.gear-view:hover, .gear-view:focus,
+.gear-delete:hover,
+.gear-delete:focus {
+  opacity: 1;
+  box-shadow: none;
+  outline: none;
+}
+.gear-view img,
+.gear-delete img {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .cyberpunk.role-sheet.app {
   background: transparent;
   box-shadow: none;
