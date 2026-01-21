@@ -4,6 +4,8 @@
   --chat-stroke: #252730;
   --chat-accent: #26282F;
   --chat-gray: #444856;
+  --sheet-gold: #B8A46A;
+  --sheet-gilt: #B9B29D;
   --chat-green: #24563D;
   --chat-green-text: #1A804D;
   --chat-green-back: #1A2A25;
@@ -16,6 +18,7 @@
 
 * {
   scrollbar-width: thin;
+  scrollbar-color: var(--sheet-gilt) var(--color-scrollbar-track);
 }
 
 *::-webkit-scrollbar {
@@ -1715,11 +1718,14 @@ div.statderive .value.rightborder {
   border: none;
   border-bottom: none;
 }
+.cyberpunk.character-sheet .window-content, .cyberpunk.character-sheet .editable {
+  height: 100%;
+}
 
 .character-sheet {
   display: flex;
   width: 930px;
-  min-height: 624px;
+  min-height: 634px;
   height: 100%;
 }
 
@@ -2374,8 +2380,18 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
   opacity: 1;
 }
 
+.character-sheet .tab {
+  min-height: 260px;
+  max-height: 900px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.character-sheet .scrollable {
+  padding-inline-end: 8px;
+}
+
 .skills-container {
-  width: 620px;
+  width: 100%;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -2384,7 +2400,7 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
 }
 
 .tab-header {
-  width: 620px;
+  width: 100%;
   height: 36px;
   padding: 0 10px;
   display: flex;
@@ -2589,7 +2605,7 @@ input.skill-value.skill-level-input:focus {
 }
 
 .gear-container {
-  width: 620px;
+  width: 100%;
   flex: 1;
   min-height: 0;
   display: flex;
