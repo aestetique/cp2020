@@ -2400,13 +2400,18 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
 }
 
 .tab-header {
+  position: sticky;
+  top: 0;
   width: 100%;
   height: 36px;
   padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #B9B29D;
+  border-bottom: 1px solid var(--sheet-gilt);
+  background-color: var(--chat-back);
+  box-shadow: 0 7px 10px 0 var(--chat-back);
+  z-index: 1;
 }
 
 .tab-title {
