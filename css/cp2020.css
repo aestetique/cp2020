@@ -1801,18 +1801,21 @@ div.statderive .value.rightborder {
 
 .sheet-content {
   flex: 1;
-  min-height: 566px;
+  min-height: 0;
   padding: 0 20px;
   display: flex;
   gap: 20px;
+  overflow: hidden;
 }
 
 .left-sidebar {
   width: 200px;
   flex-shrink: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: hidden;
 }
 
 .portrait-section {
@@ -2042,17 +2045,33 @@ div.statderive .value.rightborder {
 .sheet-details {
   width: 620px;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: visible;
 }
 
 .character-identity {
   height: 66px;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.identity-left {
+  display: flex;
   flex-direction: column;
   gap: 0;
-  flex-shrink: 0;
+  flex: 1;
+}
+
+.identity-points {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .character-name {
@@ -2116,8 +2135,12 @@ input.character-name[readonly] {
 .stat-btn {
   width: 60px;
   height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+  flex-shrink: 0;
   position: relative;
   padding: 0;
+  margin: 0;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -2349,6 +2372,220 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
 }
 .tab-btn.active .tab-filled {
   opacity: 1;
+}
+
+.skills-container {
+  width: 620px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.tab-header {
+  width: 620px;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #B9B29D;
+}
+
+.tab-title {
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 36px;
+  color: #B9B29D;
+}
+
+.tab-badge {
+  width: 16px;
+  height: 16px;
+}
+
+.skills-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  column-gap: 10px;
+}
+
+.skills-column {
+  width: 305px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.skill-row {
+  width: 100%;
+  height: 36px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  border-bottom: 1px dashed #26282F;
+}
+
+.skill-chip {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  outline: none;
+  box-shadow: none;
+}
+.skill-chip:hover, .skill-chip:focus {
+  box-shadow: none;
+  outline: none;
+}
+.skill-chip img {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.skill-attr {
+  width: 36px;
+  height: 24px;
+  flex-shrink: 0;
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+  color: #B9B29D;
+}
+
+.skill-name {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.skill-name:hover {
+  text-decoration: underline;
+}
+
+.skill-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.skill-value {
+  width: 20px;
+  height: 24px;
+  font-family: var(--font-blender);
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+input.skill-value.skill-level-input {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  outline: none;
+  box-shadow: none;
+  -moz-appearance: textfield;
+}
+input.skill-value.skill-level-input::-webkit-outer-spin-button, input.skill-value.skill-level-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.skill-value.skill-level-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.skill-plus {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  outline: none;
+  box-shadow: none;
+}
+.skill-plus:hover, .skill-plus:focus {
+  box-shadow: none;
+  outline: none;
+}
+.skill-plus img {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.skill-ip {
+  width: 16px;
+  height: 24px;
+  padding: 0;
+  font-family: var(--font-blender);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+  color: #444856;
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
+}
+.skill-ip::-webkit-outer-spin-button, .skill-ip::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.skill-ip {
+  -moz-appearance: textfield;
+}
+.skill-ip:focus {
+  outline: none;
+  box-shadow: none;
+  color: #FFFFFF;
+}
+
+.skill-delete {
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.6;
+  outline: none;
+  box-shadow: none;
+}
+.skill-delete:hover, .skill-delete:focus {
+  opacity: 1;
+  box-shadow: none;
+  outline: none;
+}
+.skill-delete img {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 .cyberpunk.role-sheet.app {
@@ -2584,6 +2821,43 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
 }
 .special-ability input[type=text] {
   margin-bottom: 6px;
+}
+
+.special-skill-drop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: var(--chat-accent);
+  border: 1px dashed var(--chat-stroke);
+  border-radius: 2px;
+  min-height: 32px;
+}
+.special-skill-drop .skill-name {
+  font-family: var(--font-blender);
+  font-size: 13px;
+  color: var(--chat-text);
+  pointer-events: none;
+}
+.special-skill-drop .placeholder {
+  font-family: var(--font-blender);
+  font-size: 13px;
+  color: var(--chat-gray);
+  font-style: italic;
+  pointer-events: none;
+}
+.special-skill-drop .remove-special-skill {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--chat-gray);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.special-skill-drop .remove-special-skill:hover {
+  color: var(--chat-red-text);
 }
 
 .career-skills-list {
