@@ -2694,6 +2694,7 @@ input.skill-value.skill-level-input:focus {
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  padding-right: 8px;
 }
 .gear-price .price-value {
   font-family: var(--font-blender);
