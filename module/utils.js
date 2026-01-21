@@ -32,6 +32,32 @@ export function shortLocalize(str) {
     let makeShort = !!game.i18n.has("CYBERPUNK." + str + "Short");
     return tryLocalize(makeShort ? str + "Short" : str);
 }
+
+// Scrollable tab beautifying
+let resizeObserver = null;
+export function tabBeautifying() {
+    const charsheet = document.querySelector('.character-sheet');
+    if (!charsheet) return;
+    if (!resizeObserver) {
+        resizeObserver = new ResizeObserver(update);
+        resizeObserver.observe(charsheet);
+    }
+    update();
+
+    new MutationObserver(update).observe(charsheet, {
+    childList: true,
+    subtree: true,
+    });
+}
+
+function update() {
+    const tabs = document.querySelectorAll('.character-sheet .tab');
+    tabs.forEach(tab => {
+        const hasScroll = tab.scrollHeight > tab.clientHeight;
+        tab.classList.toggle('scrollable', hasScroll);
+    });
+}
+
 /**
  * 
  * @param {CyberpunkActor} The actor you're targeting a location on

@@ -1,5 +1,5 @@
 import { martialOptions, meleeAttackTypes, meleeBonkOptions, rangedModifiers, weaponTypes, reliability, concealability } from "../lookups.js"
-import { localize, localizeParam } from "../utils.js"
+import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { SortOrders } from "./skill-sort.js";
 
@@ -1294,6 +1294,9 @@ export class CyberpunkActorSheet extends ActorSheet {
 
       fp.render(true);
     });
+
+    tabBeautifying(html[0]);
+    html.find('.tab-selector').on('click', () => tabBeautifying(html[0]));
   }
 
   /**
