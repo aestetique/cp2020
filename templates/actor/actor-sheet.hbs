@@ -29,19 +29,18 @@
           <div class="portrait-section">
             <div class="portrait-frame">
               <img class="portrait-img" src="{{actor.img}}" title="{{actor.name}}">
-              <img class="portrait-overlay" src="systems/cp2020/img/ui/portrait-frame.svg" alt="">
             </div>
             <div class="action-buttons">
               <button class="action-btn roll-initiative" type="button" title="Roll Initiative">
-                <img src="systems/cp2020/img/ui/button-initiative.svg" alt="Initiative">
+                <span class="action-btn-name">Initiative</span>
                 <span class="btn-value">{{initiativeTotal}}</span>
               </button>
               <button class="action-btn death-save" type="button" title="Roll Death Save">
-                <img src="systems/cp2020/img/ui/button-deathsave.svg" alt="Death Save">
+                <span class="action-btn-name">vs Death</span>
                 <span class="btn-value">{{deathSaveTotal}}</span>
               </button>
               <button class="action-btn stun-save" type="button" title="Roll Stun Save">
-                <img src="systems/cp2020/img/ui/button-stunsave.svg" alt="Stun Save">
+                <span class="action-btn-name">vs Stun</span>
                 <span class="btn-value">{{stunSaveTotal}}</span>
               </button>
             </div>
@@ -144,15 +143,15 @@
             {{#unless isLocked}}
             <div class="identity-points">
               <div class="info-block">
-                <img class="info-bg" src="systems/cp2020/img/ui/info-points.svg" alt="Character Points">
+                <span class="info-name">Points</span>
                 <span class="info-value">{{charPoints}} / 80</span>
               </div>
               <div class="info-block">
-                <img class="info-bg" src="systems/cp2020/img/ui/info-career.svg" alt="Career Points">
+                <span class="info-name">Career</span>
                 <span class="info-value">{{careerPoints}} / 40</span>
               </div>
               <div class="info-block">
-                <img class="info-bg" src="systems/cp2020/img/ui/info-pickup.svg" alt="Pickup Points">
+                <span class="info-name">Pickup</span>
                 <span class="info-value">{{pickupPoints}} / {{pickupMax}}</span>
               </div>
             </div>
@@ -164,12 +163,12 @@
             {{#each statButtons as |stat|}}
               {{#if ../isLocked}}
               <button class="stat-btn stat-roll" type="button" data-stat-name="{{stat.key}}" title="{{stat.label}}">
-                <img src="systems/cp2020/img/ui/button-{{stat.key}}.svg" alt="{{stat.label}}">
+                <span class="stat-name">{{stat.label}}</span>
                 <span class="stat-value">{{stat.total}}</span>
               </button>
               {{else}}
               <div class="stat-btn stat-edit">
-                <img src="systems/cp2020/img/ui/button-{{stat.key}}.svg" alt="{{stat.label}}">
+                <span class="stat-name">{{stat.label}}</span>
                 <input type="number" class="stat-value stat-input" name="{{stat.path}}" value="{{stat.base}}" min="1" max="10">
               </div>
               {{/if}}
@@ -191,7 +190,7 @@
                        alt="">
                   {{/each}}
                 </div>
-                <img class="tracker-indicator" src="systems/cp2020/img/ui/wounds-{{block.label}}{{#if block.hasWound}}-active{{/if}}.svg" alt="{{block.label}}">
+                <span class="tracker-state wounds-state">{{block.label}}</span>
               </div>
               {{/each}}
             </div>
@@ -208,9 +207,7 @@
                        alt="">
                   {{/each}}
                 </div>
-                <img class="tracker-indicator"
-                     src="systems/cp2020/img/ui/humanity-label-{{block.label}}{{#if block.disabled}}-disabled{{/if}}.svg"
-                     alt="{{block.label}}">
+                <span class="tracker-state humanity-state">{{block.label}}</span>
               </div>
               {{/each}}
             </div>
@@ -220,7 +217,7 @@
           <div class="info-row">
             {{#each infoBlocks as |info|}}
             <div class="info-block">
-              <img class="info-bg" src="systems/cp2020/img/ui/info-{{info.key}}.svg" alt="{{info.label}}">
+              <span class="info-name">{{info.label}}</span>
               {{#if info.editable}}
                 {{#if ../isLocked}}
                   <span class="info-value">{{info.displayValue}}</span>
