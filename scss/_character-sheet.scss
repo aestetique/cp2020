@@ -190,13 +190,15 @@
     outline: none;
   }
 
-  .portrait-overlay {
+  &::after {
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
+    background-image: url(../img/ui/portrait-frame.svg);
   }
 }
 
@@ -211,7 +213,10 @@
   position: relative;
   padding: 0;
   border: none;
-  background: transparent;
+  background-color: transparent;
+  background-image: url(../img/ui/button-action.svg);
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   outline: none;
   box-shadow: none;
@@ -227,6 +232,21 @@
     width: 100%;
     height: 100%;
     border: none;
+  }
+
+  .action-btn-name {
+    position: absolute;
+    top: 3px;
+    left: 1px;
+    right: 0;
+    font-family: var(--font-orbitron);
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--sheet-gilt);
   }
 
   .btn-value {
@@ -518,7 +538,10 @@ input.character-name {
   padding: 0;
   margin: 0;
   border: none;
-  background: transparent;
+  background-color: transparent;
+  background-image: url(../img/ui/button-attribute.svg);
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   outline: none;
   box-shadow: none;
@@ -549,6 +572,21 @@ input.character-name {
     text-align: center;
     color: var(--chat-text);
     pointer-events: none;
+  }
+
+  .stat-name {
+    position: absolute;
+    top: 2px;
+    left: 1px; // I had cuz the font is tricky
+    right: 0;
+    font-family: var(--font-orbitron);
+    font-size: 9.75px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.975px;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--sheet-gilt);
   }
 
   // Edit mode (unlocked)
@@ -614,6 +652,7 @@ input.stat-value.stat-input {
 }
 
 .dot-row {
+  position: relative;
   width: 54px;
   height: 12px;
   padding: 1px;
@@ -621,6 +660,40 @@ input.stat-value.stat-input {
   gap: 4px;
   align-items: center;
   justify-content: center;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 54px;
+    height: 3px;    
+    background-image: url(../img/ui/label-bracket.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+.wounds-row {
+  .tracker-block.active {
+    .dot-row::after {
+      background-image: url(../img/ui/label-bracket-active.svg);
+    }
+
+    .tracker-state {
+      color: var(--sheet-crimson);
+    }
+  }
+}
+
+.tracker-block.disabled {
+  .dot-row::after {
+    background-image: url(../img/ui/label-bracket-disabled.svg);
+  }
+
+  .tracker-state {
+    color: var(--chat-gray);
+  }
 }
 
 .wound-dot {
@@ -640,9 +713,16 @@ input.stat-value.stat-input {
   // Read-only, no cursor change or hover
 }
 
-.tracker-indicator {
-  width: 54px;
-  height: 14px;
+.tracker-state {
+  margin-block-start: 5px;
+  padding-inline-start: 2px;
+  font-family: var(--font-orbitron);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  line-height: 8px;
+  text-align: center;
+  color: var(--sheet-gilt);
 }
 
 // Indicator colors now use separate SVG files:
@@ -662,14 +742,9 @@ input.stat-value.stat-input {
   width: 60px;
   height: 50px;
   position: relative;
-}
-
-.info-bg {
-  width: 60px;
-  height: 50px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  background-image: url(../img/ui/info.svg);
+  background-position: center;
+  background-repeat: no-repeat;  
 }
 
 .info-value {
@@ -684,6 +759,21 @@ input.stat-value.stat-input {
   line-height: 27px;
   text-align: center;
   color: var(--chat-text);
+}
+
+.info-name {
+  position: absolute;
+  bottom: 8px;
+  left: 2px;
+  right: 0;
+  font-family: var(--font-orbitron);
+  font-weight: 400;
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--sheet-gilt)
 }
 
 // Editable input styling

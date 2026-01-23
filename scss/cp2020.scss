@@ -1,5 +1,11 @@
 @import "resets";
 
+@font-face {
+  font-family: "Orbitron";
+  src: url(../fonts/Orbitron-Regular.ttf) format("truetype");
+  font-weight: 400;
+}
+
 // I'd have loved to give Stone Sans with this, but I don't have the license
 // Open Sans ExtraBold seems to do okay though
 $font-primary: "Noto Sans", sans-serif;
@@ -28,6 +34,7 @@ $field-border-width: 2px;
 
   --sheet-gold: #B8A46A;
   --sheet-gilt: #B9B29D;
+  --sheet-crimson: #B60F3C;
 
   // Success States
   --chat-green: #24563D;
@@ -42,6 +49,7 @@ $field-border-width: 2px;
   // Typography - Using fallbacks until custom fonts are loaded
   --font-blender: "Blender Pro", "Noto Sans", sans-serif;
   --font-refinery: "Refinery 55", "Open Sans", sans-serif;
+  --font-orbitron: "Orbitron", "Open Sans", sans-serif;
 }
 
 * {

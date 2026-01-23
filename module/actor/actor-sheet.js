@@ -130,23 +130,28 @@ export class CyberpunkActorSheet extends ActorSheet {
       sheetData.deathSaveMod = deathSaveMod;
       sheetData.deathSaveTotal = btTotal + deathSaveMod;
 
-      // Stat buttons data for attributes row
+      // Overriding B.T to body and M.A to Move so it matches the design
       const stats = system.stats || {};
+      const getStatLabel = (key) => {
+        const overrides = { 'bt': 'body', 'ma': 'move' };
+        return overrides[key] || game.i18n.localize(`CYBERPUNK.${key.charAt(0).toUpperCase() + key.slice(1)}`);
+      };
+      
       sheetData.statButtons = [
-        { key: 'int', label: game.i18n.localize('CYBERPUNK.Int'), total: stats.int?.total ?? stats.int?.base ?? 0, base: stats.int?.base ?? 0, path: 'system.stats.int.base' },
-        { key: 'ref', label: game.i18n.localize('CYBERPUNK.Ref'), total: stats.ref?.total ?? stats.ref?.base ?? 0, base: stats.ref?.base ?? 0, path: 'system.stats.ref.base' },
-        { key: 'tech', label: game.i18n.localize('CYBERPUNK.Tech'), total: stats.tech?.total ?? stats.tech?.base ?? 0, base: stats.tech?.base ?? 0, path: 'system.stats.tech.base' },
-        { key: 'cool', label: game.i18n.localize('CYBERPUNK.Cool'), total: stats.cool?.total ?? stats.cool?.base ?? 0, base: stats.cool?.base ?? 0, path: 'system.stats.cool.base' },
-        { key: 'attr', label: game.i18n.localize('CYBERPUNK.Attr'), total: stats.attr?.total ?? stats.attr?.base ?? 0, base: stats.attr?.base ?? 0, path: 'system.stats.attr.base' },
-        { key: 'bt', label: game.i18n.localize('CYBERPUNK.Body'), total: stats.bt?.total ?? stats.bt?.base ?? 0, base: stats.bt?.base ?? 0, path: 'system.stats.bt.base' },
-        { key: 'emp', label: game.i18n.localize('CYBERPUNK.Emp'), total: stats.emp?.total ?? stats.emp?.base ?? 0, base: stats.emp?.base ?? 0, path: 'system.stats.emp.base' },
-        { key: 'ma', label: game.i18n.localize('CYBERPUNK.Move'), total: stats.ma?.total ?? stats.ma?.base ?? 0, base: stats.ma?.base ?? 0, path: 'system.stats.ma.base' },
-        { key: 'luck', label: game.i18n.localize('CYBERPUNK.Luck'), total: stats.luck?.total ?? stats.luck?.base ?? 0, base: stats.luck?.base ?? 0, path: 'system.stats.luck.base' }
+        { key: 'int', label: getStatLabel('int'), total: stats.int?.total ?? stats.int?.base ?? 0, base: stats.int?.base ?? 0, path: 'system.stats.int.base' },
+        { key: 'ref', label: getStatLabel('ref'), total: stats.ref?.total ?? stats.ref?.base ?? 0, base: stats.ref?.base ?? 0, path: 'system.stats.ref.base' },
+        { key: 'tech', label: getStatLabel('tech'), total: stats.tech?.total ?? stats.tech?.base ?? 0, base: stats.tech?.base ?? 0, path: 'system.stats.tech.base' },
+        { key: 'cool', label: getStatLabel('cool'), total: stats.cool?.total ?? stats.cool?.base ?? 0, base: stats.cool?.base ?? 0, path: 'system.stats.cool.base' },
+        { key: 'attr', label: getStatLabel('attr'), total: stats.attr?.total ?? stats.attr?.base ?? 0, base: stats.attr?.base ?? 0, path: 'system.stats.attr.base' },
+        { key: 'bt', label: getStatLabel('bt'), total: stats.bt?.total ?? stats.bt?.base ?? 0, base: stats.bt?.base ?? 0, path: 'system.stats.bt.base' },
+        { key: 'emp', label: getStatLabel('emp'), total: stats.emp?.total ?? stats.emp?.base ?? 0, base: stats.emp?.base ?? 0, path: 'system.stats.emp.base' },
+        { key: 'ma', label: getStatLabel('ma'), total: stats.ma?.total ?? stats.ma?.base ?? 0, base: stats.ma?.base ?? 0, path: 'system.stats.ma.base' },
+        { key: 'luck', label: getStatLabel('luck'), total: stats.luck?.total ?? stats.luck?.base ?? 0, base: stats.luck?.base ?? 0, path: 'system.stats.luck.base' }
       ];
 
       // Wound blocks data for template
       const damage = system.damage || 0;
-      const woundLabels = ['light', 'serious', 'critical', 'mortal0', 'mortal1', 'mortal2', 'mortal3', 'mortal4', 'mortal5', 'mortal6'];
+      const woundLabels = ['light', 'serious', 'critical', 'mortal 0', 'mortal 1', 'mortal 2', 'mortal 3', 'mortal 4', 'mortal 5', 'mortal 6'];
 
       sheetData.woundBlocks = woundLabels.map((label, blockIndex) => {
         const blockStart = blockIndex * 4 + 1; // 1-4, 5-8, 9-12, etc.

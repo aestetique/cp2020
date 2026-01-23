@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "Orbitron";
+  src: url(../fonts/Orbitron-Regular.ttf) format("truetype");
+  font-weight: 400;
+}
 :root {
   --chat-text: #FFFFFF;
   --chat-back: #1A1A1A;
@@ -6,6 +11,7 @@
   --chat-gray: #444856;
   --sheet-gold: #B8A46A;
   --sheet-gilt: #B9B29D;
+  --sheet-crimson: #B60F3C;
   --chat-green: #24563D;
   --chat-green-text: #1A804D;
   --chat-green-back: #1A2A25;
@@ -14,6 +20,7 @@
   --chat-red-back: #30161A;
   --font-blender: "Blender Pro", "Noto Sans", sans-serif;
   --font-refinery: "Refinery 55", "Open Sans", sans-serif;
+  --font-orbitron: "Orbitron", "Open Sans", sans-serif;
 }
 
 * {
@@ -1850,13 +1857,15 @@ div.statderive .value.rightborder {
   border: none;
   outline: none;
 }
-.portrait-frame .portrait-overlay {
+.portrait-frame::after {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  background-image: url(../img/ui/portrait-frame.svg);
 }
 
 .action-buttons {
@@ -1870,7 +1879,10 @@ div.statderive .value.rightborder {
   position: relative;
   padding: 0;
   border: none;
-  background: transparent;
+  background-color: transparent;
+  background-image: url(../img/ui/button-action.svg);
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   outline: none;
   box-shadow: none;
@@ -1885,6 +1897,20 @@ div.statderive .value.rightborder {
   width: 100%;
   height: 100%;
   border: none;
+}
+.action-btn .action-btn-name {
+  position: absolute;
+  top: 3px;
+  left: 1px;
+  right: 0;
+  font-family: var(--font-orbitron);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--sheet-gilt);
 }
 .action-btn .btn-value {
   position: absolute;
@@ -2148,7 +2174,10 @@ input.character-name[readonly] {
   padding: 0;
   margin: 0;
   border: none;
-  background: transparent;
+  background-color: transparent;
+  background-image: url(../img/ui/button-attribute.svg);
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   outline: none;
   box-shadow: none;
@@ -2177,6 +2206,20 @@ input.character-name[readonly] {
   text-align: center;
   color: var(--chat-text);
   pointer-events: none;
+}
+.stat-btn .stat-name {
+  position: absolute;
+  top: 2px;
+  left: 1px;
+  right: 0;
+  font-family: var(--font-orbitron);
+  font-size: 9.75px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.975px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--sheet-gilt);
 }
 .stat-btn.stat-edit {
   cursor: default;
@@ -2233,6 +2276,7 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
 }
 
 .dot-row {
+  position: relative;
   width: 54px;
   height: 12px;
   padding: 1px;
@@ -2240,6 +2284,31 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
   gap: 4px;
   align-items: center;
   justify-content: center;
+}
+.dot-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 54px;
+  height: 3px;
+  background-image: url(../img/ui/label-bracket.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.wounds-row .tracker-block.active .dot-row::after {
+  background-image: url(../img/ui/label-bracket-active.svg);
+}
+.wounds-row .tracker-block.active .tracker-state {
+  color: var(--sheet-crimson);
+}
+
+.tracker-block.disabled .dot-row::after {
+  background-image: url(../img/ui/label-bracket-disabled.svg);
+}
+.tracker-block.disabled .tracker-state {
+  color: var(--chat-gray);
 }
 
 .wound-dot {
@@ -2257,9 +2326,16 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
   height: 10px;
 }
 
-.tracker-indicator {
-  width: 54px;
-  height: 14px;
+.tracker-state {
+  margin-block-start: 5px;
+  padding-inline-start: 2px;
+  font-family: var(--font-orbitron);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  line-height: 8px;
+  text-align: center;
+  color: var(--sheet-gilt);
 }
 
 .info-row {
@@ -2274,14 +2350,9 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
   width: 60px;
   height: 50px;
   position: relative;
-}
-
-.info-bg {
-  width: 60px;
-  height: 50px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  background-image: url(../img/ui/info.svg);
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .info-value {
@@ -2296,6 +2367,21 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
   line-height: 27px;
   text-align: center;
   color: var(--chat-text);
+}
+
+.info-name {
+  position: absolute;
+  bottom: 8px;
+  left: 2px;
+  right: 0;
+  font-family: var(--font-orbitron);
+  font-weight: 400;
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--sheet-gilt);
 }
 
 input.info-value.info-input {
