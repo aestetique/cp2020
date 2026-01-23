@@ -1,4 +1,7 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="12" r="10" stroke="#FF6600" stroke-width="2" fill="none"/>
-  <path d="M8 9l4-3 4 3M8 15l4 3 4-3" stroke="#FF6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 60H16V64H0V48H4V60Z" fill="white"/>
+<path d="M64 64H48V60H60V48H64V64Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M21.9834 7C28.9281 11.7397 33.6591 17.616 36.4512 23.5898C59.2665 34.7224 66.6626 59.7331 33.498 51.4326C27.7312 55.8117 18.1525 55.1755 6 44.9121C25.47 57.2438 37.7121 41.6602 33.0703 24.3418C26.0484 20.6251 16.9427 18.3302 6.57617 19.2334C15.9631 17.6287 24.7637 18.9261 32.2646 21.7793C30.4107 16.6717 27.0636 11.5254 21.9834 7ZM37.9639 27.3896C41.2208 37.187 39.4214 46.6554 33.7949 51.2012C53.0024 51.7563 51.2724 37.1043 37.9639 27.3896Z" fill="white"/>
+<path d="M16 4H4V16H0V0H16V4Z" fill="white"/>
+<path d="M64 16H60V4H48V0H64V16Z" fill="white"/>
 </svg>
