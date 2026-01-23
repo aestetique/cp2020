@@ -1,4 +1,9 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="12" r="10" stroke="#FFD700" stroke-width="2" fill="none"/>
-  <path d="M13 6l-2 5h4l-3 7" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 60H16V64H0V48H4V60Z" fill="white"/>
+<path d="M64 64H48V60H60V48H64V64Z" fill="white"/>
+<path d="M9.57617 7L26.9004 24.0391L16.3994 9.35059L34.6143 29.1514L19.5176 7H21.8916L47.2793 43.4619L45.5088 37.0518L48.4053 40.3867L50.0342 30.5947L56.9844 57L30.9219 50.1504L38.4023 49.832L35.5469 46.5508L44.7666 48.4092L7 21.8799V15.6309L44.9629 46.3545L7 10.4238V7H9.57617Z" fill="white"/>
+<path d="M43.8223 55.5986L27.9893 56.9541L25.6895 54.0254L28.3389 51.5371L43.8223 55.5986Z" fill="white"/>
+<path d="M57 19.8379L55.3779 42.9287L49.5225 20.8535L52.9424 16.7734L57 19.8379Z" fill="white"/>
+<path d="M16 4H4V16H0V0H16V4Z" fill="white"/>
+<path d="M64 16H60V4H48V0H64V16Z" fill="white"/>
 </svg>
