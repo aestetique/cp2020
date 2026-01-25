@@ -366,13 +366,11 @@ export class CyberpunkItem extends Item {
               roundsHit = 0;
           }
           let areaDamages = {};
+          let allDamageRolls = [];
           // Roll damage for each of the bullets that hit
           for (let j = 0; j < roundsHit; j++) {
               let damageRoll = await new Roll(system.damage).evaluate();
-              // Trigger Dice So Nice for damage roll
-              if (game.dice3d) {
-                  await game.dice3d.showForRoll(damageRoll, game.user, true);
-              }
+              allDamageRolls.push(damageRoll);
               let location = (await rollLocation(attackMods.targetActor, attackMods.targetArea)).areaHit;
               if (!areaDamages[location]) {
                   areaDamages[location] = [];
@@ -385,6 +383,12 @@ export class CyberpunkItem extends Item {
                       results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
                   }))
               });
+          }
+          // Show all damage dice at once
+          if (game.dice3d && allDamageRolls.length > 0) {
+              await Promise.all(allDamageRolls.map(roll =>
+                  game.dice3d.showForRoll(roll, game.user, true, null, false)
+              ));
           }
           let templateData = {
               target: targetTokens[i] || undefined,
@@ -423,16 +427,14 @@ export class CyberpunkItem extends Item {
       let roundsFired = Math.min(system.shotsLeft, system.rof, 3);
       let attackHits = attackRoll.total >= DC;
       let areaDamages = {};
+      let allDamageRolls = [];
       let roundsHit;
       if (attackHits) {
           // In RAW this is 1d6/2, but this is functionally the same
           roundsHit = await new Roll("1d3").evaluate();
           for (let i = 0; i < roundsHit.total; i++) {
               let damageRoll = await new Roll(system.damage).evaluate();
-              // Trigger Dice So Nice for damage roll
-              if (game.dice3d) {
-                  await game.dice3d.showForRoll(damageRoll, game.user, true);
-              }
+              allDamageRolls.push(damageRoll);
               let location = (await rollLocation(attackMods.targetActor, attackMods.targetArea)).areaHit;
               if (!areaDamages[location]) {
                   areaDamages[location] = [];
@@ -445,6 +447,12 @@ export class CyberpunkItem extends Item {
                       results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
                   }))
               });
+          }
+          // Show all damage dice at once
+          if (game.dice3d && allDamageRolls.length > 0) {
+              await Promise.all(allDamageRolls.map(roll =>
+                  game.dice3d.showForRoll(roll, game.user, true, null, false)
+              ));
           }
       }
       let templateData = {
@@ -521,7 +529,7 @@ export class CyberpunkItem extends Item {
       let damageRoll = await new Roll(system.damage).evaluate();
 
       // Trigger Dice So Nice for damage roll
-      if (game.dice3d) {
+      if (game.dice3d && damageRoll.dice.length > 0) {
           await game.dice3d.showForRoll(damageRoll, game.user, true);
       }
 

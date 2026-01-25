@@ -1014,8 +1014,8 @@ div.statderive .value.rightborder {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 26px;
-  padding: 1px 0;
+  min-height: 26px;
+  padding: 4px 8px;
   border-radius: 2px;
   background: var(--chat-accent);
 }
@@ -1024,8 +1024,10 @@ div.statderive .value.rightborder {
   font-family: var(--font-blender);
   font-weight: 400;
   font-size: 14px;
-  line-height: 24px;
+  line-height: 18px;
   color: var(--chat-text);
+  text-align: center;
+  word-break: break-word;
 }
 
 .roll-details {
@@ -2098,6 +2100,7 @@ div.statderive .value.rightborder {
   flex-direction: column;
   gap: 0;
   flex: 1;
+  padding-right: 16px;
 }
 
 .identity-points {
@@ -2136,9 +2139,24 @@ input.character-name[readonly] {
   user-select: text;
 }
 
+.unlocked .character-sheet input.character-name {
+  background: #26282F;
+  border-radius: 4px;
+}
+.unlocked .character-sheet input.skill-level-input {
+  background: #26282F;
+  border-radius: 4px;
+}
+.unlocked .character-sheet .skill-delete {
+  margin-left: 8px;
+}
+
 .role-display {
   height: 22px;
   padding: 2px 4px 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .role-display .role-label {
   font-family: var(--font-refinery);
@@ -2147,6 +2165,16 @@ input.character-name[readonly] {
   line-height: 16px;
   color: var(--chat-text);
   letter-spacing: 0.05em;
+}
+.role-display .role-view-icon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+.role-display .role-view-icon:hover {
+  opacity: 1;
 }
 .role-display:not(:has(.role-label:not(:empty))) .role-label,
 .role-display .role-label:empty::before {
@@ -2537,24 +2565,17 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
   border-bottom: 1px dashed #26282F;
 }
 
-.skill-chip {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
+.skill-type-icon {
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
-  outline: none;
-  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.skill-chip:hover, .skill-chip:focus {
-  box-shadow: none;
-  outline: none;
-}
-.skill-chip img {
-  width: 100%;
-  height: 100%;
+.skill-type-icon img {
+  width: 12px;
+  height: 12px;
   border: none;
 }
 

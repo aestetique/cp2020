@@ -1,4 +1,4 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}}{{#unless isLocked}} unlocked{{/unless}}" autocomplete="off">
   <div class="character-sheet">
     {{!-- Sheet Frame (880px) --}}
     <div class="sheet-frame">
@@ -138,6 +138,9 @@
               <input type="text" class="character-name" name="name" value="{{actor.name}}" {{#if isLocked}}readonly{{/if}}>
               <div class="role-display" data-drop-target="role">
                 <span class="role-label">{{#if roleLabel}}{{roleLabel}}{{else}}{{localize 'CYBERPUNK.DropRoleHere'}}{{/if}}</span>
+                {{#if roleUuid}}
+                  <img class="role-view-icon" src="systems/cp2020/img/ui/icon-view.svg" alt="View" title="View Role" data-role-uuid="{{roleUuid}}">
+                {{/if}}
               </div>
             </div>
             {{#unless isLocked}}

@@ -16,6 +16,21 @@ export class CyberpunkActorSheet extends ActorSheet {
   _isLocked = true;
 
   /**
+   * Minimized state for the sheet
+   * @type {boolean}
+   */
+  _isMinimized = false;
+
+  /**
+   * Original dimensions before minimizing (to restore when maximizing)
+   * @type {number|null}
+   */
+  _originalWidth = null;
+  _originalHeight = null;
+  _originalFoundryWidth = null;
+  _originalFoundryHeight = null;
+
+  /**
    * Static map to remember sheet heights per actor
    * @type {Map<string, number>}
    */
@@ -619,6 +634,99 @@ export class CyberpunkActorSheet extends ActorSheet {
           });
         }
       }
+
+      // Double-click header to minimize/maximize
+      sheetHeader.addEventListener('dblclick', (ev) => {
+        // Don't minimize if clicking on a control button
+        if (ev.target.closest('.lock-toggle, .header-control')) return;
+
+        const sheetFrame = html[0].querySelector('.sheet-frame');
+        const characterSheet = html[0].querySelector('.character-sheet');
+        const appElement = html.closest('.app')[0];
+        const tabSelector = html[0].querySelector('.tab-selector');
+        const sheetContent = html[0].querySelector('.sheet-content');
+        const sheetResize = html[0].querySelector('.sheet-resize');
+
+        if (this._isMinimized) {
+          // Maximize - restore original dimensions
+          // Enable transitions on both elements
+          sheetFrame.style.transition = 'width 250ms ease, height 250ms ease';
+          appElement.style.transition = 'width 250ms ease, height 250ms ease';
+
+          // Animate back to original size
+          sheetFrame.style.width = this._originalWidth + 'px';
+          sheetFrame.style.height = this._originalHeight + 'px';
+          appElement.style.width = this._originalFoundryWidth + 'px';
+          appElement.style.height = this._originalFoundryHeight + 'px';
+
+          // Clear character-sheet constraints so content can expand
+          characterSheet.style.width = '';
+          characterSheet.style.minHeight = '';
+
+          // Update Foundry position and clear inline styles after animation
+          setTimeout(() => {
+            sheetFrame.style.transition = '';
+            sheetFrame.style.width = '';
+            sheetFrame.style.height = '';
+            sheetFrame.style.minHeight = '';
+            appElement.style.transition = '';
+            appElement.style.width = '';
+            appElement.style.height = '';
+            appElement.style.minHeight = '';
+            tabSelector.style.display = '';
+            sheetContent.style.display = '';
+            sheetResize.style.display = '';
+
+            // Restore Foundry position
+            this.setPosition({
+              width: this._originalFoundryWidth,
+              height: this._originalFoundryHeight
+            });
+          }, 250);
+
+          this._isMinimized = false;
+        } else {
+          // Minimize - save current dimensions
+          this._originalWidth = sheetFrame.offsetWidth;
+          this._originalHeight = sheetFrame.offsetHeight;
+          this._originalFoundryWidth = this.position.width;
+          this._originalFoundryHeight = this.position.height;
+
+          // Hide content
+          tabSelector.style.display = 'none';
+          sheetContent.style.display = 'none';
+          sheetResize.style.display = 'none';
+
+          // Allow shrinking by removing min-height constraints
+          sheetFrame.style.minHeight = '0';
+          characterSheet.style.minHeight = '0';
+          appElement.style.minHeight = '0';
+
+          const minWidth = 400;
+
+          // Enable transitions on both elements
+          sheetFrame.style.transition = 'width 250ms ease, height 250ms ease';
+          appElement.style.transition = 'width 250ms ease, height 250ms ease';
+
+          // Animate to minimized size
+          sheetFrame.style.width = minWidth + 'px';
+          sheetFrame.style.height = '46px';
+          appElement.style.width = minWidth + 'px';
+          appElement.style.height = '46px';
+
+          setTimeout(() => {
+            // After animation, set final constraints
+            characterSheet.style.width = minWidth + 'px';
+            characterSheet.style.minHeight = '46px';
+
+            this.setPosition({ width: minWidth, height: 46 });
+            sheetFrame.style.transition = '';
+            appElement.style.transition = '';
+          }, 250);
+
+          this._isMinimized = true;
+        }
+      });
     }
 
     function getEventItem(sheet, ev) {
@@ -701,6 +809,19 @@ export class CyberpunkActorSheet extends ActorSheet {
           left: this.position.left + 10
         });
         fp.render(true);
+      }
+    });
+
+    // ----- View Role Icon -----
+    html.find('.role-view-icon').click(ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const roleUuid = ev.currentTarget.dataset.roleUuid;
+      if (roleUuid) {
+        const roleItem = fromUuidSync(roleUuid);
+        if (roleItem) {
+          roleItem.sheet.render(true);
+        }
       }
     });
 

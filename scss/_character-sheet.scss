@@ -452,6 +452,7 @@
   flex-direction: column;
   gap: 0;
   flex: 1;
+  padding-right: 16px;
 }
 
 // Right side: point tracker boxes (unlock mode only)
@@ -494,10 +495,30 @@ input.character-name {
   }
 }
 
+// Unlock mode styling for editable inputs
+.unlocked .character-sheet {
+  input.character-name {
+    background: #26282F;
+    border-radius: 4px;
+  }
+
+  input.skill-level-input {
+    background: #26282F;
+    border-radius: 4px;
+  }
+
+  .skill-delete {
+    margin-left: 8px;
+  }
+}
+
 // Role Display (drag-drop target)
 .role-display {
   height: 22px;
   padding: 2px 4px 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
   .role-label {
     font-family: var(--font-refinery);
@@ -506,6 +527,18 @@ input.character-name {
     line-height: 16px;
     color: var(--chat-text);
     letter-spacing: 0.05em;
+  }
+
+  .role-view-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   // Empty state placeholder
@@ -954,25 +987,17 @@ input.info-value.info-input {
   border-bottom: 1px dashed #26282F;
 }
 
-.skill-chip {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
+.skill-type-icon {
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
-  outline: none;
-  box-shadow: none;
-
-  &:hover, &:focus {
-    box-shadow: none;
-    outline: none;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   img {
-    width: 100%;
-    height: 100%;
+    width: 12px;
+    height: 12px;
     border: none;
   }
 }
