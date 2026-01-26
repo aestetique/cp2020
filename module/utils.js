@@ -119,7 +119,6 @@ export function clamp(x, min, max) {
 }
 
 export async function getDefaultSkills() {
-    const pack = game.packs.get("cp2020.skills");
-    const content = await pack.getDocuments();
-    return content;
+    // Compendiums removed - skills should be added manually or from local world items
+    return [];
 }

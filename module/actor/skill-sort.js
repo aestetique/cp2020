@@ -89,7 +89,7 @@ function sortSkills(skills, compareFs) {
         return skills;
     }
     let unsorted = skills.slice();
-    let firstFilter = game.settings.get("cp2020", "trainedSkillsFirst") ? [hasPoints] : [];
+    let firstFilter = [hasPoints];
 
     return unsorted.sort(hierarchical(firstFilter.concat(compareFs)));
 }

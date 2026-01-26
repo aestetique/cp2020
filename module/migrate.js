@@ -22,9 +22,6 @@ export async function migrateWorld() {
     for(let item of game.items.contents) {
         migrateDocument(item);
     }
-    for(let compendium of game.packs.contents) {
-        migrateCompendium(compendium);
-    }
     if(migrationSuccess) {
         game.settings.set("cp2020", "systemMigrationVersion", game.system.version);
         ui.notifications.info(localize("MigrationComplete", { version: game.system.version }), { permanent: true });
@@ -177,22 +174,6 @@ export function migrateItem(item) {
   }
 
   return itemUpdates;
-}
-
-export function migrateCompendium(compendium) {
-    if(compendium.locked) {
-        console.log(`Not migrating compendium ${compendium.metadata.label}, as it is locked`);
-        return
-    }
-    console.log(`Updating entities in compendium ${compendium.metadata.label}`);
-    let documentIDs = compendium.index.map(e => e.id);
-    documentIDs.forEach(async (id) => {
-        let document = await compendium.getDocument(id);
-        migrateDocument(document, async (document, updateData) => {
-            updateData.id = id;
-            await compendium.updateDocument(updateData);
-        });
-    });
 }
 
 // Take an old hardcoded skill and translate it into data for a skill item

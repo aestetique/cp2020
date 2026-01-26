@@ -1472,17 +1472,6 @@ export class CyberpunkActorSheet extends ActorSheet {
         }
       }
 
-      // Fallback to name-based search in compendiums (old format)
-      if (!skillData) {
-        const skillsPack = game.packs.get("cp2020.skills");
-        const allSkills = await skillsPack?.getDocuments() || [];
-
-        const foundSkill = allSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase());
-        if (foundSkill) {
-          skillData = foundSkill.toObject();
-        }
-      }
-
       if (skillData) {
         skillData.system.isRoleSkill = true;
         // Remove the _id so Foundry generates a new one

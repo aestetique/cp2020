@@ -2,6 +2,7 @@
 // Any given string value is the same as its key in the localization file, and will be used for translation
 import { getMartialKeyByName } from './translations.js'
 import { localize } from './translations.js';
+import { WEAPON_TYPE_TO_CATEGORY } from './settings/skill-mapping-defaults.js';
 
 export let weaponTypes = {
     pistol: "Pistol",
@@ -12,18 +13,71 @@ export let weaponTypes = {
     melee: "Melee",
     exotic: "Exotic"
 }
-export let attackSkills = {
+
+// Default attack skills (fallback when settings not initialized)
+export const DEFAULT_ATTACK_SKILLS = {
     "Pistol": ["Handgun"],
     "SMG": ["Submachinegun"],
     "Shotgun": ["Rifle"],
-    // "Rifle": [localize("Rifle")],
     "Rifle": ["Rifle"],
     "Heavy": ["HeavyWeapons"],
-    // Trained martial arts get added in item-sheet for now
     "Melee": ["Fencing", "Melee", "Brawling"],
-    // No limitations for exotic, go nuts
     "Exotic": []
+};
+
+/**
+ * Get attack skills for a weapon type from settings
+ * @param {string} weaponType - The weapon type (Pistol, SMG, etc.)
+ * @returns {string[]} Array of skill names
+ */
+export function getAttackSkillsForWeapon(weaponType) {
+    // Exotic weapons have no skill restrictions
+    if (weaponType === "Exotic") return [];
+
+    const categoryKey = WEAPON_TYPE_TO_CATEGORY[weaponType];
+    if (!categoryKey) return DEFAULT_ATTACK_SKILLS[weaponType] || [];
+
+    try {
+        const mappings = game.settings.get("cp2020", "skillMappings");
+        const category = mappings[categoryKey];
+        if (category?.skills?.length) {
+            return category.skills.map(s => s.name);
+        }
+    } catch (e) {
+        // Settings not yet initialized, use defaults
+        console.warn("Skill mappings not available, using defaults");
+    }
+
+    return DEFAULT_ATTACK_SKILLS[weaponType] || [];
 }
+
+/**
+ * Get skills for a specific mapping category
+ * @param {string} categoryKey - The category key (defenceSkills, escapeSkills, etc.)
+ * @returns {string[]} Array of skill names
+ */
+export function getSkillsForCategory(categoryKey) {
+    try {
+        const mappings = game.settings.get("cp2020", "skillMappings");
+        const category = mappings[categoryKey];
+        if (category?.skills?.length) {
+            return category.skills.map(s => s.name);
+        }
+    } catch (e) {
+        console.warn(`Could not get skills for category ${categoryKey}`);
+    }
+    return [];
+}
+
+// For backward compatibility - dynamic proxy that reads from settings
+export let attackSkills = new Proxy(DEFAULT_ATTACK_SKILLS, {
+    get(target, prop) {
+        if (typeof prop === "string" && prop in target) {
+            return getAttackSkillsForWeapon(prop);
+        }
+        return target[prop];
+    }
+})
 
 export function getStatNames() {
   // v13+

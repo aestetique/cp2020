@@ -1,0 +1,26 @@
+<section class="scrollable standard-form">
+  <p class="hint">{{localize "SETTINGS.SkillMappingHint"}}</p>
+
+  {{#each categories}}
+  <fieldset data-category="{{key}}">
+    <legend>{{label}}</legend>
+
+    {{#each skills}}
+    <div class="form-group">
+      <label>{{name}}</label>
+      <div class="form-fields" style="flex: 0">
+        <button type="button" class="icon" data-action="delete"
+                data-category="{{../key}}" data-index="{{index}}"
+                data-tooltip="{{localize 'SETTINGS.SkillMappingRemove'}}">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    {{/each}}
+
+    <p class="hint">
+      <i class="fa-solid fa-plus"></i> {{localize "SETTINGS.SkillMappingDropHere"}}
+    </p>
+  </fieldset>
+  {{/each}}
+</section>

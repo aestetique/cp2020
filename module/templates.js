@@ -75,6 +75,9 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/item/parts/role/summary.hbs",
         "systems/cp2020/templates/item/parts/role/settings.hbs",
 
+        // Settings
+        "systems/cp2020/templates/settings/skill-mapping-config.hbs",
+
     ]);
   };
   
