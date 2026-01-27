@@ -59,9 +59,9 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/item/parts/skill/summary.hbs",
         "systems/cp2020/templates/item/parts/skill/settings.hbs",
 
-        // Misc
-        "systems/cp2020/templates/item/parts/misc/summary.hbs",
-        "systems/cp2020/templates/item/parts/misc/settings.hbs",
+        // Commodity
+        "systems/cp2020/templates/item/parts/commodity/summary.hbs",
+        "systems/cp2020/templates/item/parts/commodity/settings.hbs",
 
         // Weapon settings dialog
         "systems/cp2020/templates/dialog/modifiers.hbs",

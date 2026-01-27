@@ -1,34 +1,30 @@
+import { CyberpunkItemSheet } from "./item-sheet-base.js";
+
 /**
- * Role Item Sheet with custom header and lock/unlock functionality
- * @extends {ItemSheet}
+ * Role Item Sheet with custom card design and tab functionality
+ * @extends {CyberpunkItemSheet}
  */
-export class CyberpunkRoleSheet extends ItemSheet {
+export class CyberpunkRoleSheet extends CyberpunkItemSheet {
 
   /**
-   * Lock state for the sheet (locked = view mode, unlocked = edit mode)
-   * @type {boolean}
+   * Active tab state
+   * @type {string}
    */
-  _isLocked = true;
+  _activeTab = "description";
 
   /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["cyberpunk", "sheet", "item", "role-sheet"],
       template: "systems/cp2020/templates/item/role-sheet.hbs",
-      width: 400,
-      height: 520,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "details" }],
       dragDrop: [{ dropSelector: "[data-drop-target]" }]
     });
   }
 
-  /* -------------------------------------------- */
-
   /** @override */
   getData() {
     const data = super.getData();
-    data.system = this.item.system;
-    data.isLocked = this._isLocked;
+    data.activeTab = this._activeTab;
 
     // Career skills are now objects with uuid and name
     // Support both old format (strings) and new format (objects)
@@ -41,26 +37,35 @@ export class CyberpunkRoleSheet extends ItemSheet {
       return skill;
     });
 
+    // Check if special skill is set
+    data.hasSpecialSkill = !!(this.item.system.specialSkill?.uuid || this.item.system.specialSkill?.name);
+
     return data;
   }
-
-  /* -------------------------------------------- */
 
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
 
-    // Lock/Unlock toggle
-    html.find('.lock-toggle').click(ev => {
+    // Tab switching
+    html.find('.tab-header').click(ev => {
       ev.preventDefault();
-      this._isLocked = !this._isLocked;
-      this.render(false);
+      const tab = ev.currentTarget.dataset.tab;
+      if (tab && tab !== this._activeTab) {
+        this._activeTab = tab;
+        this.render(false);
+      }
     });
 
-    // Close button
-    html.find('[data-action="closeSheet"]').click(ev => {
+    // Click skill name to open its sheet
+    html.find('.skill-name[data-uuid]').click(async ev => {
       ev.preventDefault();
-      this.close();
+      ev.stopPropagation();
+      const uuid = ev.currentTarget.dataset.uuid;
+      if (uuid) {
+        const item = await fromUuid(uuid);
+        if (item) item.sheet.render(true);
+      }
     });
 
     // Everything below here is only needed if unlocked
@@ -69,6 +74,7 @@ export class CyberpunkRoleSheet extends ItemSheet {
     // Remove career skill
     html.find('.remove-career-skill').click(async ev => {
       ev.preventDefault();
+      ev.stopPropagation();
       const index = parseInt(ev.currentTarget.dataset.index);
       const skills = [...(this.item.system.careerSkills || [])];
       skills.splice(index, 1);
@@ -78,11 +84,10 @@ export class CyberpunkRoleSheet extends ItemSheet {
     // Remove special skill
     html.find('.remove-special-skill').click(async ev => {
       ev.preventDefault();
+      ev.stopPropagation();
       await this.item.update({ "system.specialSkill": { uuid: "", name: "" } });
     });
   }
-
-  /* -------------------------------------------- */
 
   /** @override */
   async _onDrop(event) {
@@ -115,8 +120,6 @@ export class CyberpunkRoleSheet extends ItemSheet {
     // Determine which drop target received the skill
     const dropTargetEl = event.target.closest('[data-drop-target]');
     const dropTarget = dropTargetEl?.dataset.dropTarget;
-    console.log("Drop target element:", dropTargetEl);
-    console.log("Drop target value:", dropTarget);
 
     if (dropTarget === 'special-skill') {
       // Set the special skill

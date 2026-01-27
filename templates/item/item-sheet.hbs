@@ -35,13 +35,13 @@
         {{!-- Attributes Tab --}}
         <div class="tab" data-group="primary" data-tab="settings">
             
-            {{#unless (equals item.type "misc")}}
+            {{#unless (equals item.type "commodity")}}
             {{> (varTemplate "item/parts/[VAR]/settings.hbs" item.type)}}
             {{/unless}}
             {{!-- Not all items have common settings --}}
             {{!-- May be worth instead other settings things just including the template on their own --}}
             {{#if (hasProperty item.system "equipped")}}
-            {{> (varTemplate "item/parts/misc/settings.hbs" item.type)}}
+            {{> (varTemplate "item/parts/commodity/settings.hbs" item.type)}}
             {{/if}}
         </div>
     </section>

@@ -771,13 +771,14 @@
 		}
 	},
 	"Item": {
-		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role"],
+		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "commodity", "program", "role"],
 		"templates": {
 			"common": {
 				"flavor": "",
 				"notes": "",
 				"cost": 0,
 				"weight": 0,
+				"availability": "common",
 				"equipped": true,
 				"source": ""
 			}
@@ -892,7 +893,7 @@
 				"value": 50
 			}
 		},
-		"misc": {
+		"commodity": {
 			"templates": ["common"]
 		},
 		"role": {

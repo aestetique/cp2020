@@ -338,4 +338,15 @@ export function registerHandlebarsHelpers() {
         cleaned = cleaned.replace(/\s+/g, " ").trim();
         return cleaned;
     });
+
+    /**
+     * Format number with fixed decimal places
+     * @param {number} value - The number to format
+     * @param {number} decimals - Number of decimal places
+     * @returns {string} Formatted number string
+     */
+    Handlebars.registerHelper("toFixed", function(value, decimals) {
+        const num = parseFloat(value) || 0;
+        return num.toFixed(decimals);
+    });
 }

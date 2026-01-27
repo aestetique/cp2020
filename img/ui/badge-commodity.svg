@@ -1,0 +1,14 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_commodity)">
+<!-- Box/Package icon representing commodity -->
+<path d="M8 1.5L14 4.5V11.5L8 14.5L2 11.5V4.5L8 1.5Z" stroke="#B9B29D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 14.5V8" stroke="#B9B29D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14 4.5L8 8L2 4.5" stroke="#B9B29D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5 3L11 6" stroke="#B9B29D" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_commodity">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>
