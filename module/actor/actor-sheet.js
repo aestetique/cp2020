@@ -1,6 +1,7 @@
-import { martialOptions, meleeAttackTypes, meleeBonkOptions, rangedModifiers, weaponTypes, reliability, concealability } from "../lookups.js"
+import { martialOptions, meleeAttackTypes, meleeBonkOptions, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, weaponToAmmoType } from "../lookups.js"
 import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
+import { ReloadDialog } from "../dialog/reload-dialog.js"
 import { SortOrders } from "./skill-sort.js";
 
 /**
@@ -597,6 +598,32 @@ export class CyberpunkActorSheet extends ActorSheet {
         name: m.name,
         context: 'Commodity',
         price: m.system.cost || 0
+      };
+    });
+
+    // Prepare ammo data
+    const ammoItems = this.actor.itemTypes.ammo || [];
+    sheetData.ammoItems = ammoItems.map(a => {
+      const sys = a.system;
+      const wt = ammoWeaponTypes[sys.weaponType];
+      const wtLabel = wt ? game.i18n.localize(`CYBERPUNK.${wt}`) : '';
+      const calibers = ammoCalibersByWeaponType[sys.weaponType] || {};
+      const calLabel = calibers[sys.caliber] ? game.i18n.localize(`CYBERPUNK.${calibers[sys.caliber]}`) : '';
+      const atLabel = ammoTypes[sys.ammoType] ? game.i18n.localize(`CYBERPUNK.${ammoTypes[sys.ammoType]}`) : '';
+      const contextParts = [wtLabel, calLabel, atLabel].filter(p => p);
+
+      const packSize = Number(sys.packSize) || 1;
+      const quantity = Number(sys.quantity) || 0;
+      const costPerRound = (Number(sys.cost) || 0) / packSize;
+      const totalPrice = Math.round(costPerRound * quantity * 100) / 100;
+
+      return {
+        id: a.id,
+        img: a.img,
+        name: a.name,
+        context: contextParts.join(' · '),
+        totalPrice: totalPrice,
+        quantity: quantity
       };
     });
   }
@@ -1212,10 +1239,28 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
+      // If the weapon uses ammo, open the reload dialog
+      const ammoWT = weaponToAmmoType[item.system.weaponType];
+      if (ammoWT) {
+        new ReloadDialog(this.actor, item).render(true);
+        return;
+      }
+
+      // Legacy instant reload for weapons without ammo mapping
       const maxShots = item.system.shots ?? 0;
       await this.actor.updateEmbeddedDocuments("Item", [{
         _id: itemId,
         "system.shotsLeft": maxShots
+      }]);
+    });
+
+    // Ammo quantity input (gear tab)
+    html.find('.ammo-quantity-input').change(async ev => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const newQty = Math.max(0, Number(ev.currentTarget.value) || 0);
+      await this.actor.updateEmbeddedDocuments("Item", [{
+        _id: itemId,
+        "system.quantity": newQty
       }]);
     });
 
@@ -1520,6 +1565,13 @@ export class CyberpunkActorSheet extends ActorSheet {
         ui.notifications.info("This skill is already added.");
         return;
       }
+    }
+
+    // Handle ammo drops - always create a new item (no stacking)
+    if (item.type === "ammo") {
+      const newData = item.toObject();
+      newData.system.quantity = Number(item.system.packSize) || 20;
+      return this.actor.createEmbeddedDocuments("Item", [newData]);
     }
 
     // Handle role drops - works anywhere on the sheet

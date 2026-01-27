@@ -30,6 +30,9 @@
 <div class="field-list">
     {{!-- When changing weapon type, the weapon's attack type will not update correspondingly until the sheet is closed --}}
     {{> (template "fields/select") label="WeaponType" edit="system.weaponType" choices=weaponTypes}}
+    {{#if showCaliber}}
+    {{> (template "fields/select") label="Caliber" edit="system.caliber" choices=caliberChoices}}
+    {{/if}}
     {{> (template "fields/select") label="AttackType" edit="system.attackType" choices=attackTypes allowBlank=true}}
     {{!-- Custom, as all the translate keys start with Skill, but they don't in the character --}}
     {{!-- This might not need to be custom anymore, as regular selects can deal with choices that supply their own translateKeys --}}

@@ -10,6 +10,8 @@ export let weaponTypes = {
     shotgun: "Shotgun",
     rifle: "Rifle",
     heavy: "Heavy",
+    bow: "Bow",
+    crossbow: "Crossbow",
     melee: "Melee",
     exotic: "Exotic"
 }
@@ -21,8 +23,88 @@ export const DEFAULT_ATTACK_SKILLS = {
     "Shotgun": ["Rifle"],
     "Rifle": ["Rifle"],
     "Heavy": ["HeavyWeapons"],
+    "Bow": ["Archery"],
+    "Crossbow": ["Archery"],
     "Melee": ["Fencing", "Melee", "Brawling"],
     "Exotic": []
+};
+
+// --- Ammo system lookups ---
+
+/** Weapon types that use ammunition */
+export const ammoWeaponTypes = {
+    pistol: "AmmoPistolSMG",
+    rifle: "AmmoRifle",
+    shotgun: "AmmoShotgun",
+    heavy: "AmmoHeavy",
+    bow: "AmmoBow",
+    crossbow: "AmmoCrossbow"
+};
+
+/** Caliber options per ammo weapon type (bow/crossbow have no caliber) */
+export const ammoCalibersByWeaponType = {
+    pistol:   { light: "CaliberLight", medium: "CaliberMedium", heavy: "CaliberHeavy", veryHeavy: "CaliberVeryHeavy" },
+    rifle:    { light: "CaliberLight", medium: "CaliberMedium", assault: "CaliberAssault", sniper: "CaliberSniper", antiMateriel: "CaliberAntiMateriel" },
+    shotgun:  { light: "CaliberLight", medium: "CaliberMedium", heavy: "CaliberHeavy" },
+    heavy:    { light: "CaliberLight", medium: "CaliberMedium", heavy: "CaliberHeavy", autocannon: "CaliberAutocannon" },
+    bow:      { arrow: "CaliberArrow" },
+    crossbow: { bolt: "CaliberBolt" }
+};
+
+/** Ammo types with localization keys */
+export const ammoTypes = {
+    standard: "AmmoStandard",
+    armorPiercing: "AmmoArmorPiercing",
+    hollowPoint: "AmmoHollowPoint",
+    rubberSlug: "AmmoRubberSlug"
+};
+
+/**
+ * Validity matrix: which ammo types are valid for a given weaponType + caliber.
+ */
+export function isAmmoTypeValid(weaponType, caliber, ammoType) {
+    // Standard is always valid
+    if (ammoType === "standard") return true;
+
+    // Bow / Crossbow: standard, AP, rubber slug
+    if (weaponType === "bow" || weaponType === "crossbow") {
+        return ammoType === "armorPiercing" || ammoType === "rubberSlug";
+    }
+
+    // Shotgun: standard, rubber slug only
+    if (weaponType === "shotgun") {
+        return ammoType === "rubberSlug";
+    }
+
+    // Heavy: no hollow point
+    if (weaponType === "heavy" && ammoType === "hollowPoint") return false;
+
+    // Rifle: sniper and anti-materiel have no hollow point
+    if (weaponType === "rifle" && ammoType === "hollowPoint" && ["sniper", "antiMateriel"].includes(caliber)) return false;
+
+    // Rubber slug: pistol light/medium/heavy only (beyond shotgun/bow/crossbow above)
+    if (ammoType === "rubberSlug") {
+        return weaponType === "pistol" && ["light", "medium", "heavy"].includes(caliber);
+    }
+
+    // All other combinations valid (pistol AP/HP, rifle AP/HP, heavy AP)
+    return true;
+}
+
+/**
+ * Maps a weapon's weaponType (from weaponTypes lookup) to the ammo weaponType key.
+ * Returns null for weapon types that don't use ammo (Melee, Exotic).
+ */
+export const weaponToAmmoType = {
+    "Pistol": "pistol",
+    "SMG": "pistol",
+    "Shotgun": "shotgun",
+    "Rifle": "rifle",
+    "Heavy": "heavy",
+    "Bow": "bow",
+    "Crossbow": "crossbow",
+    "Melee": null,
+    "Exotic": null
 };
 
 /**

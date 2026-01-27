@@ -13,30 +13,37 @@
 export const DEFAULT_SKILL_MAPPINGS = {
   pistols: {
     labelKey: "SETTINGS.SkillMapPistols",
+    singleSkill: true,
     skills: []
   },
   rifles: {
     labelKey: "SETTINGS.SkillMapRifles",
+    singleSkill: true,
     skills: []
   },
   shotguns: {
     labelKey: "SETTINGS.SkillMapShotguns",
+    singleSkill: true,
     skills: []
   },
   submachineGuns: {
     labelKey: "SETTINGS.SkillMapSMGs",
+    singleSkill: true,
     skills: []
   },
   heavyWeapons: {
     labelKey: "SETTINGS.SkillMapHeavy",
+    singleSkill: true,
     skills: []
   },
   bows: {
     labelKey: "SETTINGS.SkillMapBows",
+    singleSkill: true,
     skills: []
   },
   crossbows: {
     labelKey: "SETTINGS.SkillMapCrossbows",
+    singleSkill: true,
     skills: []
   },
   meleeAttacks: {
@@ -70,6 +77,8 @@ export const WEAPON_TYPE_TO_CATEGORY = {
   "Shotgun": "shotguns",
   "Rifle": "rifles",
   "Heavy": "heavyWeapons",
+  "Bow": "bows",
+  "Crossbow": "crossbows",
   "Melee": "meleeAttacks",
   "Exotic": null
 };

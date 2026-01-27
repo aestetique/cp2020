@@ -570,6 +570,9 @@ export class CyberpunkChatMessage extends ChatMessage {
             damageData = {};
         }
 
+        // Get loaded ammo type
+        const ammoType = targetSelector.dataset.ammoType || "standard";
+
         // Get targets based on mode
         let targets = [];
         if (mode === "targeted") {
@@ -595,7 +598,7 @@ export class CyberpunkChatMessage extends ChatMessage {
             if (!actor) continue;
 
             // Calculate damage preview for this target
-            const preview = this._calculateDamagePreview(actor, damageData);
+            const preview = this._calculateDamagePreview(actor, damageData, ammoType);
 
             // Simplified row: portrait | name | total damage
             infoHtml += `
@@ -634,7 +637,7 @@ export class CyberpunkChatMessage extends ChatMessage {
      * @returns {Object} Preview object with total damage, hint string, and per-location final damage
      * @private
      */
-    _calculateDamagePreview(actor, damageData) {
+    _calculateDamagePreview(actor, damageData, ammoType = "standard") {
         let total = 0;
         const hintParts = [];
         const byLocation = {}; // Track final damage per location for limb loss detection
@@ -652,23 +655,65 @@ export class CyberpunkChatMessage extends ChatMessage {
                 const locData = hitLocations[location] || {};
                 const armorSP = locData.stoppingPower || 0;
 
+                // Apply ammo type modifiers to armor penetration
+                let effectiveSP = armorSP;
+                if (ammoType === "armorPiercing") {
+                    effectiveSP = Math.floor(armorSP / 2);
+                } else if (ammoType === "hollowPoint") {
+                    effectiveSP = armorSP * 2;
+                }
+
+                // Rubber slugs: hard armor blocks completely, soft armor penetrates to max 1
+                if (ammoType === "rubberSlug") {
+                    // Check for hard armor at this location
+                    const hasHardArmor = actor.items.some(i =>
+                        i.type === "armor" && i.system.equipped &&
+                        i.system.armorType === "hard" &&
+                        i.system.coverage?.[location]?.stoppingPower > 0
+                    );
+                    if (hasHardArmor) {
+                        hintParts.push(`${location}: ${rawDamage} (rubber vs hard armor) = 0`);
+                        continue;
+                    }
+                    // Soft armor or no armor — normal penetration, cap at 1
+                    const afterArmorRubber = Math.max(0, rawDamage - armorSP);
+                    let finalDamageRubber = 0;
+                    if (afterArmorRubber > 0) {
+                        finalDamageRubber = 1;
+                        hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1`);
+                    } else {
+                        hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 0`);
+                    }
+                    total += finalDamageRubber;
+                    locationTotal += finalDamageRubber;
+                    continue;
+                }
+
                 // Calculate damage after armor
-                const afterArmor = Math.max(0, rawDamage - armorSP);
+                const afterArmor = Math.max(0, rawDamage - effectiveSP);
+
+                // Apply ammo type modifier to post-armor damage
+                let modifiedDamage = afterArmor;
+                if (ammoType === "armorPiercing" && afterArmor > 0) {
+                    modifiedDamage = Math.floor(afterArmor / 2);
+                } else if (ammoType === "hollowPoint" && afterArmor > 0) {
+                    modifiedDamage = Math.floor(afterArmor * 1.5);
+                }
 
                 // Apply BTM if damage penetrated
-                // BTM is stored as positive (0-5) but represents damage reduction
-                // So we SUBTRACT it from damage
                 let finalDamage = 0;
                 const btm = actor.system?.stats?.bt?.modifier || 0;
 
-                if (afterArmor > 0) {
-                    // BTM reduces damage (subtract it), minimum 1 damage if armor was penetrated
-                    finalDamage = Math.max(1, afterArmor - btm);
+                if (modifiedDamage > 0) {
+                    finalDamage = Math.max(1, modifiedDamage - btm);
                 }
 
-                // Build hint string with location: "Torso: 8 - 4 SP - 2 BTM = 2"
-                // Display BTM as negative since it reduces damage
-                if (afterArmor > 0 && btm !== 0) {
+                // Build hint string
+                if (ammoType === "armorPiercing") {
+                    hintParts.push(`${location}: ${rawDamage} - ${effectiveSP} SP(AP) → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                } else if (ammoType === "hollowPoint") {
+                    hintParts.push(`${location}: ${rawDamage} - ${effectiveSP} SP(HP) → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                } else if (modifiedDamage > 0 && btm !== 0) {
                     hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP - ${btm} BTM = ${finalDamage}`);
                 } else if (armorSP > 0) {
                     hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP = ${finalDamage}`);
@@ -710,6 +755,9 @@ export class CyberpunkChatMessage extends ChatMessage {
             return;
         }
 
+        // Get loaded ammo type
+        const ammoType = targetSelector.dataset.ammoType || "standard";
+
         // Get active tab mode
         const activeTab = html.querySelector(".target-selector__tab--active");
         const mode = activeTab?.dataset.mode || "targeted";
@@ -738,7 +786,7 @@ export class CyberpunkChatMessage extends ChatMessage {
             if (!actor) continue;
 
             // Calculate total damage for this actor (includes per-location breakdown)
-            const preview = this._calculateDamagePreview(actor, damageData);
+            const preview = this._calculateDamagePreview(actor, damageData, ammoType);
             const totalDamage = preview.total;
 
             if (totalDamage <= 0) continue;
@@ -761,11 +809,17 @@ export class CyberpunkChatMessage extends ChatMessage {
                 const locData = hitLocations[location] || {};
                 const armorSP = locData.stoppingPower || 0;
 
+                // Apply ammo type modifier to effective SP for penetration check
+                let effectiveSP = armorSP;
+                if (ammoType === "armorPiercing") effectiveSP = Math.floor(armorSP / 2);
+                else if (ammoType === "hollowPoint") effectiveSP = armorSP * 2;
+
                 // Count penetrating hits at this location
                 let penetrations = 0;
                 for (const hit of hits) {
                     const rawDamage = hit.damage || 0;
-                    if (rawDamage > armorSP) penetrations++;
+                    if (ammoType === "rubberSlug") continue; // Rubber slugs don't penetrate
+                    if (rawDamage > effectiveSP) penetrations++;
                 }
 
                 if (penetrations > 0) {

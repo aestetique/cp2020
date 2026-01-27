@@ -21,6 +21,7 @@ export class CyberpunkItem extends Item {
       cyberware: "systems/cp2020/img/svg/placeholder-cyberware.svg",
       vehicle: "systems/cp2020/img/svg/placeholder-vehicle.svg",
       misc: "systems/cp2020/img/svg/placeholder-gear.svg",
+      ammo: "systems/cp2020/img/svg/placeholder-ammo.svg",
       program: "systems/cp2020/img/svg/placeholder-program.svg",
       role: "systems/cp2020/img/svg/placeholder-role.svg"
     };
@@ -403,7 +404,8 @@ export class CyberpunkItem extends Item {
               rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
               weaponName: this.name,
               weaponImage: this.img,
-              weaponType: this.system.attackType
+              weaponType: this.system.attackType,
+              loadedAmmoType: this.system.loadedAmmoType || "standard"
           };
           let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.fullAuto));
           roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
@@ -467,7 +469,8 @@ export class CyberpunkItem extends Item {
           rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
           weaponName: this.name,
           weaponImage: this.img,
-          weaponType: this.system.attackType
+          weaponType: this.system.attackType,
+          loadedAmmoType: this.system.loadedAmmoType || "standard"
       };
       let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.threeRoundBurst));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
@@ -504,7 +507,7 @@ export class CyberpunkItem extends Item {
 
     const html = await renderTemplate(
       "systems/cp2020/templates/chat/suppressive.hbs",
-      { weaponName: this.name, rounds, width, saveDC, dmgFormula, results }
+      { weaponName: this.name, rounds, width, saveDC, dmgFormula, results, loadedAmmoType: this.system.loadedAmmoType || "standard" }
     );
 
     ChatMessage.create({
@@ -566,7 +569,8 @@ export class CyberpunkItem extends Item {
           rangeLabel: CyberpunkItem.getRangeLabel(attackMods.range, actualRangeBracket),
           weaponName: this.name,
           weaponImage: this.img,
-          weaponType: this.system.attackType
+          weaponType: this.system.attackType,
+          loadedAmmoType: this.system.loadedAmmoType || "standard"
       };
 
       let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.singleShot));

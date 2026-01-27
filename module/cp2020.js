@@ -6,6 +6,7 @@ import { CyberpunkRoleSheet } from "./item/role-sheet.js";
 import { CyberpunkSkillSheet } from "./item/skill-sheet.js";
 import { CyberpunkCommoditySheet } from "./item/commodity-sheet.js";
 import { CyberpunkOutfitSheet } from "./item/outfit-sheet.js";
+import { CyberpunkAmmoSheet } from "./item/ammo-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
@@ -61,6 +62,11 @@ Hooks.once('init', async function () {
         types: ["armor"],
         makeDefault: true,
         label: "CYBERPUNK.OutfitSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkAmmoSheet, {
+        types: ["ammo"],
+        makeDefault: true,
+        label: "CYBERPUNK.AmmoSheet"
     });
 
     // Register System Settings

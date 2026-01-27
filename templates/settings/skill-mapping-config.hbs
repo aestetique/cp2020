@@ -18,9 +18,11 @@
     </div>
     {{/each}}
 
+    {{#unless isFull}}
     <p class="hint">
       <i class="fa-solid fa-plus"></i> {{localize "SETTINGS.SkillMappingDropHere"}}
     </p>
+    {{/unless}}
   </fieldset>
   {{/each}}
 </section>

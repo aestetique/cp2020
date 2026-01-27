@@ -48,15 +48,21 @@ export class SkillMappingConfig extends HandlebarsApplicationMixin(ApplicationV2
   async _prepareContext(options) {
     const mappings = game.settings.get("cp2020", "skillMappings");
 
-    const categories = Object.entries(mappings).map(([key, category]) => ({
-      key,
-      label: game.i18n.localize(category.labelKey),
-      skills: category.skills.map((skill, index) => ({
-        name: skill.name,
-        uuid: skill.uuid,
-        index
-      }))
-    }));
+    const defaults = DEFAULT_SKILL_MAPPINGS;
+    const categories = Object.entries(mappings).map(([key, category]) => {
+      const singleSkill = category.singleSkill ?? defaults[key]?.singleSkill ?? false;
+      return {
+        key,
+        label: game.i18n.localize(category.labelKey),
+        singleSkill,
+        isFull: singleSkill && category.skills.length >= 1,
+        skills: category.skills.map((skill, index) => ({
+          name: skill.name,
+          uuid: skill.uuid,
+          index
+        }))
+      };
+    });
 
     return {
       categories,
@@ -128,6 +134,8 @@ export class SkillMappingConfig extends HandlebarsApplicationMixin(ApplicationV2
     const category = mappings[categoryKey];
     if (!category) return;
 
+    const isSingle = category.singleSkill ?? DEFAULT_SKILL_MAPPINGS[categoryKey]?.singleSkill ?? false;
+
     const isDuplicate = category.skills.some(
       s => s.uuid === item.uuid || s.name.toLowerCase() === item.name.toLowerCase()
     );
@@ -138,7 +146,11 @@ export class SkillMappingConfig extends HandlebarsApplicationMixin(ApplicationV2
       return;
     }
 
-    category.skills.push({ name: item.name, uuid: item.uuid });
+    if (isSingle) {
+      category.skills = [{ name: item.name, uuid: item.uuid }];
+    } else {
+      category.skills.push({ name: item.name, uuid: item.uuid });
+    }
     await game.settings.set("cp2020", "skillMappings", mappings);
     this._scrollTop = this.element.querySelector(".scrollable")?.scrollTop || 0;
     this.render();

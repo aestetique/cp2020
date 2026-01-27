@@ -79,7 +79,7 @@
     {{> "systems/cp2020/templates/chat/partials/damage-grid.hbs" aggregatedDamage=(aggregateDamage areaDamages) areaDamages=areaDamages}}
 
     {{!-- Target Selector --}}
-    <div class="target-selector" data-damage="{{json areaDamages}}">
+    <div class="target-selector" data-damage="{{json areaDamages}}" data-ammo-type="{{loadedAmmoType}}">
         <div class="target-selector__tabs">
             <button class="target-selector__tab target-selector__tab--active" data-mode="targeted">{{CPLocal "Targeted"}}</button>
             <span class="target-selector__divider"></span>

@@ -771,7 +771,7 @@
 		}
 	},
 	"Item": {
-		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role"],
+		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role", "ammo"],
 		"templates": {
 			"common": {
 				"flavor": "",
@@ -824,7 +824,9 @@
 			"reliability": "ST",
 			"range": 50,
 			"attackType": "",
-			"attackSkill": "ref"
+			"attackSkill": "ref",
+			"caliber": "medium",
+			"loadedAmmoType": "standard"
 		},
 		"armor": {
 			"templates": ["common"],
@@ -895,6 +897,14 @@
 		},
 		"misc": {
 			"templates": ["common"]
+		},
+		"ammo": {
+			"templates": ["common"],
+			"weaponType": "pistol",
+			"caliber": "medium",
+			"ammoType": "standard",
+			"packSize": 20,
+			"quantity": 20
 		},
 		"role": {
 			"templates": ["common"],

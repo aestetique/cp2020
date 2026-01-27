@@ -136,4 +136,50 @@
       {{/each}}
     </div>
   </div>
+
+  {{!-- AMMO Block --}}
+  <div class="gear-block">
+    <header class="tab-header">
+      <span class="tab-title">AMMO</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-ammo.svg" alt="">
+    </header>
+    <div class="tab-content gear-content">
+      {{#unless ammoItems.length}}
+        <div class="gear-row gear-empty">
+          <span class="gear-empty-text">No ammo in the inventory.</span>
+        </div>
+      {{/unless}}
+      {{#each ammoItems as |ammo|}}
+        <div class="gear-row" data-item-id="{{ammo.id}}">
+          <div class="gear-icon">
+            <img src="{{ammo.img}}" alt="{{ammo.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{ammo.name}}</span>
+            <span class="gear-context">{{ammo.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{ammo.totalPrice}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-field" style="width: 60px;">
+            {{#if ../isUnlocked}}
+              <input type="number" class="field-top ammo-quantity-input" data-item-id="{{ammo.id}}" value="{{ammo.quantity}}" min="0">
+            {{else}}
+              <span class="field-top">{{ammo.quantity}}</span>
+            {{/if}}
+            <span class="field-bottom">Qty</span>
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{ammo.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{ammo.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
 </div>

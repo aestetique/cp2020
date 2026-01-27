@@ -1,4 +1,4 @@
-import { weaponTypes, sortedAttackTypes, concealability, availability, reliability, attackSkills, meleeAttackTypes, getStatNames } from "../lookups.js";
+import { weaponTypes, sortedAttackTypes, concealability, availability, reliability, attackSkills, meleeAttackTypes, getStatNames, ammoCalibersByWeaponType, weaponToAmmoType } from "../lookups.js";
 import { formulaHasDice } from "../dice.js";
 import { localize } from "../utils.js";
 import { getMartialKeyByName } from '../translations.js'
@@ -86,6 +86,21 @@ export class CyberpunkItemSheet extends ItemSheet {
       if(this.actor) {
         sheet.attackSkills = this.actor.itemTypes.skill.map(skill => skill.name).sort();
       }
+    }
+
+    // Caliber options for ranged weapons that use ammo
+    const ammoWT = weaponToAmmoType[this.item.system.weaponType];
+    if (ammoWT) {
+      const calibers = ammoCalibersByWeaponType[ammoWT] || {};
+      const calKeys = Object.keys(calibers);
+      sheet.showCaliber = calKeys.length > 0;
+      sheet.caliberChoices = calKeys.map(key => ({
+        value: key,
+        localKey: calibers[key]
+      }));
+    } else {
+      sheet.showCaliber = false;
+      sheet.caliberChoices = [];
     }
   }
 

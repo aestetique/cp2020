@@ -556,5 +556,45 @@
     "CYBERPUNK.OutfitSheet": "Outfit Sheet",
     "CYBERPUNK.StoppingPower": "Stopping Power",
     "CYBERPUNK.SoftArmor": "Soft Armor",
-    "CYBERPUNK.HardArmor": "Hard Armor"
+    "CYBERPUNK.HardArmor": "Hard Armor",
+
+    "TYPES.Item.ammo": "Ammo",
+    "CYBERPUNK.Ammo": "Ammo",
+    "CYBERPUNK.AmmoSheet": "Ammo Sheet",
+    "CYBERPUNK.Bow": "Bow",
+    "CYBERPUNK.Crossbow": "Crossbow",
+
+    "CYBERPUNK.AmmoPistolSMG": "Pistols & SMG",
+    "CYBERPUNK.AmmoRifle": "Rifle",
+    "CYBERPUNK.AmmoShotgun": "Shotgun",
+    "CYBERPUNK.AmmoHeavy": "Heavy Weapon",
+    "CYBERPUNK.AmmoBow": "Bow",
+    "CYBERPUNK.AmmoCrossbow": "Crossbow",
+
+    "CYBERPUNK.CaliberLight": "Light",
+    "CYBERPUNK.CaliberMedium": "Medium",
+    "CYBERPUNK.CaliberHeavy": "Heavy",
+    "CYBERPUNK.CaliberVeryHeavy": "Very Heavy",
+    "CYBERPUNK.CaliberAssault": "Assault",
+    "CYBERPUNK.CaliberSniper": "Sniper",
+    "CYBERPUNK.CaliberAntiMateriel": "Anti-materiel",
+    "CYBERPUNK.CaliberAutocannon": "Autocannon",
+    "CYBERPUNK.CaliberArrow": "Arrow",
+    "CYBERPUNK.CaliberBolt": "Bolt",
+
+    "CYBERPUNK.AmmoStandard": "Standard",
+    "CYBERPUNK.AmmoArmorPiercing": "Armor Piercing",
+    "CYBERPUNK.AmmoHollowPoint": "Hollow Point",
+    "CYBERPUNK.AmmoRubberSlug": "Rubber Slug",
+
+    "CYBERPUNK.PackSize": "Pack Size",
+    "CYBERPUNK.Quantity": "Quantity",
+    "CYBERPUNK.Caliber": "Caliber",
+    "CYBERPUNK.LoadedAmmo": "Loaded Ammo",
+
+    "CYBERPUNK.ReloadTitle": "Reload",
+    "CYBERPUNK.ReloadSelectAmmo": "Select ammo type to load:",
+    "CYBERPUNK.ReloadNoAmmo": "No compatible ammo available.",
+    "CYBERPUNK.ReloadApply": "APPLY",
+    "CYBERPUNK.ReloadRoundsAvailable": "{count} rounds"
 }
