@@ -753,6 +753,39 @@ export class CyberpunkChatMessage extends ChatMessage {
             // Update actor damage
             await actor.update({ "system.damage": newDamage });
 
+            // Ablate armor on penetration
+            // For each location that took damage, find equipped armor and increase ablation
+            for (const [location, hits] of Object.entries(damageData)) {
+                if (!Array.isArray(hits)) continue;
+                const hitLocations = actor.system?.hitLocations || {};
+                const locData = hitLocations[location] || {};
+                const armorSP = locData.stoppingPower || 0;
+
+                // Count penetrating hits at this location
+                let penetrations = 0;
+                for (const hit of hits) {
+                    const rawDamage = hit.damage || 0;
+                    if (rawDamage > armorSP) penetrations++;
+                }
+
+                if (penetrations > 0) {
+                    // Find equipped armor items covering this location and ablate
+                    const equippedArmor = actor.items.filter(i =>
+                        i.type === "armor" && i.system.equipped &&
+                        i.system.coverage?.[location]?.stoppingPower > 0
+                    );
+                    for (const armor of equippedArmor) {
+                        const cov = armor.system.coverage[location];
+                        const currentAblation = Number(cov.ablation) || 0;
+                        const maxSP = Number(cov.stoppingPower) || 0;
+                        const newAblation = Math.min(currentAblation + penetrations, maxSP);
+                        if (newAblation !== currentAblation) {
+                            await armor.update({ [`system.coverage.${location}.ablation`]: newAblation });
+                        }
+                    }
+                }
+            }
+
             // Get new wound state
             const newWoundState = actor.woundState();
 

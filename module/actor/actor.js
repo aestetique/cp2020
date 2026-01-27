@@ -99,9 +99,11 @@ export class CyberpunkActor extends Actor {
       for(let armorArea in armorData.coverage) {
         let location = system.hitLocations[armorArea];
         if(location !== undefined) {
-          let armorValue = armorData.coverage[armorArea].stoppingPower;
+          let armorCoverage = armorData.coverage[armorArea];
+            let armorMaxSP = Number(armorCoverage.stoppingPower) || 0;
+            let armorAblation = Number(armorCoverage.ablation) || 0;
             let locationStoppingPower = Number(location.stoppingPower);
-            let armorStoppingPower = Number(armorValue);
+            let armorStoppingPower = Math.max(0, armorMaxSP - armorAblation);
 
             // If there is no armor on one of the zones, just add armor
             if(locationStoppingPower === 0 || armorStoppingPower === 0) {

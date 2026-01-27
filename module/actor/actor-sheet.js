@@ -517,7 +517,7 @@ export class CyberpunkActorSheet extends ActorSheet {
   _prepareGearData(sheetData) {
     const weapons = this.actor.itemTypes.weapon || [];
     const armor = this.actor.itemTypes.armor || [];
-    const commodity = this.actor.itemTypes.commodity || [];
+    const commodity = this.actor.itemTypes.misc || [];
 
     // Prepare weapons data
     sheetData.weapons = weapons.map(w => {
@@ -610,7 +610,7 @@ export class CyberpunkActorSheet extends ActorSheet {
       weapons: sortedItems.weapon,
       armor: sortedItems.armor,
       cyberware: sortedItems.cyberware,
-      commodity: sortedItems.commodity,
+      commodity: sortedItems.misc,
       cyberCost: sortedItems.cyberware.reduce((a,b) => a + b.system.cost, 0)
     };
   }

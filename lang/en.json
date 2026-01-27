@@ -2,10 +2,10 @@
     "TYPES.Actor.character": "Character",
     "TYPES.Item.skill": "Skill",
     "TYPES.Item.weapon": "Weapon",
-    "TYPES.Item.armor": "Armor",
+    "TYPES.Item.armor": "Outfit",
     "TYPES.Item.cyberware": "Cyberware",
     "TYPES.Item.vehicle": "Vehicle",
-    "TYPES.Item.commodity": "Commodity",
+    "TYPES.Item.misc": "Commodity",
     "TYPES.Item.program": "Program",
     "TYPES.Item.role": "Role",
     "CYBERPUNK.ActorName": "Handle",
@@ -552,5 +552,9 @@
     "CYBERPUNK.SelectRole": "Select a role",
     "CYBERPUNK.RoleSheet": "Role Sheet",
     "CYBERPUNK.SkillSheet": "Skill Sheet",
-    "CYBERPUNK.CommoditySheet": "Commodity Sheet"
+    "CYBERPUNK.CommoditySheet": "Commodity Sheet",
+    "CYBERPUNK.OutfitSheet": "Outfit Sheet",
+    "CYBERPUNK.StoppingPower": "Stopping Power",
+    "CYBERPUNK.SoftArmor": "Soft Armor",
+    "CYBERPUNK.HardArmor": "Hard Armor"
 }

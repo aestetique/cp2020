@@ -20,7 +20,7 @@ export class CyberpunkItem extends Item {
       armor: "systems/cp2020/img/svg/placeholder-armor.svg",
       cyberware: "systems/cp2020/img/svg/placeholder-cyberware.svg",
       vehicle: "systems/cp2020/img/svg/placeholder-vehicle.svg",
-      commodity: "systems/cp2020/img/svg/placeholder-gear.svg",
+      misc: "systems/cp2020/img/svg/placeholder-gear.svg",
       program: "systems/cp2020/img/svg/placeholder-program.svg",
       role: "systems/cp2020/img/svg/placeholder-role.svg"
     };

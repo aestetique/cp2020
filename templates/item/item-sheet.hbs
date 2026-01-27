@@ -35,7 +35,7 @@
         {{!-- Attributes Tab --}}
         <div class="tab" data-group="primary" data-tab="settings">
             
-            {{#unless (equals item.type "commodity")}}
+            {{#unless (equals item.type "misc")}}
             {{> (varTemplate "item/parts/[VAR]/settings.hbs" item.type)}}
             {{/unless}}
             {{!-- Not all items have common settings --}}

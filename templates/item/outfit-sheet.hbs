@@ -1,0 +1,187 @@
+<form class="item-card outfit-card has-stats {{#unless isLocked}}unlocked{{/unless}}" autocomplete="off">
+  {{!-- Header (38px) --}}
+  <header class="sheet-header">
+    <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+      <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+    </button>
+
+    <span class="header-name">{{item.name}}</span>
+
+    <a class="header-control" data-action="copyUuid" title="Copy UUID">
+      <i class="fas fa-passport"></i>
+    </a>
+    <a class="header-control close" data-action="closeSheet" title="Close">
+      <i class="fas fa-times"></i>
+    </a>
+  </header>
+
+  {{!-- Item Content --}}
+  <div class="item-content">
+    {{!-- Item Trivia (460×80px) --}}
+    <div class="item-trivia">
+      {{!-- Portrait (80×80px) --}}
+      <div class="item-portrait">
+        <img src="{{item.img}}" alt="{{item.name}}">
+      </div>
+
+      {{!-- Name+Category Container --}}
+      <div class="item-identity">
+        <input type="text" class="item-name" name="name" value="{{item.name}}" {{#if isLocked}}readonly{{/if}}>
+        <div class="item-category">
+          <div class="category-icon">
+            <img src="systems/cp2020/img/ui/badge-outfit.svg" alt="">
+          </div>
+          <span class="category-label">Outfit</span>
+        </div>
+      </div>
+
+      {{!-- Stats Block (90×80px) --}}
+      <div class="item-stats">
+        {{!-- Price Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.cost 2}}</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.cost" value="{{system.cost}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="Price">
+          </div>
+        </div>
+
+        {{!-- Weight Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.weight 2}} kg</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.weight" value="{{system.weight}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="Weight">
+          </div>
+        </div>
+
+        {{!-- Availability Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{selectedAvailabilityLabel}}</span>
+          {{else}}
+            <div class="dropdown-wrapper">
+              <select class="stat-value" name="system.availability">
+                {{#each availabilityOptions}}
+                  <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-rarity.svg" alt="Availability">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Tabs Line --}}
+    <div class="tabs-line">
+      <a class="tab-header {{#if (equals activeTab 'description')}}active{{/if}}" data-tab="description">
+        <span class="tab-text">Description</span>
+      </a>
+      <a class="tab-header {{#if (equals activeTab 'armor')}}active{{/if}}" data-tab="armor">
+        <span class="tab-text">Armor</span>
+      </a>
+    </div>
+
+    {{!-- Horizontal Divider --}}
+    <div class="divider"></div>
+
+    {{!-- Tab Content --}}
+    <div class="tab-content">
+      {{#if (equals activeTab 'description')}}
+        {{!-- Description Tab --}}
+        <div class="flavour-section">
+          {{#if isLocked}}
+            <p class="flavour-text">{{system.flavor}}</p>
+          {{else}}
+            <textarea class="flavour-text" name="system.flavor" placeholder="Outfit description...">{{system.flavor}}</textarea>
+          {{/if}}
+        </div>
+
+        {{!-- Source Field --}}
+        <div class="source-field">
+          <label class="variable-label">Source</label>
+          <input type="text" class="source-input" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX" {{#if isLocked}}readonly{{/if}}>
+        </div>
+      {{else}}
+        {{!-- Armor Tab --}}
+        {{!-- Variables Row --}}
+        <div class="variables-row">
+          {{!-- Armor Type --}}
+          <div class="variable-field">
+            <label class="variable-label">Armor Type</label>
+            {{#if isLocked}}
+              <div class="dropdown">
+                <span class="dropdown-text">{{selectedArmorTypeLabel}}</span>
+                <div class="dropdown-chevron">
+                  <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+                </div>
+              </div>
+            {{else}}
+              <div class="dropdown-wrapper">
+                <select class="dropdown-select" name="system.armorType">
+                  {{#each armorTypeOptions}}
+                    <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                  {{/each}}
+                </select>
+                <div class="dropdown-chevron">
+                  <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+                </div>
+              </div>
+            {{/if}}
+          </div>
+
+          {{!-- Encumbrance --}}
+          <div class="variable-field">
+            <label class="variable-label">Encumbrance</label>
+            {{#if isLocked}}
+              <div class="dropdown">
+                <span class="dropdown-text">{{system.encumbrance}}</span>
+              </div>
+            {{else}}
+              <input type="number" class="variable-input" name="system.encumbrance" value="{{system.encumbrance}}" step="1">
+            {{/if}}
+          </div>
+        </div>
+
+        {{!-- Stopping Power Frame --}}
+        <div class="sp-frame">
+          <span class="sp-frame-label">Stopping Power</span>
+          {{#each coverageRows}}
+            <div class="sp-row">
+              {{#each this}}
+                <div class="sp-block">
+                  <div class="sp-values">
+                    {{#if ../../isLocked}}
+                      <span class="sp-current {{#if isDamaged}}sp-damaged{{/if}}">{{currentSP}}</span>
+                    {{else}}
+                      <input type="number" class="sp-input sp-current-input" value="{{currentSP}}" data-key="{{key}}" data-max="{{maxSP}}" min="0">
+                    {{/if}}
+                    <span class="sp-of">of</span>
+                    {{#if ../../isLocked}}
+                      <span class="sp-max">{{maxSP}}</span>
+                    {{else}}
+                      <input type="number" class="sp-input" name="system.coverage.{{key}}.stoppingPower" value="{{maxSP}}" min="0">
+                    {{/if}}
+                  </div>
+                  <span class="sp-location">{{label}}</span>
+                </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</form>
