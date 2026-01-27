@@ -570,8 +570,9 @@ export class CyberpunkChatMessage extends ChatMessage {
             damageData = {};
         }
 
-        // Get loaded ammo type
+        // Get loaded ammo type and melee damage type
         const ammoType = targetSelector.dataset.ammoType || "standard";
+        const damageType = targetSelector.dataset.damageType || "";
 
         // Get targets based on mode
         let targets = [];
@@ -598,7 +599,7 @@ export class CyberpunkChatMessage extends ChatMessage {
             if (!actor) continue;
 
             // Calculate damage preview for this target
-            const preview = this._calculateDamagePreview(actor, damageData, ammoType);
+            const preview = this._calculateDamagePreview(actor, damageData, ammoType, damageType);
 
             // Simplified row: portrait | name | total damage
             infoHtml += `
@@ -637,7 +638,7 @@ export class CyberpunkChatMessage extends ChatMessage {
      * @returns {Object} Preview object with total damage, hint string, and per-location final damage
      * @private
      */
-    _calculateDamagePreview(actor, damageData, ammoType = "standard") {
+    _calculateDamagePreview(actor, damageData, ammoType = "standard", damageType = "") {
         let total = 0;
         const hintParts = [];
         const byLocation = {}; // Track final damage per location for limb loss detection
@@ -655,22 +656,47 @@ export class CyberpunkChatMessage extends ChatMessage {
                 const locData = hitLocations[location] || {};
                 const armorSP = locData.stoppingPower || 0;
 
-                // Apply ammo type modifiers to armor penetration
+                // Determine if armor at this location is hard or soft
+                const hasHardArmor = actor.items.some(i =>
+                    i.type === "armor" && i.system.equipped &&
+                    i.system.armorType === "hard" &&
+                    i.system.coverage?.[location]?.stoppingPower > 0
+                );
+
+                // Apply melee damage type modifiers to effective SP
                 let effectiveSP = armorSP;
+                let dmgTypeLabel = "";
+                if (damageType === "edged") {
+                    // Edged: SP/2 vs soft armor, normal vs hard
+                    if (!hasHardArmor && armorSP > 0) {
+                        effectiveSP = Math.floor(armorSP / 2);
+                    }
+                    dmgTypeLabel = "Edged";
+                } else if (damageType === "spike") {
+                    // Spike: SP/2 vs any armor
+                    if (armorSP > 0) {
+                        effectiveSP = Math.floor(armorSP / 2);
+                    }
+                    dmgTypeLabel = "Spike";
+                } else if (damageType === "monoblade") {
+                    // Monoblade: SP/3 vs soft, SP/1.5 vs hard (round down)
+                    if (armorSP > 0) {
+                        effectiveSP = hasHardArmor
+                            ? Math.floor(armorSP / 1.5)
+                            : Math.floor(armorSP / 3);
+                    }
+                    dmgTypeLabel = "Mono";
+                }
+
+                // Apply ammo type modifiers to armor penetration (stacks with melee damage type)
                 if (ammoType === "armorPiercing") {
-                    effectiveSP = Math.floor(armorSP / 2);
+                    effectiveSP = Math.floor(effectiveSP / 2);
                 } else if (ammoType === "hollowPoint") {
-                    effectiveSP = armorSP * 2;
+                    effectiveSP = effectiveSP * 2;
                 }
 
                 // Rubber slugs: hard armor blocks completely, soft armor penetrates to max 1
                 if (ammoType === "rubberSlug") {
-                    // Check for hard armor at this location
-                    const hasHardArmor = actor.items.some(i =>
-                        i.type === "armor" && i.system.equipped &&
-                        i.system.armorType === "hard" &&
-                        i.system.coverage?.[location]?.stoppingPower > 0
-                    );
                     if (hasHardArmor) {
                         hintParts.push(`${location}: ${rawDamage} (rubber vs hard armor) = 0`);
                         continue;
@@ -700,6 +726,11 @@ export class CyberpunkChatMessage extends ChatMessage {
                     modifiedDamage = Math.floor(afterArmor * 1.5);
                 }
 
+                // Spike: post-armor damage is also halved
+                if (damageType === "spike" && modifiedDamage > 0) {
+                    modifiedDamage = Math.floor(modifiedDamage / 2);
+                }
+
                 // Apply BTM if damage penetrated
                 let finalDamage = 0;
                 const btm = actor.system?.stats?.bt?.modifier || 0;
@@ -709,14 +740,24 @@ export class CyberpunkChatMessage extends ChatMessage {
                 }
 
                 // Build hint string
-                if (ammoType === "armorPiercing") {
-                    hintParts.push(`${location}: ${rawDamage} - ${effectiveSP} SP(AP) → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                const spLabel = dmgTypeLabel
+                    ? `${effectiveSP} SP(${dmgTypeLabel})`
+                    : ammoType === "armorPiercing"
+                        ? `${effectiveSP} SP(AP)`
+                        : ammoType === "hollowPoint"
+                            ? `${effectiveSP} SP(HP)`
+                            : `${armorSP} SP`;
+
+                if (damageType === "spike" && afterArmor > 0) {
+                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                } else if (ammoType === "armorPiercing") {
+                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
                 } else if (ammoType === "hollowPoint") {
-                    hintParts.push(`${location}: ${rawDamage} - ${effectiveSP} SP(HP) → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
                 } else if (modifiedDamage > 0 && btm !== 0) {
-                    hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP - ${btm} BTM = ${finalDamage}`);
-                } else if (armorSP > 0) {
-                    hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP = ${finalDamage}`);
+                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} - ${btm} BTM = ${finalDamage}`);
+                } else if (armorSP > 0 || dmgTypeLabel) {
+                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${finalDamage}`);
                 } else {
                     hintParts.push(`${location}: ${rawDamage} = ${finalDamage}`);
                 }
@@ -755,8 +796,9 @@ export class CyberpunkChatMessage extends ChatMessage {
             return;
         }
 
-        // Get loaded ammo type
+        // Get loaded ammo type and melee damage type
         const ammoType = targetSelector.dataset.ammoType || "standard";
+        const damageType = targetSelector.dataset.damageType || "";
 
         // Get active tab mode
         const activeTab = html.querySelector(".target-selector__tab--active");
@@ -786,7 +828,7 @@ export class CyberpunkChatMessage extends ChatMessage {
             if (!actor) continue;
 
             // Calculate total damage for this actor (includes per-location breakdown)
-            const preview = this._calculateDamagePreview(actor, damageData, ammoType);
+            const preview = this._calculateDamagePreview(actor, damageData, ammoType, damageType);
             const totalDamage = preview.total;
 
             if (totalDamage <= 0) continue;
@@ -809,10 +851,23 @@ export class CyberpunkChatMessage extends ChatMessage {
                 const locData = hitLocations[location] || {};
                 const armorSP = locData.stoppingPower || 0;
 
-                // Apply ammo type modifier to effective SP for penetration check
+                // Apply melee damage type modifier to effective SP for penetration check
+                const hasHardArmorAblate = actor.items.some(i =>
+                    i.type === "armor" && i.system.equipped &&
+                    i.system.armorType === "hard" &&
+                    i.system.coverage?.[location]?.stoppingPower > 0
+                );
                 let effectiveSP = armorSP;
-                if (ammoType === "armorPiercing") effectiveSP = Math.floor(armorSP / 2);
-                else if (ammoType === "hollowPoint") effectiveSP = armorSP * 2;
+                if (damageType === "edged" && !hasHardArmorAblate && armorSP > 0) {
+                    effectiveSP = Math.floor(armorSP / 2);
+                } else if (damageType === "spike" && armorSP > 0) {
+                    effectiveSP = Math.floor(armorSP / 2);
+                } else if (damageType === "monoblade" && armorSP > 0) {
+                    effectiveSP = hasHardArmorAblate ? Math.floor(armorSP / 1.5) : Math.floor(armorSP / 3);
+                }
+                // Apply ammo type modifier on top
+                if (ammoType === "armorPiercing") effectiveSP = Math.floor(effectiveSP / 2);
+                else if (ammoType === "hollowPoint") effectiveSP = effectiveSP * 2;
 
                 // Count penetrating hits at this location
                 let penetrations = 0;

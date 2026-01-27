@@ -525,7 +525,10 @@ export class CyberpunkActorSheet extends ActorSheet {
       const sys = w.system;
       // Build context: Type · Caliber · Reliability · Concealability · Range
       const weaponType = weaponTypes[sys.weaponType] || sys.weaponType || '';
-      const caliber = sys.ammoType || '';
+      const ammoKey = weaponToAmmoType[sys.weaponType];
+      const calibers = ammoKey ? (ammoCalibersByWeaponType[ammoKey] || {}) : {};
+      const calLabelKey = calibers[sys.caliber];
+      const caliber = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : '';
       const rel = sys.reliability ? game.i18n.localize("CYBERPUNK." + sys.reliability) : '';
       const conc = sys.concealability ? game.i18n.localize("CYBERPUNK." + sys.concealability) : '';
       const range = sys.range ? `${sys.range} m` : '';
@@ -539,6 +542,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         name: w.name,
         context: context,
         price: sys.cost || 0,
+        weight: sys.weight || 0,
         damage: sys.damage || '',
         shotsLeft: sys.shotsLeft ?? 0,
         shots: sys.shots ?? 0,
@@ -584,6 +588,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         name: a.name,
         context: context,
         price: sys.cost || 0,
+        weight: sys.weight || 0,
         sp: sp,
         encumbrance: sys.encumbrance ?? 0,
         equipped: sys.equipped ?? false
@@ -597,7 +602,8 @@ export class CyberpunkActorSheet extends ActorSheet {
         img: m.img,
         name: m.name,
         context: 'Commodity',
-        price: m.system.cost || 0
+        price: m.system.cost || 0,
+        weight: m.system.weight || 0
       };
     });
 
@@ -623,6 +629,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         name: a.name,
         context: contextParts.join(' · '),
         totalPrice: totalPrice,
+        weight: sys.weight || 0,
         quantity: quantity
       };
     });

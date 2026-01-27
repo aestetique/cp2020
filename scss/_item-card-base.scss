@@ -282,7 +282,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   flex: 1 0 0;
   align-self: stretch;
 }
@@ -464,4 +464,325 @@
 .item-card input::placeholder,
 .item-card textarea::placeholder {
   color: #444856;
+}
+
+// ============================================
+// 12. Tabs Line (shared by weapon, outfit, role)
+// ============================================
+.item-card .tabs-line {
+  display: flex;
+  width: 460px;
+  height: 24px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.item-card .tab-header {
+  display: flex;
+  height: 24px;
+  padding: 0 1.5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 0;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+
+  &.active {
+    color: var(--Chat-Text, #FFF);
+  }
+
+  &:not(.active) {
+    color: var(--Sheet-Key, #B9B29D);
+  }
+
+  &:hover:not(.active) {
+    color: var(--Chat-Text, #FFF);
+  }
+
+  .tab-text {
+    font-family: var(--font-blender);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    text-transform: uppercase;
+  }
+
+  &.active .tab-text {
+    border-bottom: 2px solid var(--Sheet-Key, #B9B29D);
+  }
+}
+
+// ============================================
+// 13. Variables Row (shared by weapon, outfit, ammo, skill)
+// ============================================
+.item-card .variables-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  align-self: stretch;
+}
+
+.item-card .variable-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+
+// ============================================
+// 14. Dropdown System (shared by weapon, outfit, ammo, skill)
+// ============================================
+
+// Locked-state dropdown display
+.item-card .dropdown {
+  display: flex;
+  width: 126px;
+  padding: 5px 8px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  cursor: default;
+
+  .dropdown-text {
+    flex: 1;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+  }
+
+  .dropdown-chevron {
+    display: flex;
+    width: 12px;
+    height: 12px;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1/1;
+
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+// Locked state
+.item-card:not(.unlocked) .dropdown {
+  pointer-events: none;
+
+  .dropdown-text {
+    color: #808090;
+  }
+
+  .dropdown-chevron img {
+    filter: brightness(0.5);
+    opacity: 0.5;
+  }
+}
+
+// Unlocked state
+.item-card.unlocked .dropdown {
+  cursor: pointer;
+
+  .dropdown-text {
+    color: var(--Chat-Text, #FFF);
+  }
+
+  .dropdown-chevron img {
+    filter: brightness(1);
+    opacity: 1;
+  }
+
+  &:hover {
+    background: #2F3340;
+  }
+}
+
+// Unlocked select wrapper
+.item-card .dropdown-wrapper {
+  position: relative;
+  width: 126px;
+
+  .dropdown-chevron {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    width: 12px;
+    height: 12px;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+// Native select with hidden arrow
+.item-card select.dropdown-select {
+  display: flex;
+  width: 100%;
+  height: 26px;
+  padding: 5px 28px 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  option {
+    background: var(--Chat-Front, #26282F);
+    color: var(--Chat-Text, #FFF);
+    padding: 4px;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+// ============================================
+// 15. Variable Input (shared by weapon, outfit, ammo)
+// ============================================
+.item-card .variable-input {
+  display: flex;
+  width: 126px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  outline: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  // Remove spinner
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  -moz-appearance: textfield;
+}
+
+// ============================================
+// 16. Unlocked Stats Block (shared by weapon, outfit, ammo, commodity)
+// ============================================
+.item-card.unlocked .item-stats {
+  width: 90px;
+
+  .stat-row {
+    height: 24px;
+  }
+
+  input.stat-value {
+    display: flex;
+    width: 70px;
+    padding: 8px;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 12px;
+    text-align: left;
+    outline: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  // Dropdown wrapper for availability
+  .dropdown-wrapper {
+    position: relative;
+    display: flex;
+    width: 70px;
+  }
+
+  select.stat-value {
+    display: flex;
+    width: 70px;
+    padding: 8px;
+    padding-right: 16px;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 12px;
+    text-align: left;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .item-stats .dropdown-chevron {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+
+    img {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  // Remove spinner from number inputs
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }

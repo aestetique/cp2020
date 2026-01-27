@@ -52,7 +52,25 @@ export class CyberpunkItem extends Item {
   }
   
   _prepareWeaponData(data) {
-    
+
+  }
+
+  /**
+   * Calculate Minimum Body penalty for this weapon.
+   * If the wielder's BODY stat is below the weapon's minimumBody,
+   * they suffer an accuracy penalty and halved rate of fire.
+   * @returns {{ accuracyPenalty: number, rofMultiplier: number }}
+   */
+  _getMinBodyPenalty() {
+    const minBody = this.system.minimumBody || 0;
+    if (!minBody || !this.actor) return { accuracyPenalty: 0, rofMultiplier: 1 };
+    const body = this.actor.system.stats?.bt?.total || 0;
+    const deficit = minBody - body;
+    if (deficit <= 0) return { accuracyPenalty: 0, rofMultiplier: 1 };
+    return {
+      accuracyPenalty: -(2 * deficit),
+      rofMultiplier: 0.5
+    };
   }
 
   _prepareArmorData(system) {
@@ -332,6 +350,12 @@ export class CyberpunkItem extends Item {
       attackTerms.push(-3);
     }
 
+    // Minimum Body penalty: -2 per point of BODY deficit
+    const minBodyPenalty = this._getMinBodyPenalty();
+    if (minBodyPenalty.accuracyPenalty) {
+      attackTerms.push(minBodyPenalty.accuracyPenalty);
+    }
+
     return await makeD10Roll(attackTerms, {
       stats: this.actor.system.stats,
       attackSkill: this.actor.getSkillVal(this.system.attackSkill)
@@ -350,6 +374,10 @@ export class CyberpunkItem extends Item {
       let DC = rangeDCs[attackMods.range];
       let targetCount = targetTokens.length || attackMods.targetsCount || 1;
 
+      // Minimum Body penalty halves effective ROF
+      const minBodyPenalty = this._getMinBodyPenalty();
+      const effectiveRof = Math.max(1, Math.floor(system.rof * minBodyPenalty.rofMultiplier));
+
       // This is a somewhat flawed multi-target thing - given target tokens, we could calculate distance (& therefore penalty) for each, and apply damage to them
       let rolls = [];
       for (let i = 0; i < targetCount; i++) {
@@ -360,7 +388,7 @@ export class CyberpunkItem extends Item {
               await game.dice3d.showForRoll(attackRoll, game.user, true);
           }
 
-          let roundsFired = Math.min(system.shotsLeft, system.rof / targetCount);
+          let roundsFired = Math.min(system.shotsLeft, effectiveRof / targetCount);
           await this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
           let roundsHit = Math.min(roundsFired, attackRoll.total - DC);
           if (roundsHit < 0) {
@@ -405,7 +433,8 @@ export class CyberpunkItem extends Item {
               weaponName: this.name,
               weaponImage: this.img,
               weaponType: this.system.attackType,
-              loadedAmmoType: this.system.loadedAmmoType || "standard"
+              loadedAmmoType: this.system.loadedAmmoType || "standard",
+              damageType: this.system.damageType || ""
           };
           let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.fullAuto));
           roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
@@ -426,7 +455,10 @@ export class CyberpunkItem extends Item {
           await game.dice3d.showForRoll(attackRoll, game.user, true);
       }
 
-      let roundsFired = Math.min(system.shotsLeft, system.rof, 3);
+      // Minimum Body penalty halves effective ROF
+      const minBodyPenalty = this._getMinBodyPenalty();
+      const effectiveRof = Math.max(1, Math.floor(system.rof * minBodyPenalty.rofMultiplier));
+      let roundsFired = Math.min(system.shotsLeft, effectiveRof, 3);
       let attackHits = attackRoll.total >= DC;
       let areaDamages = {};
       let allDamageRolls = [];
@@ -470,7 +502,8 @@ export class CyberpunkItem extends Item {
           weaponName: this.name,
           weaponImage: this.img,
           weaponType: this.system.attackType,
-          loadedAmmoType: this.system.loadedAmmoType || "standard"
+          loadedAmmoType: this.system.loadedAmmoType || "standard",
+          damageType: this.system.damageType || ""
       };
       let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.threeRoundBurst));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
@@ -480,7 +513,10 @@ export class CyberpunkItem extends Item {
 
   async __suppressiveFire(mods = {}) {
     const sys = this.system;
-    const rounds = clamp(Number(mods.roundsFired  ?? sys.rof), 1, sys.shotsLeft);
+    // Minimum Body penalty halves effective ROF
+    const minBodyPenalty = this._getMinBodyPenalty();
+    const effectiveRof = Math.max(1, Math.floor(sys.rof * minBodyPenalty.rofMultiplier));
+    const rounds = clamp(Number(mods.roundsFired ?? effectiveRof), 1, sys.shotsLeft);
     const width = Math.max(2,  Number(mods.zoneWidth    ?? 2));
     const targets = Math.max(1,  Number(mods.targetsCount ?? 1));
 
@@ -570,7 +606,8 @@ export class CyberpunkItem extends Item {
           weaponName: this.name,
           weaponImage: this.img,
           weaponType: this.system.attackType,
-          loadedAmmoType: this.system.loadedAmmoType || "standard"
+          loadedAmmoType: this.system.loadedAmmoType || "standard",
+          damageType: this.system.damageType || ""
       };
 
       let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.singleShot));

@@ -2815,6 +2815,29 @@ input.skill-value.skill-level-input:focus {
   text-overflow: ellipsis;
 }
 
+.gear-weight {
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-right: 8px;
+}
+.gear-weight .price-value {
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  color: #FFFFFF;
+  text-align: right;
+}
+.gear-weight img {
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+
 .gear-price {
   height: 24px;
   display: flex;
@@ -2860,6 +2883,11 @@ input.skill-value.skill-level-input:focus {
   line-height: 12px;
   color: #808090;
   text-align: center;
+}
+
+.ammo-quantity {
+  width: 176px;
+  padding-right: 116px;
 }
 
 .gear-action-btn {
@@ -3123,7 +3151,7 @@ input.skill-value.skill-level-input:focus {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   flex: 1 0 0;
   align-self: stretch;
 }
@@ -3281,6 +3309,274 @@ input.skill-value.skill-level-input:focus {
   color: #444856;
 }
 
+.item-card .tabs-line {
+  display: flex;
+  width: 460px;
+  height: 24px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.item-card .tab-header {
+  display: flex;
+  height: 24px;
+  padding: 0 1.5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 0;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+}
+.item-card .tab-header.active {
+  color: var(--Chat-Text, #FFF);
+}
+.item-card .tab-header:not(.active) {
+  color: var(--Sheet-Key, #B9B29D);
+}
+.item-card .tab-header:hover:not(.active) {
+  color: var(--Chat-Text, #FFF);
+}
+.item-card .tab-header .tab-text {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+.item-card .tab-header.active .tab-text {
+  border-bottom: 2px solid var(--Sheet-Key, #B9B29D);
+}
+
+.item-card .variables-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  align-self: stretch;
+}
+
+.item-card .variable-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+
+.item-card .dropdown {
+  display: flex;
+  width: 126px;
+  padding: 5px 8px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  cursor: default;
+}
+.item-card .dropdown .dropdown-text {
+  flex: 1;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+.item-card .dropdown .dropdown-chevron {
+  display: flex;
+  width: 12px;
+  height: 12px;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1/1;
+}
+.item-card .dropdown .dropdown-chevron img {
+  width: 12px;
+  height: 12px;
+}
+
+.item-card:not(.unlocked) .dropdown {
+  pointer-events: none;
+}
+.item-card:not(.unlocked) .dropdown .dropdown-text {
+  color: #808090;
+}
+.item-card:not(.unlocked) .dropdown .dropdown-chevron img {
+  filter: brightness(0.5);
+  opacity: 0.5;
+}
+
+.item-card.unlocked .dropdown {
+  cursor: pointer;
+}
+.item-card.unlocked .dropdown .dropdown-text {
+  color: var(--Chat-Text, #FFF);
+}
+.item-card.unlocked .dropdown .dropdown-chevron img {
+  filter: brightness(1);
+  opacity: 1;
+}
+.item-card.unlocked .dropdown:hover {
+  background: #2F3340;
+}
+
+.item-card .dropdown-wrapper {
+  position: relative;
+  width: 126px;
+}
+.item-card .dropdown-wrapper .dropdown-chevron {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  width: 12px;
+  height: 12px;
+  justify-content: center;
+  align-items: center;
+}
+.item-card .dropdown-wrapper .dropdown-chevron img {
+  width: 12px;
+  height: 12px;
+}
+
+.item-card select.dropdown-select {
+  display: flex;
+  width: 100%;
+  height: 26px;
+  padding: 5px 28px 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.item-card select.dropdown-select option {
+  background: var(--Chat-Front, #26282F);
+  color: var(--Chat-Text, #FFF);
+  padding: 4px;
+}
+.item-card select.dropdown-select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.item-card .variable-input {
+  display: flex;
+  width: 126px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  outline: none;
+}
+.item-card .variable-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.item-card .variable-input::-webkit-inner-spin-button, .item-card .variable-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.item-card .variable-input {
+  -moz-appearance: textfield;
+}
+
+.item-card.unlocked .item-stats {
+  width: 90px;
+}
+.item-card.unlocked .item-stats .stat-row {
+  height: 24px;
+}
+.item-card.unlocked .item-stats input.stat-value {
+  display: flex;
+  width: 70px;
+  padding: 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+  text-align: left;
+  outline: none;
+}
+.item-card.unlocked .item-stats input.stat-value:focus {
+  outline: none;
+  box-shadow: none;
+}
+.item-card.unlocked .item-stats .dropdown-wrapper {
+  position: relative;
+  display: flex;
+  width: 70px;
+}
+.item-card.unlocked .item-stats select.stat-value {
+  display: flex;
+  width: 70px;
+  padding: 8px;
+  padding-right: 16px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+  text-align: left;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+.item-card.unlocked .item-stats select.stat-value:focus {
+  outline: none;
+  box-shadow: none;
+}
+.item-card.unlocked .item-stats .item-stats .dropdown-chevron {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.item-card.unlocked .item-stats .item-stats .dropdown-chevron img {
+  width: 8px;
+  height: 8px;
+}
+.item-card.unlocked .item-stats input[type=number]::-webkit-inner-spin-button,
+.item-card.unlocked .item-stats input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.item-card.unlocked .item-stats input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .cyberpunk.role-sheet.app {
   background: transparent;
   box-shadow: none;
@@ -3316,52 +3612,6 @@ input.skill-value.skill-level-input:focus {
 
 .role-card {
   min-height: 400px;
-}
-
-.role-card .tab-content {
-  gap: 20px;
-}
-
-.role-card .tabs-line {
-  display: flex;
-  width: 460px;
-  height: 24px;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.role-card .tab-header {
-  display: flex;
-  height: 24px;
-  padding: 0 1.5px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 1 0 0;
-  cursor: pointer;
-  text-decoration: none;
-  border: none;
-  background: transparent;
-}
-.role-card .tab-header.active {
-  color: var(--Chat-Text, #FFF);
-}
-.role-card .tab-header:not(.active) {
-  color: var(--Sheet-Key, #B9B29D);
-}
-.role-card .tab-header:hover:not(.active) {
-  color: var(--Chat-Text, #FFF);
-}
-.role-card .tab-header .tab-text {
-  font-family: var(--font-blender);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  text-transform: uppercase;
-}
-.role-card .tab-header.active .tab-text {
-  border-bottom: 2px solid var(--Sheet-Key, #B9B29D);
 }
 
 .role-card .special-skill-field {
@@ -3439,6 +3689,7 @@ input.skill-value.skill-level-input:focus {
 .role-card .career-skills-frame {
   position: relative;
   display: flex;
+  margin-top: 8px;
   padding: 20px;
   flex-direction: column;
   align-items: flex-start;
@@ -3568,130 +3819,6 @@ input.skill-value.skill-level-input:focus {
   height: 400px;
 }
 
-.skill-card .variables-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  align-self: stretch;
-}
-
-.skill-card .variable-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-
-.skill-card .dropdown {
-  display: flex;
-  width: 126px;
-  padding: 5px 8px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  cursor: default;
-}
-.skill-card .dropdown .dropdown-text {
-  flex: 1;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-}
-.skill-card .dropdown .dropdown-chevron {
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1/1;
-}
-.skill-card .dropdown .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-
-.skill-card:not(.unlocked) .dropdown {
-  pointer-events: none;
-}
-.skill-card:not(.unlocked) .dropdown .dropdown-text {
-  color: #808090;
-}
-.skill-card:not(.unlocked) .dropdown .dropdown-chevron img {
-  filter: brightness(0.5);
-  opacity: 0.5;
-}
-
-.skill-card.unlocked .dropdown {
-  cursor: pointer;
-}
-.skill-card.unlocked .dropdown .dropdown-text {
-  color: var(--Chat-Text, #FFF);
-}
-.skill-card.unlocked .dropdown .dropdown-chevron img {
-  filter: brightness(1);
-  opacity: 1;
-}
-.skill-card.unlocked .dropdown:hover {
-  background: #2F3340;
-}
-
-.skill-card .dropdown-wrapper {
-  position: relative;
-  width: 126px;
-}
-.skill-card .dropdown-wrapper .dropdown-chevron {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-}
-.skill-card .dropdown-wrapper .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-
-.skill-card select.dropdown-select {
-  display: flex;
-  width: 100%;
-  height: 26px;
-  padding: 5px 28px 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-  cursor: pointer;
-  outline: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-.skill-card select.dropdown-select option {
-  background: var(--Chat-Front, #26282F);
-  color: var(--Chat-Text, #FFF);
-  padding: 4px;
-}
-.skill-card select.dropdown-select:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 .cyberpunk.commodity-sheet.app {
   background: transparent;
   box-shadow: none;
@@ -3727,78 +3854,6 @@ input.skill-value.skill-level-input:focus {
 
 .commodity-card {
   height: 400px;
-}
-.commodity-card.unlocked .item-stats {
-  width: 90px;
-}
-.commodity-card.unlocked .item-stats .stat-row {
-  height: 24px;
-}
-.commodity-card.unlocked .item-stats input.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  text-align: right;
-  outline: none;
-}
-.commodity-card.unlocked .item-stats input.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.commodity-card.unlocked .item-stats .dropdown-wrapper {
-  position: relative;
-  display: flex;
-  width: 70px;
-}
-.commodity-card.unlocked .item-stats select.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  padding-right: 16px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-}
-.commodity-card.unlocked .item-stats select.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.commodity-card.unlocked .item-stats .dropdown-chevron {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.commodity-card.unlocked .item-stats .dropdown-chevron img {
-  width: 8px;
-  height: 8px;
-}
-.commodity-card.unlocked .item-stats input[type=number]::-webkit-inner-spin-button,
-.commodity-card.unlocked .item-stats input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.commodity-card.unlocked .item-stats input[type=number] {
-  -moz-appearance: textfield;
 }
 
 .cyberpunk.outfit-sheet.app {
@@ -3838,213 +3893,17 @@ input.skill-value.skill-level-input:focus {
   min-height: 400px;
 }
 
-.outfit-card .tab-content {
-  gap: 20px;
-}
-
-.outfit-card .tabs-line {
-  display: flex;
-  width: 460px;
-  height: 24px;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.outfit-card .tab-header {
-  display: flex;
-  height: 24px;
-  padding: 0 1.5px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 1 0 0;
-  cursor: pointer;
-  text-decoration: none;
-  border: none;
-  background: transparent;
-}
-.outfit-card .tab-header.active {
-  color: var(--Chat-Text, #FFF);
-}
-.outfit-card .tab-header:not(.active) {
-  color: var(--Sheet-Key, #B9B29D);
-}
-.outfit-card .tab-header:hover:not(.active) {
-  color: var(--Chat-Text, #FFF);
-}
-.outfit-card .tab-header .tab-text {
-  font-family: var(--font-blender);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px;
-  text-transform: uppercase;
-}
-.outfit-card .tab-header.active .tab-text {
-  border-bottom: 2px solid var(--Sheet-Key, #B9B29D);
-}
-
-.outfit-card .variables-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  align-self: stretch;
-}
-
-.outfit-card .variable-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-
-.outfit-card .dropdown {
-  display: flex;
-  width: 126px;
-  padding: 5px 8px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  cursor: default;
-}
-.outfit-card .dropdown .dropdown-text {
-  flex: 1;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-}
-.outfit-card .dropdown .dropdown-chevron {
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-}
-.outfit-card .dropdown .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-
-.outfit-card:not(.unlocked) .dropdown {
-  pointer-events: none;
-}
-.outfit-card:not(.unlocked) .dropdown .dropdown-text {
-  color: #808090;
-}
-.outfit-card:not(.unlocked) .dropdown .dropdown-chevron img {
-  filter: brightness(0.5);
-  opacity: 0.5;
-}
-
-.outfit-card.unlocked .dropdown {
-  cursor: pointer;
-}
-.outfit-card.unlocked .dropdown .dropdown-text {
-  color: var(--Chat-Text, #FFF);
-}
-.outfit-card.unlocked .dropdown .dropdown-chevron img {
-  filter: brightness(1);
-  opacity: 1;
-}
-.outfit-card.unlocked .dropdown:hover {
-  background: #2F3340;
-}
-
-.outfit-card .dropdown-wrapper {
-  position: relative;
-  width: 126px;
-}
-.outfit-card .dropdown-wrapper .dropdown-chevron {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-}
-.outfit-card .dropdown-wrapper .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-
-.outfit-card select.dropdown-select {
-  display: flex;
-  width: 100%;
-  height: 26px;
-  padding: 5px 28px 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-}
-.outfit-card select.dropdown-select option {
-  background: var(--Chat-Front, #26282F);
-  color: var(--Chat-Text, #FFF);
-  padding: 4px;
-}
-.outfit-card select.dropdown-select:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.outfit-card .variable-input {
-  display: flex;
-  width: 126px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-  outline: none;
-}
-.outfit-card .variable-input:focus {
-  outline: none;
-  box-shadow: none;
-}
-.outfit-card .variable-input::-webkit-inner-spin-button, .outfit-card .variable-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.outfit-card .variable-input {
-  -moz-appearance: textfield;
-}
-
 .outfit-card .sp-frame {
   position: relative;
   display: flex;
-  padding: 24px 20px 16px 20px;
+  margin-top: 8px;
+  padding: 24px 0 16px 0;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   align-self: stretch;
   border-radius: 10px;
   border: 1px solid var(--Chat-Gray, #444856);
-  flex: 1 0 0;
 }
 
 .outfit-card .sp-frame-label {
@@ -4107,16 +3966,18 @@ input.skill-value.skill-level-input:focus {
 .outfit-card .sp-of {
   color: var(--Sheet-Key, #B9B29D);
   font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
   line-height: 16px;
 }
 
 .outfit-card .sp-location {
   color: var(--Sheet-Key, #B9B29D);
   font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
   line-height: 16px;
   text-align: center;
 }
@@ -4148,79 +4009,6 @@ input.skill-value.skill-level-input:focus {
   margin: 0;
 }
 .outfit-card .sp-input {
-  -moz-appearance: textfield;
-}
-
-.outfit-card.unlocked .item-stats {
-  width: 90px;
-}
-.outfit-card.unlocked .item-stats .stat-row {
-  height: 24px;
-}
-.outfit-card.unlocked .item-stats input.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  text-align: right;
-  outline: none;
-}
-.outfit-card.unlocked .item-stats input.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.outfit-card.unlocked .item-stats .dropdown-wrapper {
-  position: relative;
-  display: flex;
-  width: 70px;
-}
-.outfit-card.unlocked .item-stats select.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  padding-right: 16px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-}
-.outfit-card.unlocked .item-stats select.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.outfit-card.unlocked .item-stats .item-stats .dropdown-chevron {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.outfit-card.unlocked .item-stats .item-stats .dropdown-chevron img {
-  width: 8px;
-  height: 8px;
-}
-.outfit-card.unlocked .item-stats input[type=number]::-webkit-inner-spin-button,
-.outfit-card.unlocked .item-stats input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.outfit-card.unlocked .item-stats input[type=number] {
   -moz-appearance: textfield;
 }
 
@@ -4259,223 +4047,6 @@ input.skill-value.skill-level-input:focus {
 
 .ammo-card {
   height: 400px;
-}
-.ammo-card .variables-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  align-self: stretch;
-}
-.ammo-card .variable-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-.ammo-card .dropdown {
-  display: flex;
-  width: 126px;
-  padding: 5px 8px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  cursor: default;
-}
-.ammo-card .dropdown .dropdown-text {
-  flex: 1;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-}
-.ammo-card .dropdown .dropdown-chevron {
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1/1;
-}
-.ammo-card .dropdown .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-.ammo-card:not(.unlocked) .dropdown {
-  pointer-events: none;
-}
-.ammo-card:not(.unlocked) .dropdown .dropdown-text {
-  color: #808090;
-}
-.ammo-card:not(.unlocked) .dropdown .dropdown-chevron img {
-  filter: brightness(0.5);
-  opacity: 0.5;
-}
-.ammo-card.unlocked .dropdown {
-  cursor: pointer;
-}
-.ammo-card.unlocked .dropdown .dropdown-text {
-  color: var(--Chat-Text, #FFF);
-}
-.ammo-card.unlocked .dropdown .dropdown-chevron img {
-  filter: brightness(1);
-  opacity: 1;
-}
-.ammo-card.unlocked .dropdown:hover {
-  background: #2F3340;
-}
-.ammo-card .dropdown-wrapper {
-  position: relative;
-  width: 126px;
-}
-.ammo-card .dropdown-wrapper .dropdown-chevron {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  display: flex;
-  width: 12px;
-  height: 12px;
-  justify-content: center;
-  align-items: center;
-}
-.ammo-card .dropdown-wrapper .dropdown-chevron img {
-  width: 12px;
-  height: 12px;
-}
-.ammo-card select.dropdown-select {
-  display: flex;
-  width: 100%;
-  height: 26px;
-  padding: 5px 28px 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px;
-  cursor: pointer;
-  outline: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-.ammo-card select.dropdown-select option {
-  background: var(--Chat-Front, #26282F);
-  color: var(--Chat-Text, #FFF);
-  padding: 4px;
-}
-.ammo-card select.dropdown-select:focus {
-  outline: none;
-  box-shadow: none;
-}
-.ammo-card .variable-input {
-  display: flex;
-  width: 126px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  outline: none;
-}
-.ammo-card .variable-input:focus {
-  outline: none;
-  box-shadow: none;
-}
-.ammo-card.unlocked .item-stats {
-  width: 90px;
-}
-.ammo-card.unlocked .item-stats .stat-row {
-  height: 24px;
-}
-.ammo-card.unlocked .item-stats input.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  text-align: right;
-  outline: none;
-}
-.ammo-card.unlocked .item-stats input.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.ammo-card.unlocked .item-stats .dropdown-wrapper {
-  position: relative;
-  display: flex;
-  width: 70px;
-}
-.ammo-card.unlocked .item-stats select.stat-value {
-  display: flex;
-  width: 70px;
-  padding: 4px;
-  padding-right: 16px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-  color: var(--Chat-Text, #FFF);
-  font-family: var(--font-blender);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 12px;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-}
-.ammo-card.unlocked .item-stats select.stat-value:focus {
-  outline: none;
-  box-shadow: none;
-}
-.ammo-card.unlocked .item-stats .dropdown-chevron {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.ammo-card.unlocked .item-stats .dropdown-chevron img {
-  width: 8px;
-  height: 8px;
-}
-.ammo-card.unlocked .item-stats input[type=number]::-webkit-inner-spin-button,
-.ammo-card.unlocked .item-stats input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.ammo-card.unlocked .item-stats input[type=number] {
-  -moz-appearance: textfield;
-}
-.ammo-card .variable-input[type=number]::-webkit-inner-spin-button,
-.ammo-card .variable-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.ammo-card .variable-input[type=number] {
-  -moz-appearance: textfield;
 }
 
 .reload-dialog .reload-hint {
@@ -4521,4 +4092,111 @@ input.skill-value.skill-level-input:focus {
   color: var(--chat-gray);
 }
 
-/*# sourceMappingURL=cp2020.css.map */
+.cyberpunk.weapon-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.weapon-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.weapon-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.weapon-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.weapon-sheet button, .cyberpunk.weapon-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.weapon-sheet button:focus, .cyberpunk.weapon-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.weapon-sheet img {
+  border: none;
+}
+.cyberpunk.weapon-sheet h1, .cyberpunk.weapon-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.weapon-card {
+  min-height: 400px;
+}
+.weapon-card .weapon-divider {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
+}
+.weapon-card .dual-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.weapon-card .dual-value {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+}
+.weapon-card .dual-value-narrow {
+  width: 40px;
+}
+.weapon-card .dual-input {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+  outline: none;
+}
+.weapon-card .dual-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.weapon-card .dual-input::-webkit-inner-spin-button, .weapon-card .dual-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.weapon-card .dual-input {
+  -moz-appearance: textfield;
+}
+.weapon-card .dual-input-narrow {
+  width: 40px;
+}
+.weapon-card .dual-separator {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  flex-shrink: 0;
+}

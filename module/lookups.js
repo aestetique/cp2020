@@ -29,6 +29,58 @@ export const DEFAULT_ATTACK_SKILLS = {
     "Exotic": []
 };
 
+// --- Weapon card lookups ---
+
+/** High-level weapon categories for the Weapon Type dropdown */
+export const weaponCategories = {
+    melee: "WeaponCatMelee",
+    ranged: "WeaponCatRanged",
+    exotic: "WeaponCatExotic"
+};
+
+/** Ranged weapon subtypes (maps to stored weaponType values) */
+export const rangedSubtypes = {
+    Pistol: "SubPistol",
+    SMG: "SubSMG",
+    Shotgun: "SubShotgun",
+    Rifle: "SubRifle",
+    Heavy: "SubHeavy",
+    Bow: "SubBow",
+    Crossbow: "SubCrossbow"
+};
+
+/** Melee damage types affecting armor penetration */
+export const meleeDamageTypes = {
+    blunt: "DmgBlunt",
+    edged: "DmgEdged",
+    spike: "DmgSpike",
+    monoblade: "DmgMonoblade"
+};
+
+/** Exotic weapon effects (stored only, not yet implemented in combat) */
+export const exoticEffects = {
+    confusion: "EffConfusion",
+    poisoned: "EffPoisoned",
+    tearing: "EffTearing",
+    unconscious: "EffUnconscious",
+    stunAt2: "EffStunAt2",
+    stunAt4: "EffStunAt4",
+    burning: "EffBurning",
+    microwave: "EffMicrowave",
+    acid: "EffAcid"
+};
+
+/**
+ * Derive weapon category from stored weaponType value.
+ * @param {string} weaponType - The stored weapon type (Pistol, Melee, Exotic, etc.)
+ * @returns {"melee"|"ranged"|"exotic"}
+ */
+export function getWeaponCategory(weaponType) {
+    if (weaponType === "Melee") return "melee";
+    if (weaponType === "Exotic") return "exotic";
+    return "ranged";
+}
+
 // --- Ammo system lookups ---
 
 /** Weapon types that use ammunition */
@@ -113,8 +165,26 @@ export const weaponToAmmoType = {
  * @returns {string[]} Array of skill names
  */
 export function getAttackSkillsForWeapon(weaponType) {
-    // Exotic weapons have no skill restrictions
-    if (weaponType === "Exotic") return [];
+    // Exotic weapons get all ranged + melee attack skills (excluding unarmed)
+    if (weaponType === "Exotic") {
+        const UNARMED_SKILLS = ["Brawling"];
+        const allSkills = new Set();
+        for (const [wType, skills] of Object.entries(DEFAULT_ATTACK_SKILLS)) {
+            if (wType === "Exotic") continue;
+            for (const s of skills) {
+                if (!UNARMED_SKILLS.includes(s)) allSkills.add(s);
+            }
+        }
+        try {
+            const mappings = game.settings.get("cp2020", "skillMappings");
+            for (const category of Object.values(mappings)) {
+                if (category?.skills?.length) {
+                    for (const s of category.skills) allSkills.add(s.name);
+                }
+            }
+        } catch (e) { /* settings not yet initialized */ }
+        return [...allSkills].sort();
+    }
 
     const categoryKey = WEAPON_TYPE_TO_CATEGORY[weaponType];
     if (!categoryKey) return DEFAULT_ATTACK_SKILLS[weaponType] || [];
@@ -226,6 +296,7 @@ export let meleeAttackTypes = {
 export let sortedAttackTypes = Object.values(rangedAttackTypes).concat(Object.values(meleeAttackTypes)).sort();
 
 export let concealability = {
+    hidden: "ConcealHidden",
     pocket: "ConcealPocket",
     jacket: "ConcealJacket",
     longcoat: "ConcealLongcoat",

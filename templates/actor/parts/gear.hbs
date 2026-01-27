@@ -25,6 +25,10 @@
             <span class="price-value">{{weapon.price}}</span>
             <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
           </div>
+          <div class="gear-weight">
+            <span class="price-value">{{weapon.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
           <div class="gear-field" style="width: 60px;">
             <span class="field-top">{{weapon.damage}}</span>
             <span class="field-bottom">Damage</span>
@@ -73,6 +77,10 @@
           <div class="gear-price">
             <span class="price-value">{{armor.price}}</span>
             <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-weight">
+            <span class="price-value">{{armor.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
           </div>
           <div class="gear-field" style="width: 60px;">
             <span class="field-top">{{armor.sp}}</span>
@@ -123,6 +131,10 @@
             <span class="price-value">{{item.price}}</span>
             <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
           </div>
+          <div class="gear-weight">
+            <span class="price-value">{{item.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
           <div class="gear-spacer"></div>
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{item.id}}" title="View">
@@ -162,7 +174,11 @@
             <span class="price-value">{{ammo.totalPrice}}</span>
             <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
           </div>
-          <div class="gear-field" style="width: 60px;">
+          <div class="gear-weight">
+            <span class="price-value">{{ammo.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
+          <div class="gear-field ammo-quantity">
             {{#if ../isUnlocked}}
               <input type="number" class="field-top ammo-quantity-input" data-item-id="{{ammo.id}}" value="{{ammo.quantity}}" min="0">
             {{else}}

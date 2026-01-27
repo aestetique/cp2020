@@ -1258,6 +1258,32 @@ input.skill-value.skill-level-input {
   text-overflow: ellipsis;
 }
 
+// Weight: same style as price
+.gear-weight {
+  height: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-right: 8px;
+
+  .price-value {
+    font-family: var(--font-blender);
+    font-weight: 300; // Book
+    font-size: 16px;
+    line-height: 24px;
+    color: #FFFFFF;
+    text-align: right;
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    border: none;
+  }
+}
+
 // Price: 24px tall, row with 4px gap, Blender Pro Book 16px, line-height 24px, align-right
 .gear-price {
   height: 24px;
@@ -1311,6 +1337,12 @@ input.skill-value.skill-level-input {
     color: #808090;
     text-align: center;
   }
+}
+
+// Ammo quantity field: wider with right padding
+.ammo-quantity {
+  width: 176px;
+  padding-right: 116px;
 }
 
 // Action button (reload/equip): 40px wide, 30px tall, 16x16 icon inside
