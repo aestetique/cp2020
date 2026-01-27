@@ -1,116 +1,114 @@
-<form class="{{cssClass}}" autocomplete="off">
-  <div class="role-sheet-container">
-    {{!-- Custom Header (inspired by character sheet) --}}
-    <header class="role-header">
-      <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
-        <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
-      </button>
+<form class="item-card role-card {{#unless isLocked}}unlocked{{/unless}}" autocomplete="off">
+  {{!-- Header (38px) --}}
+  <header class="sheet-header">
+    <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+      <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+    </button>
 
-      {{#if isLocked}}
-        <h1 class="role-name">{{item.name}}</h1>
-      {{else}}
-        <input type="text" class="role-name" name="name" value="{{item.name}}" placeholder="Role Name">
-      {{/if}}
+    <span class="header-name">{{item.name}}</span>
 
-      <a class="header-control close" data-action="closeSheet" title="Close">
-        <i class="fas fa-times"></i>
-      </a>
-    </header>
+    <a class="header-control" data-action="copyUuid" title="Copy UUID">
+      <i class="fas fa-passport"></i>
+    </a>
+    <a class="header-control close" data-action="closeSheet" title="Close">
+      <i class="fas fa-times"></i>
+    </a>
+  </header>
 
-    {{!-- Role Card Content --}}
-    <section class="role-card">
-      {{!-- Role Image --}}
-      <div class="role-portrait">
-        <img class="role-img" src="{{item.img}}" data-edit="img" title="{{item.name}}">
+  {{!-- Item Content --}}
+  <div class="item-content">
+    {{!-- Item Trivia (460×80px) --}}
+    <div class="item-trivia">
+      {{!-- Portrait (80×80px) --}}
+      <div class="item-portrait">
+        <img src="{{item.img}}" alt="{{item.name}}">
       </div>
 
-      {{!-- Tabs --}}
-      <nav class="sheet-tabs tabs" data-group="primary">
-        <a class="item" data-tab="details">{{localize "CYBERPUNK.Description"}}</a>
-        <a class="item" data-tab="skills">{{localize "CYBERPUNK.CareerSkills"}}</a>
-        <a class="item" data-tab="notes">{{localize "CYBERPUNK.Notes"}}</a>
-      </nav>
-
-      {{!-- Tab Content --}}
-      <section class="sheet-body">
-        {{!-- Details Tab --}}
-        <div class="tab details" data-group="primary" data-tab="details">
-          {{!-- Flavor Description --}}
-          <div class="role-field">
-            <label>{{localize "CYBERPUNK.Flavor"}}</label>
-            {{#if isLocked}}
-              <p class="field-value flavor-text">{{system.flavor}}</p>
-            {{else}}
-              <textarea name="system.flavor" placeholder="Role description...">{{system.flavor}}</textarea>
-            {{/if}}
+      {{!-- Name+Category Container --}}
+      <div class="item-identity">
+        <input type="text" class="item-name" name="name" value="{{item.name}}" {{#if isLocked}}readonly{{/if}}>
+        <div class="item-category">
+          <div class="category-icon">
+            <img src="systems/cp2020/img/ui/badge-role.svg" alt="">
           </div>
+          <span class="category-label">Role</span>
+        </div>
+      </div>
+    </div>
 
-          {{!-- Special Ability --}}
-          <div class="role-field special-ability">
-            <label>{{localize "CYBERPUNK.SpecialAbility"}}</label>
-            {{#if isLocked}}
-              <h3 class="ability-name">{{system.specialAbility.name}}</h3>
-              <p class="field-value ability-description">{{system.specialAbility.description}}</p>
-            {{else}}
-              <input type="text" name="system.specialAbility.name"
-                     value="{{system.specialAbility.name}}"
-                     placeholder="Ability Name">
-              <textarea name="system.specialAbility.description"
-                        placeholder="Ability description...">{{system.specialAbility.description}}</textarea>
-            {{/if}}
-          </div>
+    {{!-- Tabs Line --}}
+    <div class="tabs-line">
+      <a class="tab-header {{#if (equals activeTab 'description')}}active{{/if}}" data-tab="description">
+        <span class="tab-text">Description</span>
+      </a>
+      <a class="tab-header {{#if (equals activeTab 'skills')}}active{{/if}}" data-tab="skills">
+        <span class="tab-text">Skills</span>
+      </a>
+    </div>
 
-          {{!-- Special Skill --}}
-          <div class="role-field special-skill">
-            <label>{{localize "CYBERPUNK.SpecialSkill"}}</label>
-            <div class="special-skill-drop" data-drop-target="special-skill">
-              {{#if system.specialSkill.name}}
-                <span class="skill-name">{{system.specialSkill.name}}</span>
-                {{#unless isLocked}}
-                  <button type="button" class="remove-special-skill" title="{{localize 'CYBERPUNK.RemoveSpecialSkill'}}">
-                    <i class="fas fa-times"></i>
-                  </button>
-                {{/unless}}
-              {{else}}
-                <span class="placeholder">{{localize "CYBERPUNK.DropSkillHere"}}</span>
-              {{/if}}
+    {{!-- Horizontal Divider --}}
+    <div class="divider"></div>
+
+    {{!-- Tab Content --}}
+    <div class="tab-content">
+      {{#if (equals activeTab 'description')}}
+        {{!-- Description Tab --}}
+        {{!-- Flavour Text --}}
+        <div class="flavour-section">
+          {{#if isLocked}}
+            <p class="flavour-text">{{system.flavor}}</p>
+          {{else}}
+            <textarea class="flavour-text" name="system.flavor" placeholder="Role description...">{{system.flavor}}</textarea>
+          {{/if}}
+        </div>
+
+        {{!-- Source Field --}}
+        <div class="source-field">
+          <label class="variable-label">Source</label>
+          <input type="text" class="source-input" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX" {{#if isLocked}}readonly{{/if}}>
+        </div>
+      {{else}}
+        {{!-- Skills Tab --}}
+        {{!-- Special Skill Field --}}
+        <div class="special-skill-field">
+          <label class="variable-label">Special Skill</label>
+          {{#if hasSpecialSkill}}
+            <div class="skill-drop filled" data-drop-target="special-skill">
+              <span class="skill-name" data-uuid="{{system.specialSkill.uuid}}">{{system.specialSkill.name}}</span>
+              {{#unless isLocked}}
+                <button type="button" class="remove-special-skill" title="Remove Skill">
+                  <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Remove">
+                </button>
+              {{/unless}}
             </div>
-          </div>
-
-          {{!-- Source --}}
-          <div class="role-field">
-            <label>{{localize "CYBERPUNK.Source"}}</label>
-            {{#if isLocked}}
-              <span class="field-value">{{system.source}}</span>
-            {{else}}
-              <input type="text" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX">
-            {{/if}}
-          </div>
+          {{else}}
+            <div class="skill-drop empty" data-drop-target="special-skill">
+              <span class="placeholder">{{#if isLocked}}Unlock and drop a special skill here.{{else}}Drop a special skill here.{{/if}}</span>
+            </div>
+          {{/if}}
         </div>
 
-        {{!-- Career Skills Tab --}}
-        <div class="tab skills" data-group="primary" data-tab="skills">
-          <ul class="career-skills-list" data-drop-target="career-skill">
-            {{#each careerSkillsList as |skill index|}}
-              <li class="career-skill-item" data-uuid="{{skill.uuid}}">
-                <span class="skill-name">{{skill.name}}</span>
-                {{#unless ../isLocked}}
-                  <button type="button" class="remove-career-skill" data-index="{{index}}" title="{{localize 'CYBERPUNK.RemoveCareerSkill'}}">
-                    <i class="fas fa-times"></i>
-                  </button>
-                {{/unless}}
-              </li>
-            {{else}}
-              <li class="no-skills">{{localize "CYBERPUNK.DropSkillsHere"}}</li>
-            {{/each}}
-          </ul>
+        {{!-- Career Skills Frame --}}
+        <div class="career-skills-frame {{#unless careerSkillsList.length}}empty{{/unless}}" data-drop-target="career-skill">
+          <span class="career-skills-label">Career Skills</span>
+          {{#if careerSkillsList.length}}
+            <div class="career-skills-grid">
+              {{#each careerSkillsList as |skill index|}}
+                <div class="career-skill-item">
+                  <span class="skill-name" data-uuid="{{skill.uuid}}">{{skill.name}}</span>
+                  {{#unless ../isLocked}}
+                    <button type="button" class="remove-career-skill" data-index="{{index}}" title="Remove Skill">
+                      <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Remove">
+                    </button>
+                  {{/unless}}
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <span class="placeholder">{{#if isLocked}}Unlock and drop career skills here.{{else}}Drop career skills here.{{/if}}</span>
+          {{/if}}
         </div>
-
-        {{!-- Notes Tab --}}
-        <div class="tab notes" data-group="primary" data-tab="notes">
-          {{editor system.notes target="system.notes" button=true owner=owner editable=(not isLocked)}}
-        </div>
-      </section>
-    </section>
+      {{/if}}
+    </div>
   </div>
 </form>

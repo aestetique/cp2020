@@ -120,9 +120,14 @@ export class CyberpunkActorSheet extends ActorSheet {
 
       sheetData.weaponTypes = weaponTypes;
 
-      // Role data for template - now uses compendium reference
-      sheetData.roleLabel = system.role?.name || game.i18n.localize("CYBERPUNK.NoRoleSelected");
+      // Role data for template - fetch current name from role item
       sheetData.roleUuid = system.role?.uuid || "";
+      if (sheetData.roleUuid) {
+        const roleItem = fromUuidSync(sheetData.roleUuid);
+        sheetData.roleLabel = roleItem?.name || game.i18n.localize("CYBERPUNK.NoRoleSelected");
+      } else {
+        sheetData.roleLabel = game.i18n.localize("CYBERPUNK.NoRoleSelected");
+      }
 
       // Calculate totals for the action buttons
       const refTotal = system.stats?.ref?.total || system.stats?.ref?.base || 0;
@@ -512,7 +517,7 @@ export class CyberpunkActorSheet extends ActorSheet {
   _prepareGearData(sheetData) {
     const weapons = this.actor.itemTypes.weapon || [];
     const armor = this.actor.itemTypes.armor || [];
-    const misc = this.actor.itemTypes.misc || [];
+    const commodity = this.actor.itemTypes.commodity || [];
 
     // Prepare weapons data
     sheetData.weapons = weapons.map(w => {
@@ -584,13 +589,13 @@ export class CyberpunkActorSheet extends ActorSheet {
       };
     });
 
-    // Prepare misc/gear data
-    sheetData.gearItems = misc.map(m => {
+    // Prepare commodity/gear data
+    sheetData.gearItems = commodity.map(m => {
       return {
         id: m.id,
         img: m.img,
         name: m.name,
-        context: 'Misc',
+        context: 'Commodity',
         price: m.system.cost || 0
       };
     });
@@ -605,7 +610,7 @@ export class CyberpunkActorSheet extends ActorSheet {
       weapons: sortedItems.weapon,
       armor: sortedItems.armor,
       cyberware: sortedItems.cyberware,
-      misc: sortedItems.misc,
+      commodity: sortedItems.commodity,
       cyberCost: sortedItems.cyberware.reduce((a,b) => a + b.system.cost, 0)
     };
   }

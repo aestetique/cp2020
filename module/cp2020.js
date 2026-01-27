@@ -3,6 +3,8 @@ import { CyberpunkActorSheet } from "./actor/actor-sheet.js";
 import { CyberpunkItem } from "./item/item.js";
 import { CyberpunkItemSheet } from "./item/item-sheet.js";
 import { CyberpunkRoleSheet } from "./item/role-sheet.js";
+import { CyberpunkSkillSheet } from "./item/skill-sheet.js";
+import { CyberpunkCommoditySheet } from "./item/commodity-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
@@ -43,6 +45,16 @@ Hooks.once('init', async function () {
         types: ["role"],
         makeDefault: true,
         label: "CYBERPUNK.RoleSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkSkillSheet, {
+        types: ["skill"],
+        makeDefault: true,
+        label: "CYBERPUNK.SkillSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkCommoditySheet, {
+        types: ["commodity"],
+        makeDefault: true,
+        label: "CYBERPUNK.CommoditySheet"
     });
 
     // Register System Settings

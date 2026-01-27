@@ -151,10 +151,10 @@ export let concealability = {
 }
 
 export let availability = {
-    excellent: "Excellent",
     common: "Common",
-    poor: "Poor",
-    rare: "Rare"
+    limited: "Limited",
+    exclusive: "Exclusive",
+    iconic: "Iconic"
 }
 
 export let reliability = {

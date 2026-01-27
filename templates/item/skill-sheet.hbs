@@ -1,0 +1,111 @@
+<form class="item-card skill-card {{#unless isLocked}}unlocked{{/unless}}" autocomplete="off">
+  {{!-- Header (38px) --}}
+  <header class="sheet-header">
+    <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+      <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+    </button>
+
+    <span class="header-name">{{item.name}}</span>
+
+    <a class="header-control" data-action="copyUuid" title="Copy UUID">
+      <i class="fas fa-passport"></i>
+    </a>
+    <a class="header-control close" data-action="closeSheet" title="Close">
+      <i class="fas fa-times"></i>
+    </a>
+  </header>
+
+  {{!-- Item Content --}}
+  <div class="item-content">
+    {{!-- Item Trivia (460×80px) --}}
+    <div class="item-trivia">
+      {{!-- Portrait (80×80px) --}}
+      <div class="item-portrait">
+        <img src="{{item.img}}" alt="{{item.name}}">
+      </div>
+
+      {{!-- Name+Category Container --}}
+      <div class="item-identity">
+        <input type="text" class="item-name" name="name" value="{{item.name}}" {{#if isLocked}}readonly{{/if}}>
+        <div class="item-category">
+          <div class="category-icon">
+            <img src="systems/cp2020/img/ui/badge-skills.svg" alt="">
+          </div>
+          <span class="category-label">Skill</span>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Horizontal Divider --}}
+    <div class="divider"></div>
+
+    {{!-- Tab Content (Description) --}}
+    <div class="tab-content">
+      {{!-- Variables Row --}}
+      <div class="variables-row">
+        {{!-- Attribute Variable --}}
+        <div class="variable-field">
+          <label class="variable-label">Attribute</label>
+          {{#if isLocked}}
+            <div class="dropdown">
+              <span class="dropdown-text">{{selectedStatLabel}}</span>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{else}}
+            <div class="dropdown-wrapper">
+              <select class="dropdown-select" name="system.stat">
+                {{#each statOptions}}
+                  <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{/if}}
+        </div>
+
+        {{!-- Difficulty Variable --}}
+        <div class="variable-field">
+          <label class="variable-label">Difficulty</label>
+          {{#if isLocked}}
+            <div class="dropdown">
+              <span class="dropdown-text">{{selectedDifficultyLabel}}</span>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{else}}
+            <div class="dropdown-wrapper">
+              <select class="dropdown-select" name="system.diffMod">
+                {{#each difficultyOptions}}
+                  <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+
+      {{!-- Flavour Text --}}
+      <div class="flavour-section">
+        {{#if isLocked}}
+          <p class="flavour-text">{{system.flavor}}</p>
+        {{else}}
+          <textarea class="flavour-text" name="system.flavor" placeholder="Skill description...">{{system.flavor}}</textarea>
+        {{/if}}
+      </div>
+
+      {{!-- Source Field --}}
+      <div class="source-field">
+        <label class="variable-label">Source</label>
+        <input type="text" class="source-input" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX" {{#if isLocked}}readonly{{/if}}>
+      </div>
+    </div>
+  </div>
+</form>
