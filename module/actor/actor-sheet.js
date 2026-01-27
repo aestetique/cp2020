@@ -1574,10 +1574,27 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
     }
 
-    // Handle ammo drops - always create a new item (no stacking)
+    // Handle ammo drops — stack by source UUID
     if (item.type === "ammo") {
+      const droppedUuid = item.uuid;
+      const packQty = Number(item.system.packSize) || 20;
+
+      // Stack onto existing ammo from the same source
+      const existing = this.actor.items.find(i =>
+        i.type === "ammo" && i.system.sourceUuid === droppedUuid
+      );
+      if (existing) {
+        const newQty = (Number(existing.system.quantity) || 0) + packQty;
+        return this.actor.updateEmbeddedDocuments("Item", [{
+          _id: existing.id,
+          "system.quantity": newQty
+        }]);
+      }
+
+      // Create new ammo item, storing the source UUID
       const newData = item.toObject();
-      newData.system.quantity = Number(item.system.packSize) || 20;
+      newData.system.quantity = packQty;
+      newData.system.sourceUuid = droppedUuid;
       return this.actor.createEmbeddedDocuments("Item", [newData]);
     }
 

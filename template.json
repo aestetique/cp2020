@@ -818,6 +818,7 @@
 			"attackSkill": "",
 			"caliber": "medium",
 			"loadedAmmoType": "standard",
+			"loadedAmmoSources": [],
 			"minimumBody": 0,
 			"damageType": "blunt",
 			"effect": "",
@@ -904,7 +905,8 @@
 			"caliber": "medium",
 			"ammoType": "standard",
 			"packSize": 20,
-			"quantity": 20
+			"quantity": 20,
+			"sourceUuid": ""
 		},
 		"role": {
 			"templates": ["common"],
