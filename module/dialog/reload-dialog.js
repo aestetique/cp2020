@@ -279,4 +279,90 @@ export class ReloadDialog extends Application {
       }]);
     }
   }
+
+  /**
+   * Return rounds to an ammo source using the 3-tier fallback:
+   * 1. Find actor ammo with matching sourceUuid → stack
+   * 2. Clone from game item via fromUuid → create on actor
+   * 3. Create/stack generic ammo (last resort)
+   */
+  async _returnAmmoToSource(sourceUuid, quantity, ammoType) {
+    // 1. Find actor ammo from the same source
+    if (sourceUuid) {
+      const actorMatch = this.actor.items.find(i =>
+        i.type === "ammo" && i.system.sourceUuid === sourceUuid
+      );
+      if (actorMatch) {
+        const newQty = (Number(actorMatch.system.quantity) || 0) + quantity;
+        await this.actor.updateEmbeddedDocuments("Item", [{
+          _id: actorMatch.id,
+          "system.quantity": newQty
+        }]);
+        return;
+      }
+
+      // 2. Clone from the original game item
+      const templateItem = await fromUuid(sourceUuid);
+      if (templateItem) {
+        const newData = templateItem.toObject();
+        newData.system.quantity = quantity;
+        newData.system.packSize = 0;
+        newData.system.sourceUuid = sourceUuid;
+        await this.actor.createEmbeddedDocuments("Item", [newData]);
+        return;
+      }
+    }
+
+    // 3. Last resort: generic ammo
+    await this._createGenericAmmo(ammoType, quantity);
+  }
+
+  /**
+   * Create a generic ammo item when the source game item no longer exists.
+   * Name format: "[Ammo Type] [Caliber] [Weapon Subtype] Rounds"
+   */
+  async _createGenericAmmo(ammoType, quantity) {
+    const ammoWT = weaponToAmmoType[this.weapon.system.weaponType];
+    const weaponCaliber = this.weapon.system.caliber || "";
+
+    const typeLabelKey = ammoTypes[ammoType];
+    const typeLabel = typeLabelKey ? game.i18n.localize(`CYBERPUNK.${typeLabelKey}`) : ammoType;
+    const calLabelKey = ammoCalibersByWeaponType[ammoWT]?.[weaponCaliber];
+    const calLabel = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : "";
+    const wtLabelKey = ammoWeaponTypes[ammoWT];
+    const wtLabel = wtLabelKey ? game.i18n.localize(`CYBERPUNK.${wtLabelKey}`) : ammoWT;
+
+    const nameParts = [typeLabel, calLabel, wtLabel, game.i18n.localize("CYBERPUNK.Rounds")].filter(p => p);
+
+    // Check if a generic item (no sourceUuid) of this type already exists
+    const existingGeneric = this.actor.items.find(i =>
+      i.type === "ammo" &&
+      !i.system.sourceUuid &&
+      i.system.weaponType === ammoWT &&
+      i.system.caliber === weaponCaliber &&
+      (i.system.ammoType || "standard") === ammoType
+    );
+
+    if (existingGeneric) {
+      const newQty = (Number(existingGeneric.system.quantity) || 0) + quantity;
+      await this.actor.updateEmbeddedDocuments("Item", [{
+        _id: existingGeneric.id,
+        "system.quantity": newQty
+      }]);
+    } else {
+      await this.actor.createEmbeddedDocuments("Item", [{
+        name: nameParts.join(" "),
+        type: "ammo",
+        img: "systems/cp2020/img/items/ammo.svg",
+        system: {
+          weaponType: ammoWT,
+          caliber: weaponCaliber,
+          ammoType: ammoType,
+          packSize: 0,
+          quantity: quantity,
+          sourceUuid: ""
+        }
+      }]);
+    }
+  }
 }
