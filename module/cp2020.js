@@ -12,6 +12,7 @@ import { CyberpunkOrdnanceSheet } from "./item/ordnance-sheet.js";
 import { CyberpunkToolSheet } from "./item/tool-sheet.js";
 import { CyberpunkDrugSheet } from "./item/drug-sheet.js";
 import { CyberpunkProgramSheet } from "./item/program-sheet.js";
+import { CyberpunkCyberwareSheet } from "./item/cyberware-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
@@ -97,6 +98,11 @@ Hooks.once('init', async function () {
         types: ["program"],
         makeDefault: true,
         label: "CYBERPUNK.ProgramSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkCyberwareSheet, {
+        types: ["cyberware"],
+        makeDefault: true,
+        label: "CYBERPUNK.CyberwareSheet"
     });
 
     // Register System Settings
