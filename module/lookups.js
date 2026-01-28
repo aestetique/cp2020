@@ -57,6 +57,43 @@ export const meleeDamageTypes = {
     monoblade: "DmgMonoblade"
 };
 
+/** Ordnance template types (area of effect shapes) */
+export const ordnanceTemplateTypes = {
+    circle: "TemplateCircle",
+    cone: "TemplateCone",
+    beam: "TemplateBeam"
+};
+
+/** Tool bonus properties — actor property paths a tool can modify */
+export const toolBonusProperties = {
+    "stats.int.tempMod": "PropINT",
+    "stats.ref.tempMod": "PropREF",
+    "stats.tech.tempMod": "PropTECH",
+    "stats.cool.tempMod": "PropCOOL",
+    "stats.attr.tempMod": "PropATTR",
+    "stats.luck.tempMod": "PropLUCK",
+    "stats.ma.tempMod": "PropMA",
+    "stats.bt.tempMod": "PropBT",
+    "stats.emp.tempMod": "PropEMP",
+    "initiativeMod": "PropInitiative",
+    "stunSaveMod": "PropStunSave",
+    "deathSaveMod": "PropDeathSave"
+};
+
+/** Program class types */
+export const programClasses = {
+    Intrusion: "ProgramIntrusion",
+    Decryption: "ProgramDecryption",
+    Detection: "ProgramDetection",
+    AntiSystem: "ProgramAntiSystem",
+    Stealth: "ProgramStealth",
+    Protection: "ProgramProtection",
+    AntiICE: "ProgramAntiICE",
+    AntiPersonnel: "ProgramAntiPersonnel",
+    Controller: "ProgramController",
+    Utility: "ProgramUtility"
+};
+
 /** Exotic weapon effects (stored only, not yet implemented in combat) */
 export const exoticEffects = {
     confusion: "EffConfusion",
@@ -201,6 +238,43 @@ export function getAttackSkillsForWeapon(weaponType) {
     }
 
     return DEFAULT_ATTACK_SKILLS[weaponType] || [];
+}
+
+/**
+ * Get attack skills for ordnance items.
+ * Aggregates Throw + all ranged weapon skills from settings.
+ * @returns {string[]} Array of skill names
+ */
+export function getAttackSkillsForOrdnance() {
+    const skills = new Set();
+
+    // Add Throw category
+    try {
+        const mappings = game.settings.get("cp2020", "skillMappings");
+        const throwCat = mappings["throw"];
+        if (throwCat?.skills?.length) {
+            for (const s of throwCat.skills) skills.add(s.name);
+        }
+        // Add all ranged weapon categories
+        const rangedCategories = ["pistols", "rifles", "shotguns", "submachineGuns", "heavyWeapons", "bows", "crossbows"];
+        for (const catKey of rangedCategories) {
+            const cat = mappings[catKey];
+            if (cat?.skills?.length) {
+                for (const s of cat.skills) skills.add(s.name);
+            }
+        }
+    } catch (e) { /* settings not yet initialized */ }
+
+    // Fallback: if nothing from settings, use defaults
+    if (skills.size === 0) {
+        for (const [wType, wSkills] of Object.entries(DEFAULT_ATTACK_SKILLS)) {
+            if (wType !== "Melee" && wType !== "Exotic") {
+                for (const s of wSkills) skills.add(s);
+            }
+        }
+    }
+
+    return [...skills].sort();
 }
 
 /**

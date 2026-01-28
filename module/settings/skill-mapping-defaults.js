@@ -36,6 +36,11 @@ export const DEFAULT_SKILL_MAPPINGS = {
     singleSkill: true,
     skills: []
   },
+  throw: {
+    labelKey: "SETTINGS.SkillMapThrow",
+    singleSkill: true,
+    skills: []
+  },
   bows: {
     labelKey: "SETTINGS.SkillMapBows",
     singleSkill: true,
@@ -52,10 +57,6 @@ export const DEFAULT_SKILL_MAPPINGS = {
   },
   unarmedAttacks: {
     labelKey: "SETTINGS.SkillMapUnarmed",
-    skills: []
-  },
-  defenceSkills: {
-    labelKey: "SETTINGS.SkillMapDefence",
     skills: []
   },
   escapeSkills: {

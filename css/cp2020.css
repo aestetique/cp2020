@@ -3099,6 +3099,7 @@ input.skill-value.skill-level-input:focus {
   border-radius: 4px;
   outline: none;
   padding: 0;
+  box-shadow: none;
 }
 .item-card .item-name:focus {
   outline: none;
@@ -3262,6 +3263,18 @@ input.skill-value.skill-level-input:focus {
   color: var(--Chat-Text, #FFF);
 }
 
+.item-card .checkbox-img {
+  width: 12px;
+  height: 12px;
+}
+
+.item-card .checkbox-toggle {
+  cursor: pointer;
+}
+.item-card .checkbox-toggle:hover {
+  filter: brightness(1.2);
+}
+
 .item-card .item-stats {
   display: flex;
   width: 90px;
@@ -3364,11 +3377,13 @@ input.skill-value.skill-level-input:focus {
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
+  height: 26px;
 }
 
 .item-card .dropdown {
   display: flex;
   width: 126px;
+  height: 26px;
   padding: 5px 8px;
   align-items: center;
   gap: 10px;
@@ -4192,6 +4207,471 @@ input.skill-value.skill-level-input:focus {
   width: 40px;
 }
 .weapon-card .dual-separator {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  flex-shrink: 0;
+}
+
+.cyberpunk.ordnance-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.ordnance-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.ordnance-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.ordnance-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.ordnance-sheet button, .cyberpunk.ordnance-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.ordnance-sheet button:focus, .cyberpunk.ordnance-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.ordnance-sheet img {
+  border: none;
+}
+.cyberpunk.ordnance-sheet h1, .cyberpunk.ordnance-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.ordnance-card {
+  min-height: 400px;
+}
+.ordnance-card .weapon-divider {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
+}
+.ordnance-card .dual-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.ordnance-card .dual-value {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+}
+.ordnance-card .dual-value-narrow {
+  width: 40px;
+}
+.ordnance-card .dual-input {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+  outline: none;
+}
+.ordnance-card .dual-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.ordnance-card .dual-input::-webkit-inner-spin-button, .ordnance-card .dual-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ordnance-card .dual-input {
+  -moz-appearance: textfield;
+}
+.ordnance-card .dual-input-narrow {
+  width: 40px;
+}
+.ordnance-card .dual-separator {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  flex-shrink: 0;
+}
+
+.cyberpunk.tool-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.tool-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.tool-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.tool-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.tool-sheet button, .cyberpunk.tool-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.tool-sheet button:focus, .cyberpunk.tool-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.tool-sheet img {
+  border: none;
+}
+.cyberpunk.tool-sheet h1, .cyberpunk.tool-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.tool-card {
+  min-height: 400px;
+}
+
+.tool-card .bonus-row,
+.drug-card .bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+}
+
+.tool-card .bonus-row .dropdown-wrapper,
+.drug-card .bonus-row .dropdown-wrapper {
+  flex: 1 0 0;
+}
+
+.tool-card .bonus-row .dropdown-wrapper .dropdown-select,
+.drug-card .bonus-row .dropdown-wrapper .dropdown-select {
+  width: 100%;
+}
+
+.tool-card .bonus-row .dropdown,
+.drug-card .bonus-row .dropdown {
+  flex: 1 0 0;
+  width: auto;
+}
+
+.tool-card .bonus-value,
+.drug-card .bonus-value {
+  display: flex;
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.tool-card .bonus-value-input,
+.drug-card .bonus-value-input {
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+}
+.tool-card .bonus-value-input::-webkit-inner-spin-button, .tool-card .bonus-value-input::-webkit-outer-spin-button,
+.drug-card .bonus-value-input::-webkit-inner-spin-button,
+.drug-card .bonus-value-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.tool-card .bonus-value-input,
+.drug-card .bonus-value-input {
+  -moz-appearance: textfield;
+}
+.tool-card .bonus-value-input:focus,
+.drug-card .bonus-value-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.tool-card .skill-drop.filled,
+.drug-card .skill-drop.filled {
+  display: block;
+  padding: 5px 8px;
+  gap: 10px;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+}
+.tool-card .skill-drop.filled .skill-name,
+.drug-card .skill-drop.filled .skill-name {
+  flex: 1;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  height: 26px;
+  line-height: 14px;
+  cursor: pointer;
+}
+.tool-card .skill-drop.filled .skill-name:hover,
+.drug-card .skill-drop.filled .skill-name:hover {
+  text-decoration: underline;
+}
+
+.tool-card:not(.unlocked) .skill-drop.filled .skill-name,
+.drug-card:not(.unlocked) .skill-drop.filled .skill-name {
+  color: #808090;
+}
+
+.tool-card .skill-drop.empty,
+.drug-card .skill-drop.empty {
+  display: block;
+  padding: 5px 8px;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+}
+.tool-card .skill-drop.empty .placeholder,
+.drug-card .skill-drop.empty .placeholder {
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.tool-card .remove-bonus,
+.drug-card .remove-bonus {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.tool-card .remove-bonus img,
+.drug-card .remove-bonus img {
+  width: 100%;
+  height: 100%;
+}
+.tool-card .remove-bonus:hover,
+.drug-card .remove-bonus:hover {
+  opacity: 1;
+}
+
+.tool-card .effect-bonuses,
+.drug-card .effect-bonuses {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.tool-card .effect-actions,
+.drug-card .effect-actions {
+  display: flex;
+  gap: 12px;
+  align-self: stretch;
+}
+
+.tool-card .effect-actions button,
+.drug-card .effect-actions button {
+  flex: 1;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+  background: transparent;
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+}
+.tool-card .effect-actions button:hover,
+.drug-card .effect-actions button:hover {
+  border-color: var(--Sheet-Key, #B9B29D);
+  color: var(--Sheet-Key, #B9B29D);
+  box-shadow: none;
+}
+
+.cyberpunk.drug-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.drug-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.drug-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.drug-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.drug-sheet button, .cyberpunk.drug-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.drug-sheet button:focus, .cyberpunk.drug-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.drug-sheet img {
+  border: none;
+}
+.cyberpunk.drug-sheet h1, .cyberpunk.drug-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.drug-card {
+  min-height: 400px;
+}
+
+.cyberpunk.program-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.program-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.program-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.program-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.program-sheet button, .cyberpunk.program-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.program-sheet button:focus, .cyberpunk.program-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.program-sheet img {
+  border: none;
+}
+.cyberpunk.program-sheet h1, .cyberpunk.program-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.program-card {
+  min-height: 400px;
+}
+.program-card .dual-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.program-card .dual-value {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.program-card .dual-value-narrow {
+  width: 40px;
+}
+.program-card .dual-input {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  outline: none;
+}
+.program-card .dual-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.program-card .dual-input::-webkit-inner-spin-button, .program-card .dual-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.program-card .dual-input {
+  -moz-appearance: textfield;
+}
+.program-card .dual-input-narrow {
+  width: 40px;
+}
+.program-card .dual-separator {
   color: var(--Sheet-Key, #B9B29D);
   font-family: var(--font-blender);
   font-size: 14px;

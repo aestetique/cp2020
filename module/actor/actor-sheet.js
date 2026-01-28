@@ -1278,6 +1278,20 @@ export class CyberpunkActorSheet extends ActorSheet {
       if (!item) return;
 
       const currentEquipped = item.system.equipped ?? false;
+
+      // Drug consumption: on turn-off, decrement quantity
+      if (currentEquipped && item.type === "drug") {
+        const qty = (item.system.quantity ?? 1) - 1;
+        if (qty <= 0) {
+          await item.update({ "system.equipped": false, "system.quantity": 0 });
+          await item.delete();
+          return;
+        } else {
+          await item.update({ "system.equipped": false, "system.quantity": qty });
+          return;
+        }
+      }
+
       await this.actor.updateEmbeddedDocuments("Item", [{
         _id: itemId,
         "system.equipped": !currentEquipped

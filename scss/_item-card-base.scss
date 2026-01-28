@@ -218,6 +218,8 @@
   outline: none;
   padding: 0;
 
+  box-shadow: none;
+
   &:focus {
     outline: none;
     box-shadow: none;
@@ -409,6 +411,22 @@
 }
 
 // ============================================
+// Checkbox (shared pattern for boolean toggles)
+// ============================================
+.item-card .checkbox-img {
+  width: 12px;
+  height: 12px;
+}
+
+.item-card .checkbox-toggle {
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+}
+
+// ============================================
 // 10. Stats Block (80×80px) - for items with price/weight/availability
 // ============================================
 .item-card .item-stats {
@@ -532,6 +550,7 @@
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
+  height: 26px;
 }
 
 // ============================================
@@ -542,6 +561,7 @@
 .item-card .dropdown {
   display: flex;
   width: 126px;
+  height: 26px;
   padding: 5px 8px;
   align-items: center;
   gap: 10px;

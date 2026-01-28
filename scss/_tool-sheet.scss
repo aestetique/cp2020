@@ -1,0 +1,220 @@
+// ============================================
+// Tool Item Card - Specific Styles
+// Extends _item-card-base.scss
+// Also shared by Drug cards (.drug-card)
+// ============================================
+
+// Hide Foundry's default window chrome for tool sheets
+.cyberpunk.tool-sheet {
+  @include item-sheet-chrome-reset;
+}
+
+// ============================================
+// Tool Card Container - Expandable height
+// ============================================
+.tool-card {
+  min-height: 400px;
+}
+
+// ============================================
+// Bonus Row Layout
+// ============================================
+.tool-card .bonus-row,
+.drug-card .bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+}
+
+// Wide dropdown for property selection (stretch standard dropdown-wrapper)
+.tool-card .bonus-row .dropdown-wrapper,
+.drug-card .bonus-row .dropdown-wrapper {
+  flex: 1 0 0;
+}
+
+.tool-card .bonus-row .dropdown-wrapper .dropdown-select,
+.drug-card .bonus-row .dropdown-wrapper .dropdown-select {
+  width: 100%;
+}
+
+// Locked property dropdown — stretch to fill
+.tool-card .bonus-row .dropdown,
+.drug-card .bonus-row .dropdown {
+  flex: 1 0 0;
+  width: auto;
+}
+
+// ============================================
+// Bonus Value (locked)
+// ============================================
+.tool-card .bonus-value,
+.drug-card .bonus-value {
+  display: flex;
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+// ============================================
+// Bonus Value Input (unlocked)
+// ============================================
+.tool-card .bonus-value-input,
+.drug-card .bonus-value-input {
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+// ============================================
+// Skill Drop Zones
+// ============================================
+.tool-card .skill-drop.filled,
+.drug-card .skill-drop.filled {
+  display: block;
+  padding: 5px 8px;
+  gap: 10px;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+
+  .skill-name {
+    flex: 1;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    height: 26px;
+    line-height: 14px;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Locked filled state
+.tool-card:not(.unlocked) .skill-drop.filled .skill-name,
+.drug-card:not(.unlocked) .skill-drop.filled .skill-name {
+  color: #808090;
+}
+
+// Empty state — dashed border
+.tool-card .skill-drop.empty,
+.drug-card .skill-drop.empty {
+  display: block;
+  padding: 5px 8px;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+
+  .placeholder {
+    color: var(--Chat-Gray, #444856);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+}
+
+// ============================================
+// Remove Bonus Button
+// ============================================
+.tool-card .remove-bonus,
+.drug-card .remove-bonus {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// ============================================
+// Effect Bonuses Container
+// ============================================
+.tool-card .effect-bonuses,
+.drug-card .effect-bonuses {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+
+// ============================================
+// Action Buttons (Add Property / Add Skill)
+// ============================================
+.tool-card .effect-actions,
+.drug-card .effect-actions {
+  display: flex;
+  gap: 12px;
+  align-self: stretch;
+}
+
+.tool-card .effect-actions button,
+.drug-card .effect-actions button {
+  flex: 1;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+  background: transparent;
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--Sheet-Key, #B9B29D);
+    color: var(--Sheet-Key, #B9B29D);
+    box-shadow: none;
+  }
+}

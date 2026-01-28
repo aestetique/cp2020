@@ -1,0 +1,188 @@
+<form class="item-card tool-card has-stats {{#unless isLocked}}unlocked{{/unless}}" autocomplete="off">
+  {{!-- Header (38px) --}}
+  <header class="sheet-header">
+    <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+      <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+    </button>
+
+    <span class="header-name">{{item.name}}</span>
+
+    <a class="header-control" data-action="copyUuid" title="Copy UUID">
+      <i class="fas fa-passport"></i>
+    </a>
+    <a class="header-control close" data-action="closeSheet" title="Close">
+      <i class="fas fa-times"></i>
+    </a>
+  </header>
+
+  {{!-- Item Content --}}
+  <div class="item-content">
+    {{!-- Item Trivia (460×80px) --}}
+    <div class="item-trivia">
+      {{!-- Portrait (80×80px) --}}
+      <div class="item-portrait">
+        <img src="{{item.img}}" alt="{{item.name}}">
+      </div>
+
+      {{!-- Name+Category Container --}}
+      <div class="item-identity">
+        <input type="text" class="item-name" name="name" value="{{item.name}}" {{#if isLocked}}readonly{{/if}}>
+        <div class="item-category">
+          <div class="category-icon">
+            <img src="systems/cp2020/img/ui/badge-tool.svg" alt="">
+          </div>
+          <span class="category-label">{{localize "CYBERPUNK.Tool"}}</span>
+        </div>
+      </div>
+
+      {{!-- Stats Block (90×80px) --}}
+      <div class="item-stats">
+        {{!-- Price Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.cost 2}}</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.cost" value="{{system.cost}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="Price">
+          </div>
+        </div>
+
+        {{!-- Weight Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.weight 2}} kg</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.weight" value="{{system.weight}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="Weight">
+          </div>
+        </div>
+
+        {{!-- Availability Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{selectedAvailabilityLabel}}</span>
+          {{else}}
+            <div class="dropdown-wrapper">
+              <select class="stat-value" name="system.availability">
+                {{#each availabilityOptions}}
+                  <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-rarity.svg" alt="Availability">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Tabs Line --}}
+    <div class="tabs-line">
+      <a class="tab-header {{#if (equals activeTab 'description')}}active{{/if}}" data-tab="description">
+        <span class="tab-text">{{localize "CYBERPUNK.Description"}}</span>
+      </a>
+      <a class="tab-header {{#if (equals activeTab 'effect')}}active{{/if}}" data-tab="effect">
+        <span class="tab-text">{{localize "CYBERPUNK.Effect"}}</span>
+      </a>
+    </div>
+
+    {{!-- Horizontal Divider --}}
+    <div class="divider"></div>
+
+    {{!-- Tab Content --}}
+    <div class="tab-content">
+      {{#if (equals activeTab 'description')}}
+        {{!-- Description Tab --}}
+        <div class="flavour-section">
+          {{#if isLocked}}
+            <p class="flavour-text">{{system.flavor}}</p>
+          {{else}}
+            <textarea class="flavour-text" name="system.flavor" placeholder="Tool description...">{{system.flavor}}</textarea>
+          {{/if}}
+        </div>
+
+        {{!-- Source Field --}}
+        <div class="source-field">
+          <label class="variable-label">{{localize "CYBERPUNK.Source"}}</label>
+          <input type="text" class="source-input" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX" {{#if isLocked}}readonly{{/if}}>
+        </div>
+
+      {{else}}
+        {{!-- Effect Tab --}}
+        <div class="effect-bonuses" data-drop-target="skill-bonus">
+          {{#each bonuses}}
+            <div class="bonus-row" data-index="{{@index}}">
+
+              {{#if this.isProperty}}
+                {{!-- Property bonus row --}}
+                <label class="variable-label">{{localize "CYBERPUNK.Property"}}</label>
+                {{#if ../isLocked}}
+                  <div class="dropdown">
+                    <span class="dropdown-text">{{this.label}}</span>
+                    <div class="dropdown-chevron">
+                      <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+                    </div>
+                  </div>
+                {{else}}
+                  <div class="dropdown-wrapper">
+                    <select class="dropdown-select bonus-property-select" data-index="{{@index}}">
+                      <option value="{{this.property}}" selected>{{this.label}}</option>
+                      {{#each ../propertyOptions}}
+                        <option value="{{this.value}}">{{this.label}}</option>
+                      {{/each}}
+                    </select>
+                    <div class="dropdown-chevron">
+                      <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+                    </div>
+                  </div>
+                {{/if}}
+              {{else}}
+                {{!-- Skill bonus row --}}
+                <label class="variable-label">{{localize "CYBERPUNK.Skill"}}</label>
+                {{#if this.hasFilled}}
+                  <div class="skill-drop filled">
+                    <span class="skill-name" data-uuid="{{this.skillUuid}}">{{this.skillName}}</span>
+                  </div>
+                {{else}}
+                  <div class="skill-drop empty" data-drop-target="skill-bonus">
+                    <span class="placeholder">{{#if ../isLocked}}{{localize "CYBERPUNK.DropSkillLocked"}}{{else}}{{localize "CYBERPUNK.DropSkillHere"}}{{/if}}</span>
+                  </div>
+                {{/if}}
+              {{/if}}
+
+              {{!-- Bonus value --}}
+              {{#if ../isLocked}}
+                <span class="bonus-value">{{this.value}}</span>
+              {{else}}
+                <input type="number" class="bonus-value-input" data-index="{{@index}}" value="{{this.value}}">
+              {{/if}}
+
+              {{!-- Trash icon --}}
+              {{#unless ../isLocked}}
+                <button type="button" class="remove-bonus" data-index="{{@index}}" title="Remove">
+                  <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Remove">
+                </button>
+              {{/unless}}
+            </div>
+          {{/each}}
+        </div>
+
+        {{!-- Action buttons --}}
+        {{#unless isLocked}}
+          <div class="effect-actions">
+            <button type="button" class="add-property">{{localize "CYBERPUNK.AddProperty"}}</button>
+            <button type="button" class="add-skill">{{localize "CYBERPUNK.AddSkill"}}</button>
+          </div>
+        {{/unless}}
+      {{/if}}
+    </div>
+  </div>
+</form>

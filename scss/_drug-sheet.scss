@@ -1,0 +1,16 @@
+// ============================================
+// Drug Item Card - Specific Styles
+// Shares all visual styles with Tool via _tool-sheet.scss
+// ============================================
+
+// Hide Foundry's default window chrome for drug sheets
+.cyberpunk.drug-sheet {
+  @include item-sheet-chrome-reset;
+}
+
+// ============================================
+// Drug Card Container - Expandable height
+// ============================================
+.drug-card {
+  min-height: 400px;
+}

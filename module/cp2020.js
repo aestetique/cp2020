@@ -8,6 +8,10 @@ import { CyberpunkCommoditySheet } from "./item/commodity-sheet.js";
 import { CyberpunkOutfitSheet } from "./item/outfit-sheet.js";
 import { CyberpunkAmmoSheet } from "./item/ammo-sheet.js";
 import { CyberpunkWeaponSheet } from "./item/weapon-sheet.js";
+import { CyberpunkOrdnanceSheet } from "./item/ordnance-sheet.js";
+import { CyberpunkToolSheet } from "./item/tool-sheet.js";
+import { CyberpunkDrugSheet } from "./item/drug-sheet.js";
+import { CyberpunkProgramSheet } from "./item/program-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
@@ -16,7 +20,7 @@ import { CP2020_CONDITIONS } from "./conditions.js";
 import { preloadHandlebarsTemplates } from "./templates.js";
 import { registerHandlebarsHelpers } from "./handlebars-helpers.js"
 import * as migrations from "./migrate.js";
-import { registerSystemSettings } from "./settings.js"
+import { registerSystemSettings, migrateSkillMappings } from "./settings.js"
 
 Hooks.once('init', async function () {
 
@@ -74,6 +78,26 @@ Hooks.once('init', async function () {
         makeDefault: true,
         label: "CYBERPUNK.WeaponSheet"
     });
+    Items.registerSheet("cp2020", CyberpunkOrdnanceSheet, {
+        types: ["ordnance"],
+        makeDefault: true,
+        label: "CYBERPUNK.OrdnanceSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkToolSheet, {
+        types: ["tool"],
+        makeDefault: true,
+        label: "CYBERPUNK.ToolSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkDrugSheet, {
+        types: ["drug"],
+        makeDefault: true,
+        label: "CYBERPUNK.DrugSheet"
+    });
+    Items.registerSheet("cp2020", CyberpunkProgramSheet, {
+        types: ["program"],
+        makeDefault: true,
+        label: "CYBERPUNK.ProgramSheet"
+    });
 
     // Register System Settings
     registerSystemSettings();
@@ -90,6 +114,10 @@ Hooks.once('init', async function () {
 Hooks.once("ready", function() {
     // Determine whether a system migration is required and feasible
     if ( !game.user.isGM ) return;
+
+    // Reconcile skill mappings with current defaults (add new, remove obsolete)
+    migrateSkillMappings();
+
     const lastMigrateVersion = game.settings.get("cp2020", "systemMigrationVersion");
     // We do need to try migrating if we haven't run before - as it stands, previous worlds didn't use this setting, or by default had it set to current version
 

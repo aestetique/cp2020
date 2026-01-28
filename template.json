@@ -771,7 +771,7 @@
 		}
 	},
 	"Item": {
-		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role", "ammo"],
+		"types": ["skill", "weapon", "armor", "cyberware", "vehicle", "misc", "program", "role", "ammo", "ordnance", "tool", "drug"],
 		"templates": {
 			"common": {
 				"flavor": "",
@@ -919,6 +919,29 @@
 				"name": ""
 			},
 			"careerSkills": []
+		},
+		"ordnance": {
+			"templates": ["common"],
+			"attackSkill": "",
+			"damage": "0",
+			"concealability": "pocket",
+			"range": 0,
+			"accuracy": 0,
+			"reliability": "standard",
+			"effect": "",
+			"charges": 0,
+			"templateType": "circle",
+			"removeOnZero": false,
+			"radius": 0
+		},
+		"tool": {
+			"templates": ["common"],
+			"bonuses": []
+		},
+		"drug": {
+			"templates": ["common"],
+			"quantity": 1,
+			"bonuses": []
 		}
 	}
 }

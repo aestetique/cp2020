@@ -23,7 +23,10 @@ export class CyberpunkItem extends Item {
       misc: "systems/cp2020/img/svg/placeholder-gear.svg",
       ammo: "systems/cp2020/img/svg/placeholder-ammo.svg",
       program: "systems/cp2020/img/svg/placeholder-program.svg",
-      role: "systems/cp2020/img/svg/placeholder-role.svg"
+      role: "systems/cp2020/img/svg/placeholder-role.svg",
+      ordnance: "systems/cp2020/img/svg/placeholder-ordnance.svg",
+      tool: "systems/cp2020/img/svg/placeholder-tool.svg",
+      drug: "systems/cp2020/img/svg/placeholder-drug.svg"
     };
 
     const placeholder = placeholders[data.type];
