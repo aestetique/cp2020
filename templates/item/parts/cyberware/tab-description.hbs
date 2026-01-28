@@ -1,0 +1,14 @@
+{{!-- Description Tab --}}
+<div class="flavour-section">
+  {{#if isLocked}}
+    <p class="flavour-text">{{system.flavor}}</p>
+  {{else}}
+    <textarea class="flavour-text" name="system.flavor" placeholder="Cyberware description...">{{system.flavor}}</textarea>
+  {{/if}}
+</div>
+
+{{!-- Source Field --}}
+<div class="source-field">
+  <label class="variable-label">{{localize "CYBERPUNK.Source"}}</label>
+  <input type="text" class="source-input" name="system.source" value="{{system.source}}" placeholder="Core Rulebook, p.XX" {{#if isLocked}}readonly{{/if}}>
+</div>

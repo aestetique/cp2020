@@ -1,0 +1,67 @@
+{{!-- Armor Tab (Embedded Armor Data) --}}
+
+{{!-- Variables Row --}}
+<div class="variables-row">
+  {{!-- Armor Type --}}
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.ArmorType"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedArmorTypeLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.armor.armorType">
+          {{#each armorTypeOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  {{!-- Encumbrance --}}
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Encumbrance"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{system.armor.encumbrance}}</span>
+      </div>
+    {{else}}
+      <input type="number" class="variable-input" name="system.armor.encumbrance" value="{{system.armor.encumbrance}}" step="1">
+    {{/if}}
+  </div>
+</div>
+
+{{!-- Stopping Power Frame --}}
+<div class="sp-frame">
+  <span class="sp-frame-label">{{localize "CYBERPUNK.StoppingPower"}}</span>
+  {{#each coverageRows}}
+    <div class="sp-row">
+      {{#each this}}
+        <div class="sp-block">
+          <div class="sp-values">
+            {{#if ../../isLocked}}
+              <span class="sp-current {{#if isDamaged}}sp-damaged{{/if}}">{{currentSP}}</span>
+            {{else}}
+              <input type="number" class="sp-input sp-current-input" value="{{currentSP}}" data-key="{{key}}" data-max="{{maxSP}}" min="0">
+            {{/if}}
+            <span class="sp-of">of</span>
+            {{#if ../../isLocked}}
+              <span class="sp-max">{{maxSP}}</span>
+            {{else}}
+              <input type="number" class="sp-input" name="system.armor.coverage.{{key}}.stoppingPower" value="{{maxSP}}" min="0">
+            {{/if}}
+          </div>
+          <span class="sp-location">{{label}}</span>
+        </div>
+      {{/each}}
+    </div>
+  {{/each}}
+</div>

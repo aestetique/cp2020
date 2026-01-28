@@ -862,14 +862,61 @@
 		},
 		"cyberware": {
 			"templates": ["common"],
-			"surgCode": "N",
-			"humanityCost": "1d6",
-			"cyberwareType": "",
+			"cyberwareType": "implant",
 			"cyberwareSubtype": "",
-			"slots": 0,
-			"spaces": 0,
-			"abbrev": "",
-			"humanityLoss": 0
+			"surgeryCode": "N",
+			"humanityCost": "1d6",
+			"humanityLoss": 0,
+			"humanityRolled": false,
+			"isOption": false,
+			"hasSlots": 0,
+			"takesSpace": 1,
+			"structure": {
+				"current": 0,
+				"max": 0
+			},
+			"disablesAt": 0,
+			"sdpBonus": 0,
+			"isWeapon": false,
+			"isArmor": false,
+			"chippedSkill": {
+				"uuid": "",
+				"name": ""
+			},
+			"chipValue": 1,
+			"bonuses": [],
+			"weapon": {
+				"weaponType": "Melee",
+				"accuracy": 0,
+				"concealability": "hidden",
+				"damage": "1d6",
+				"shotsLeft": 0,
+				"shots": 0,
+				"rof": 1,
+				"reliability": "standard",
+				"range": 1,
+				"attackSkill": "Brawling",
+				"caliber": "",
+				"loadedAmmoType": "",
+				"loadedAmmoSources": [],
+				"minimumBody": 0,
+				"damageType": "edged",
+				"effect": "",
+				"charges": 0,
+				"chargesMax": 0
+			},
+			"armor": {
+				"armorType": "hard",
+				"coverage": {
+					"Head": { "stoppingPower": 0, "ablation": 0 },
+					"Torso": { "stoppingPower": 0, "ablation": 0 },
+					"lArm": { "stoppingPower": 0, "ablation": 0 },
+					"rArm": { "stoppingPower": 0, "ablation": 0 },
+					"lLeg": { "stoppingPower": 0, "ablation": 0 },
+					"rLeg": { "stoppingPower": 0, "ablation": 0 }
+				},
+				"encumbrance": 0
+			}
 		},
 		"vehicle": {
 			"templates": ["common"],

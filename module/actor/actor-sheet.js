@@ -519,9 +519,13 @@ export class CyberpunkActorSheet extends ActorSheet {
     const weapons = this.actor.itemTypes.weapon || [];
     const armor = this.actor.itemTypes.armor || [];
     const commodity = this.actor.itemTypes.misc || [];
+    const cyberware = this.actor.itemTypes.cyberware || [];
+
+    // Filter cyberweapons (cyberware with isWeapon=true)
+    const cyberweapons = cyberware.filter(c => c.system.isWeapon);
 
     // Prepare weapons data
-    sheetData.weapons = weapons.map(w => {
+    const weaponsList = weapons.map(w => {
       const sys = w.system;
       // Build context: Type · Caliber · Reliability · Concealability · Range
       const weaponType = weaponTypes[sys.weaponType] || sys.weaponType || '';
@@ -529,8 +533,12 @@ export class CyberpunkActorSheet extends ActorSheet {
       const calibers = ammoKey ? (ammoCalibersByWeaponType[ammoKey] || {}) : {};
       const calLabelKey = calibers[sys.caliber];
       const caliber = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : '';
-      const rel = sys.reliability ? game.i18n.localize("CYBERPUNK." + sys.reliability) : '';
-      const conc = sys.concealability ? game.i18n.localize("CYBERPUNK." + sys.concealability) : '';
+      const rel = sys.reliability && reliability[sys.reliability]
+        ? game.i18n.localize("CYBERPUNK." + reliability[sys.reliability])
+        : '';
+      const conc = sys.concealability && concealability[sys.concealability]
+        ? game.i18n.localize("CYBERPUNK." + concealability[sys.concealability])
+        : '';
       const range = sys.range ? `${sys.range} m` : '';
 
       const contextParts = [weaponType, caliber, rel, conc, range].filter(p => p);
@@ -547,9 +555,39 @@ export class CyberpunkActorSheet extends ActorSheet {
         shotsLeft: sys.shotsLeft ?? 0,
         shots: sys.shots ?? 0,
         rof: sys.rof ?? 0,
-        canReload: (sys.shotsLeft ?? 0) < (sys.shots ?? 0)
+        canReload: (sys.shotsLeft ?? 0) < (sys.shots ?? 0),
+        isCyberware: false
       };
     });
+
+    // Prepare cyberweapons data (cyberware with embedded weapon)
+    const cyberweaponsList = cyberweapons.map(c => {
+      const sys = c.system;
+      const weapon = sys.weapon || {};
+      const concLabel = weapon.concealability ? game.i18n.localize("CYBERPUNK." + (weapon.concealability.charAt(0).toUpperCase() + weapon.concealability.slice(1))) : '';
+      const relLabel = weapon.reliability ? game.i18n.localize("CYBERPUNK." + (weapon.reliability.charAt(0).toUpperCase() + weapon.reliability.slice(1))) : '';
+      const range = weapon.range ? `${weapon.range} m` : '';
+      const contextParts = ['Cyberweapon', concLabel, relLabel, range].filter(p => p);
+      const context = contextParts.join(' · ');
+
+      return {
+        id: c.id,
+        img: c.img,
+        name: c.name,
+        context: context,
+        price: sys.cost || 0,
+        weight: sys.weight || 0,
+        damage: weapon.damage || '',
+        shotsLeft: weapon.shotsLeft ?? 0,
+        shots: weapon.shots ?? 0,
+        rof: weapon.rof ?? 1,
+        canReload: (weapon.shotsLeft ?? 0) < (weapon.shots ?? 0),
+        isCyberware: true
+      };
+    });
+
+    // Combine regular weapons and cyberweapons
+    sheetData.weapons = [...weaponsList, ...cyberweaponsList];
 
     // Prepare armor/outfit data
     sheetData.outfitItems = armor.map(a => {
@@ -594,6 +632,49 @@ export class CyberpunkActorSheet extends ActorSheet {
         equipped: sys.equipped ?? false
       };
     });
+
+    // Add cyberware with armor capability to outfit items
+    // Note: cyberware was already declared above at line 522
+    const cyberarmor = cyberware.filter(c => c.system.isArmor);
+    const cyberarmorItems = cyberarmor.map(c => {
+      const sys = c.system;
+      const armorData = sys.armor || {};
+      const coverage = armorData.coverage || {};
+      const areas = [];
+
+      if (coverage.Head?.stoppingPower > 0) areas.push('Head');
+      if (coverage.Torso?.stoppingPower > 0) areas.push('Torso');
+      if (coverage.lArm?.stoppingPower > 0 || coverage.rArm?.stoppingPower > 0) areas.push('Arms');
+      if (coverage.lLeg?.stoppingPower > 0 || coverage.rLeg?.stoppingPower > 0) areas.push('Legs');
+
+      let sp = 0;
+      for (const loc of ['Head', 'Torso', 'lArm', 'rArm', 'lLeg', 'rLeg']) {
+        if (coverage[loc]?.stoppingPower > 0) {
+          sp = coverage[loc].stoppingPower;
+          break;
+        }
+      }
+
+      const armorType = armorData.armorType === 'hard' ? 'Hard Armor' : 'Soft Armor';
+      const contextParts = ['Cyberware', armorType, ...areas];
+      const context = contextParts.join(' · ');
+
+      return {
+        id: c.id,
+        img: c.img,
+        name: c.name,
+        context: context,
+        price: sys.cost || 0,
+        weight: sys.weight || 0,
+        sp: sp,
+        encumbrance: armorData.encumbrance ?? 0,
+        equipped: true,  // Cyberware is always "equipped"
+        isCyberware: true
+      };
+    });
+
+    // Combine regular outfits and cyberarmor
+    sheetData.outfitItems = [...sheetData.outfitItems, ...cyberarmorItems];
 
     // Prepare commodity/gear data
     sheetData.gearItems = commodity.map(m => {

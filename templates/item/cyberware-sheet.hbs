@@ -1,0 +1,128 @@
+<form class="item-card cyberware-card has-stats {{#unless isLocked}}unlocked{{/unless}}" autocomplete="off">
+  {{!-- Header (38px) --}}
+  <header class="sheet-header">
+    <button class="lock-toggle" type="button" title="{{#if isLocked}}Unlock{{else}}Lock{{/if}} Sheet">
+      <img src="systems/cp2020/img/ui/{{#if isLocked}}lock{{else}}unlock{{/if}}.svg" alt="">
+    </button>
+
+    <span class="header-name">{{item.name}}</span>
+
+    <a class="header-control" data-action="copyUuid" title="Copy UUID">
+      <i class="fas fa-passport"></i>
+    </a>
+    <a class="header-control close" data-action="closeSheet" title="Close">
+      <i class="fas fa-times"></i>
+    </a>
+  </header>
+
+  {{!-- Item Content --}}
+  <div class="item-content">
+    {{!-- Item Trivia (460x80px) --}}
+    <div class="item-trivia">
+      {{!-- Portrait (80x80px) --}}
+      <div class="item-portrait">
+        <img src="{{item.img}}" alt="{{item.name}}">
+      </div>
+
+      {{!-- Name+Category Container --}}
+      <div class="item-identity">
+        <input type="text" class="item-name" name="name" value="{{item.name}}" {{#if isLocked}}readonly{{/if}}>
+        <div class="item-category">
+          <div class="category-icon">
+            <img src="systems/cp2020/img/ui/badge-cyberware.svg" alt="">
+          </div>
+          <span class="category-label">{{localize "CYBERPUNK.Cyberware"}}</span>
+        </div>
+      </div>
+
+      {{!-- Stats Block (90x80px) --}}
+      <div class="item-stats">
+        {{!-- Price Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.cost 2}}</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.cost" value="{{system.cost}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="Price">
+          </div>
+        </div>
+
+        {{!-- Weight Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{toFixed system.weight 2}} kg</span>
+          {{else}}
+            <input type="number" class="stat-value" name="system.weight" value="{{system.weight}}" step="0.01">
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="Weight">
+          </div>
+        </div>
+
+        {{!-- Availability Row --}}
+        <div class="stat-row">
+          {{#if isLocked}}
+            <span class="stat-value">{{selectedAvailabilityLabel}}</span>
+          {{else}}
+            <div class="dropdown-wrapper">
+              <select class="stat-value" name="system.availability">
+                {{#each availabilityOptions}}
+                  <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+              <div class="dropdown-chevron">
+                <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+              </div>
+            </div>
+          {{/if}}
+          <div class="stat-icon">
+            <img src="systems/cp2020/img/ui/badge-rarity.svg" alt="Availability">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Tabs Line --}}
+    <div class="tabs-line">
+      <a class="tab-header {{#if (equals activeTab 'description')}}active{{/if}}" data-tab="description">
+        <span class="tab-text">{{localize "CYBERPUNK.Description"}}</span>
+      </a>
+      <a class="tab-header {{#if (equals activeTab 'details')}}active{{/if}}" data-tab="details">
+        <span class="tab-text">{{localize "CYBERPUNK.Details"}}</span>
+      </a>
+      <a class="tab-header {{#if (equals activeTab 'effect')}}active{{/if}}" data-tab="effect">
+        <span class="tab-text">{{localize "CYBERPUNK.Effect"}}</span>
+      </a>
+      {{#if showWeaponTab}}
+        <a class="tab-header {{#if (equals activeTab 'weapon')}}active{{/if}}" data-tab="weapon">
+          <span class="tab-text">{{localize "CYBERPUNK.Weapon"}}</span>
+        </a>
+      {{/if}}
+      {{#if showArmorTab}}
+        <a class="tab-header {{#if (equals activeTab 'armor')}}active{{/if}}" data-tab="armor">
+          <span class="tab-text">{{localize "CYBERPUNK.Armor"}}</span>
+        </a>
+      {{/if}}
+    </div>
+
+    {{!-- Horizontal Divider --}}
+    <div class="divider"></div>
+
+    {{!-- Tab Content --}}
+    <div class="tab-content">
+      {{#if (equals activeTab 'description')}}
+        {{> "systems/cp2020/templates/item/parts/cyberware/tab-description.hbs"}}
+      {{else if (equals activeTab 'details')}}
+        {{> "systems/cp2020/templates/item/parts/cyberware/tab-details.hbs"}}
+      {{else if (equals activeTab 'effect')}}
+        {{> "systems/cp2020/templates/item/parts/cyberware/tab-effect.hbs"}}
+      {{else if (equals activeTab 'weapon')}}
+        {{> "systems/cp2020/templates/item/parts/cyberware/tab-weapon.hbs"}}
+      {{else if (equals activeTab 'armor')}}
+        {{> "systems/cp2020/templates/item/parts/cyberware/tab-armor.hbs"}}
+      {{/if}}
+    </div>
+  </div>
+</form>

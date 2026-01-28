@@ -128,6 +128,40 @@ export class CyberpunkActor extends Actor {
       }
 
     });
+
+    // Add cyberarmor SP to hit locations (same stacking logic as armor)
+    const cyberware = equippedItems.filter(i => i.type === "cyberware" && i.system.isArmor);
+    cyberware.forEach(cyber => {
+      const armorData = cyber.system.armor || {};
+      for (let armorArea in armorData.coverage) {
+        let location = system.hitLocations[armorArea];
+        if (location !== undefined) {
+          let armorCoverage = armorData.coverage[armorArea];
+          let armorMaxSP = Number(armorCoverage.stoppingPower) || 0;
+          let armorAblation = Number(armorCoverage.ablation) || 0;
+          let locationStoppingPower = Number(location.stoppingPower);
+          let armorStoppingPower = Math.max(0, armorMaxSP - armorAblation);
+
+          if (locationStoppingPower === 0 || armorStoppingPower === 0) {
+            location.stoppingPower = locationStoppingPower + armorStoppingPower;
+          } else {
+            let difference = Math.abs(locationStoppingPower - armorStoppingPower);
+            let maxValue = Math.max(locationStoppingPower, armorStoppingPower);
+            let modifier = 0;
+
+            if (difference >= 27) modifier = 0;
+            else if (difference >= 21) modifier = 2;
+            else if (difference >= 15) modifier = 3;
+            else if (difference >= 9) modifier = 3;
+            else if (difference >= 5) modifier = 4;
+            else modifier = 5;
+
+            location.stoppingPower = maxValue + modifier;
+          }
+        }
+      }
+    });
+
     stats.ref.total = stats.ref.base + stats.ref.tempMod + stats.ref.armorMod;
 
     const move = stats.ma;
@@ -208,6 +242,14 @@ export class CyberpunkActor extends Actor {
         }
       });
 
+      // Also check cyberarmor type
+      equippedItems.filter(i => i.type === "cyberware" && i.system.isArmor).forEach(cyber => {
+        const coverage = cyber.system.armor?.coverage?.[loc];
+        if (coverage?.stoppingPower > 0 && cyber.system.armor?.armorType === "hard") {
+          hasHardArmor = true;
+        }
+      });
+
       // Determine state for background image
       let state;
       if (isLost) {
@@ -260,10 +302,11 @@ export class CyberpunkActor extends Actor {
 
   /**
    * Get a body type modifier from the body type stat (body)
-   * I couldn't figure out a single formula that'd work for it (cos of the weird widths of BT values)
+   * @param {number} body - Body stat value
+   * @returns {number} Body Type Modifier
    */
   static btm(body) {
-    
+    return btmFromBT(body);
   }
 
   /**
@@ -366,10 +409,6 @@ export class CyberpunkActor extends Actor {
   }
 
   getSkillVal(skillName) {
-    console.log("SkillName:", skillName);
-    console.log("SkillName_localize:", localize("Skill"+skillName));
-    console.log("lang:", game.i18n);
-
     const nameLoc = localize("Skill" + skillName);
     // Localization may return the original key, so we check both options
     const targetName = nameLoc.includes("Skill") ? skillName : nameLoc;
@@ -386,7 +425,7 @@ export class CyberpunkActor extends Actor {
    * @param {boolean} advantage
    * @param {boolean} disadvantage
    */
-  rollSkill(skillId, extraMod = 0, advantage = false, disadvantage = false) {
+  async rollSkill(skillId, extraMod = 0, advantage = false, disadvantage = false) {
     const skill = this.items.get(skillId);
     if (!skill) return;
 
@@ -412,10 +451,8 @@ export class CyberpunkActor extends Actor {
       const r1 = makeRoll();
       const r2 = makeRoll();
 
-      Promise.all([
-        r1.evaluate(),
-        r2.evaluate()
-      ]).then(() => {
+      try {
+        await Promise.all([r1.evaluate(), r2.evaluate()]);
         const chosen = advantage
           ? (r1.total >= r2.total ? r1 : r2)   // best
           : (r1.total <= r2.total ? r1 : r2);  // worst
@@ -423,7 +460,9 @@ export class CyberpunkActor extends Actor {
         new Multiroll(skill.name)
           .addRoll(chosen)
           .defaultExecute({ statIcon: skill.system.stat }, this);
-      });
+      } catch (e) {
+        console.error("CyberpunkActor: Failed to evaluate advantage/disadvantage rolls", e);
+      }
       return;
     }
 

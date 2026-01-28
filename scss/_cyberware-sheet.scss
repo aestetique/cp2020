@@ -1,0 +1,594 @@
+// ============================================
+// Cyberware Item Card - Specific Styles
+// Extends _item-card-base.scss
+// Combines patterns from tool, weapon, outfit sheets
+// ============================================
+
+// Hide Foundry's default window chrome for cyberware sheets
+.cyberpunk.cyberware-sheet {
+  @include item-sheet-chrome-reset;
+}
+
+// ============================================
+// Cyberware Card Container
+// ============================================
+.cyberware-card {
+  // ============================================
+  // Humanity Field (Formula + Roll Button + Result)
+  // ============================================
+  .humanity-field {
+    flex: 1 0 0;
+    gap: 7px;
+
+    .variable-label {
+      width: 83px;
+    }
+  }
+
+  .humanity-input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .humanity-formula {
+    display: flex;
+    width: 58px;
+    height: 26px;
+    padding: 5px 8px;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: #808090;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+
+  .humanity-formula-input {
+    width: 58px;
+    height: 26px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    outline: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .humanity-roll-btn {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover:not([disabled]) {
+      transform: scale(1.1);
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+
+  .humanity-result {
+    display: flex;
+    width: 32px;
+    height: 26px;
+    padding: 5px 8px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: #808090;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+
+    &.rolled {
+      color: var(--Chat-Text, #FFF);
+    }
+  }
+
+  // ============================================
+  // Cyber Divider (between type-dependent sections)
+  // ============================================
+  .cyber-divider {
+    width: 100%;
+    height: 1px;
+    flex-shrink: 0;
+    margin: 8px 0;
+    background: linear-gradient(90deg,
+      rgba(185, 178, 157, 0.00) 0%,
+      rgba(185, 178, 157, 0.50) 50%,
+      rgba(185, 178, 157, 0.00) 100%);
+  }
+
+  // ============================================
+  // Checkbox Fields
+  // ============================================
+  .checkbox-field {
+    display: flex;
+    align-items: center;
+    flex: 1 0 0;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--Sheet-Key, #B9B29D);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--Sheet-Key, #B9B29D);
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+  }
+
+  // ============================================
+  // Variable Value (locked state)
+  // ============================================
+  .variable-value {
+    display: flex;
+    height: 26px;
+    padding: 5px 8px;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: #808090;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+
+  // ============================================
+  // Dual Field (Structure, etc.)
+  // Inherited from weapon-sheet pattern
+  // ============================================
+  .dual-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+  }
+
+  .dual-value {
+    display: flex;
+    width: 47px;
+    height: 26px;
+    padding: 5px 8px;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: #808090;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: left;
+  }
+
+  .dual-value-narrow {
+    width: 40px;
+  }
+
+  .dual-input {
+    display: flex;
+    width: 47px;
+    height: 26px;
+    padding: 5px 8px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: left;
+    outline: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    -moz-appearance: textfield;
+  }
+
+  .dual-input-narrow {
+    width: 40px;
+  }
+
+  .dual-separator {
+    color: var(--Sheet-Key, #B9B29D);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    flex-shrink: 0;
+  }
+
+  // ============================================
+  // Chipped Skill Row
+  // ============================================
+  .chipped-skill-row {
+    align-items: stretch;
+  }
+
+  .chipped-skill-field {
+    flex: 2 0 0;
+  }
+
+  .chip-value-field {
+    flex: 1 0 0;
+    max-width: 100px;
+  }
+
+  .skill-drop.filled {
+    display: flex;
+    padding: 5px 8px;
+    gap: 10px;
+    flex: 1 0 0;
+    align-self: stretch;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+
+    .skill-name {
+      flex: 1;
+      color: var(--Chat-Text, #FFF);
+      font-family: var(--font-blender);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .remove-chipped-skill {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.6;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  // Locked filled state
+  &:not(.unlocked) .skill-drop.filled .skill-name {
+    color: #808090;
+  }
+
+  .skill-drop.empty {
+    display: block;
+    padding: 5px 8px;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 4px;
+    border: 1px dashed var(--Chat-Gray, #444856);
+
+    .placeholder {
+      color: var(--Chat-Gray, #444856);
+      font-family: var(--font-blender);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+    }
+  }
+
+  // ============================================
+  // Effect Tab Bonuses (same as tool-sheet)
+  // ============================================
+  .bonus-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+  }
+
+  .bonus-row .dropdown-wrapper {
+    flex: 1 0 0;
+  }
+
+  .bonus-row .dropdown-wrapper .dropdown-select {
+    width: 100%;
+  }
+
+  .bonus-row .dropdown {
+    flex: 1 0 0;
+    width: auto;
+  }
+
+  .bonus-value {
+    display: flex;
+    width: 50px;
+    height: 26px;
+    padding: 5px 8px;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: #808090;
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+
+  .bonus-value-input {
+    width: 50px;
+    height: 26px;
+    padding: 5px 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    outline: none;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    -moz-appearance: textfield;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .remove-bonus {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.6;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .effect-bonuses {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: stretch;
+  }
+
+  .effect-actions {
+    display: flex;
+    gap: 12px;
+    align-self: stretch;
+  }
+
+  .effect-actions button {
+    flex: 1;
+    height: 26px;
+    border-radius: 4px;
+    border: 1px dashed var(--Chat-Gray, #444856);
+    background: transparent;
+    color: var(--Chat-Gray, #444856);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--Sheet-Key, #B9B29D);
+      color: var(--Sheet-Key, #B9B29D);
+      box-shadow: none;
+    }
+  }
+
+  // ============================================
+  // Weapon Tab Divider
+  // ============================================
+  .weapon-divider {
+    width: 100%;
+    height: 1px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg,
+      rgba(185, 178, 157, 0.00) 0%,
+      rgba(185, 178, 157, 0.50) 50%,
+      rgba(185, 178, 157, 0.00) 100%);
+  }
+
+  // ============================================
+  // Armor Tab SP Frame (same as outfit-sheet)
+  // ============================================
+  .sp-frame {
+    position: relative;
+    display: flex;
+    margin-top: 8px;
+    padding: 24px 0 16px 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+    border-radius: 10px;
+    border: 1px solid var(--Chat-Gray, #444856);
+  }
+
+  .sp-frame-label {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--Chat-Back, #1A1A1A);
+    padding: 0 8px;
+    color: var(--Sheet-Key, #B9B29D);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  .sp-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sp-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sp-values {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sp-current,
+  .sp-max {
+    display: flex;
+    width: 40px;
+    height: 26px;
+    padding: 5px 4px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  .sp-damaged {
+    color: #B60F3C;
+  }
+
+  .sp-of {
+    color: var(--Sheet-Key, #B9B29D);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  .sp-location {
+    color: var(--Sheet-Key, #B9B29D);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  .sp-input {
+    display: flex;
+    width: 40px;
+    height: 26px;
+    padding: 5px 4px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+    color: var(--Chat-Text, #FFF);
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    text-align: center;
+    outline: none;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    -moz-appearance: textfield;
+  }
+}

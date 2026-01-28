@@ -94,6 +94,93 @@ export const programClasses = {
     Utility: "ProgramUtility"
 };
 
+/** Cyberware types */
+export const cyberwareTypes = {
+    sensor: "CyberTypeSensor",
+    cyberlimb: "CyberTypeCyberlimb",
+    implant: "CyberTypeImplant",
+    chipware: "CyberTypeChipware"
+};
+
+/** Cyberware subtypes by type */
+export const cyberwareSubtypes = {
+    sensor: {
+        voice: "CyberSubVoice",
+        audio: "CyberSubAudio",
+        optics: "CyberSubOptics"
+    },
+    cyberlimb: {
+        leftArm: "CyberSubLeftArm",
+        rightArm: "CyberSubRightArm",
+        leftLeg: "CyberSubLeftLeg",
+        rightLeg: "CyberSubRightLeg",
+        extraArm: "CyberSubExtraArm"
+    },
+    implant: {
+        fashionware: "CyberSubFashionware",
+        neuralware: "CyberSubNeuralware",
+        bioware: "CyberSubBioware",
+        nanotech: "CyberSubNanotech",
+        bodyImplant: "CyberSubBodyImplant",
+        bodyWeapon: "CyberSubBodyWeapon",
+        bodyPlating: "CyberSubBodyPlating",
+        linearFrame: "CyberSubLinearFrame"
+    },
+    chipware: {
+        skill: "CyberSubSkillChip",
+        behavior: "CyberSubBehavior",
+        storage: "CyberSubStorage"
+    }
+};
+
+/** Surgery codes */
+export const surgeryCodes = {
+    N: "SurgHarmless",
+    M: "SurgNegligible",
+    MA: "SurgMinor",
+    CR: "SurgMajor",
+    CRP: "SurgCritical"
+};
+
+/**
+ * Get subtypes for a given cyberware type
+ * @param {string} cyberwareType - The cyberware type (sensor, cyberlimb, implant, chipware)
+ * @returns {Object} Subtypes lookup object
+ */
+export function getCyberwareSubtypes(cyberwareType) {
+    return cyberwareSubtypes[cyberwareType] || {};
+}
+
+/**
+ * Check if cyberware type can have options (slots/spaces)
+ * @param {string} cyberwareType
+ * @returns {boolean}
+ */
+export function canHaveOptions(cyberwareType) {
+    return cyberwareType === "sensor" || cyberwareType === "cyberlimb";
+}
+
+/**
+ * Check if cyberware type can be a weapon
+ * @param {string} cyberwareType
+ * @param {boolean} isOption
+ * @returns {boolean}
+ */
+export function canBeWeapon(cyberwareType, isOption) {
+    if (cyberwareType === "implant") return true;
+    if ((cyberwareType === "sensor" || cyberwareType === "cyberlimb") && isOption) return true;
+    return false;
+}
+
+/**
+ * Check if cyberware type can be armor
+ * @param {string} cyberwareType
+ * @returns {boolean}
+ */
+export function canBeArmor(cyberwareType) {
+    return cyberwareType === "implant";
+}
+
 /** Exotic weapon effects (stored only, not yet implemented in combat) */
 export const exoticEffects = {
     confusion: "EffConfusion",

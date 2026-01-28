@@ -33,13 +33,17 @@
             <span class="field-top">{{weapon.damage}}</span>
             <span class="field-bottom">Damage</span>
           </div>
-          <div class="gear-field" style="width: 60px;">
-            <span class="field-top">{{weapon.shotsLeft}} / {{weapon.shots}}</span>
-            <span class="field-bottom">Magazine</span>
-          </div>
-          <div class="gear-action-btn reload-weapon" data-item-id="{{weapon.id}}" data-can-reload="{{weapon.canReload}}">
-            <img src="systems/cp2020/img/ui/badge-reload{{#unless weapon.canReload}}-disabled{{/unless}}.svg" alt="Reload">
-          </div>
+          {{#if weapon.shots}}
+            <div class="gear-field" style="width: 60px;">
+              <span class="field-top">{{weapon.shotsLeft}} / {{weapon.shots}}</span>
+              <span class="field-bottom">Magazine</span>
+            </div>
+            <div class="gear-action-btn reload-weapon" data-item-id="{{weapon.id}}" data-can-reload="{{weapon.canReload}}">
+              <img src="systems/cp2020/img/ui/badge-reload{{#unless weapon.canReload}}-disabled{{/unless}}.svg" alt="Reload">
+            </div>
+          {{else}}
+            <div class="gear-spacer" style="width: 100px;"></div>
+          {{/if}}
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{weapon.id}}" title="View">
               <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">

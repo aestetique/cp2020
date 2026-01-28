@@ -1,0 +1,330 @@
+{{!-- Weapon Tab (Embedded Weapon Data) --}}
+
+{{!-- Row 1: Weapon Type + Damage --}}
+<div class="variables-row">
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.WeaponType"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedWeaponCategoryLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="weaponCategory">
+          {{#each weaponCategoryOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Damage"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{system.weapon.damage}}</span>
+      </div>
+    {{else}}
+      <input type="text" class="variable-input" name="system.weapon.damage" value="{{system.weapon.damage}}" placeholder="2d6+1">
+    {{/if}}
+  </div>
+</div>
+
+{{!-- Row 2: Concealability + Range/WA --}}
+<div class="variables-row">
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Concealability"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedWeaponConcealabilityLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.weapon.concealability">
+          {{#each weaponConcealabilityOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="variable-field dual-field">
+    <label class="variable-label">{{localize "CYBERPUNK.RangeMeters"}}</label>
+    {{#if isLocked}}
+      <span class="dual-value">{{system.weapon.range}}</span>
+    {{else}}
+      <input type="number" class="dual-input" name="system.weapon.range" value="{{system.weapon.range}}" min="0">
+    {{/if}}
+    <label class="dual-separator">{{localize "CYBERPUNK.WA"}}</label>
+    {{#if isLocked}}
+      <span class="dual-value dual-value-narrow">{{system.weapon.accuracy}}</span>
+    {{else}}
+      <input type="number" class="dual-input dual-input-narrow" name="system.weapon.accuracy" value="{{system.weapon.accuracy}}">
+    {{/if}}
+  </div>
+</div>
+
+{{!-- Row 3: Reliability + Minimum Body --}}
+<div class="variables-row">
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Reliability"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedWeaponReliabilityLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.weapon.reliability">
+          {{#each weaponReliabilityOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.MinimumBody"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{system.weapon.minimumBody}}</span>
+      </div>
+    {{else}}
+      <input type="number" class="variable-input" name="system.weapon.minimumBody" value="{{system.weapon.minimumBody}}" min="0">
+    {{/if}}
+  </div>
+</div>
+
+{{!-- Gradient Divider --}}
+<div class="weapon-divider"></div>
+
+{{!-- ===================== --}}
+{{!-- RANGED-SPECIFIC ROWS  --}}
+{{!-- ===================== --}}
+{{#if weaponIsRanged}}
+  {{!-- Row 4: Subtype + Magazine --}}
+  <div class="variables-row">
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.Subtype"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponSubtypeLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="weaponSubtype">
+            {{#each weaponSubtypeOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="variable-field dual-field">
+      <label class="variable-label">{{localize "CYBERPUNK.Magazine"}}</label>
+      {{#if isLocked}}
+        <span class="dual-value">{{system.weapon.shotsLeft}}</span>
+      {{else}}
+        <input type="number" class="dual-input" name="system.weapon.shotsLeft" value="{{system.weapon.shotsLeft}}" min="0">
+      {{/if}}
+      <span class="dual-separator">of</span>
+      {{#if isLocked}}
+        <span class="dual-value">{{system.weapon.shots}}</span>
+      {{else}}
+        <input type="number" class="dual-input" name="system.weapon.shots" value="{{system.weapon.shots}}" min="0">
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Row 5: Caliber + Rate of Fire --}}
+  <div class="variables-row">
+    {{#if weaponHasCaliber}}
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.Caliber"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponCaliberLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="system.weapon.caliber">
+            {{#each weaponCaliberOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.RateOfFire"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{system.weapon.rof}}</span>
+        </div>
+      {{else}}
+        <input type="number" class="variable-input" name="system.weapon.rof" value="{{system.weapon.rof}}" min="1">
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{!-- ==================== --}}
+{{!-- MELEE-SPECIFIC ROWS  --}}
+{{!-- ==================== --}}
+{{#if weaponIsMelee}}
+  {{!-- Row 4: Attack Skill + Damage Type --}}
+  <div class="variables-row">
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.AttackSkill"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponAttackSkillLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="system.weapon.attackSkill">
+            {{#each weaponAttackSkillOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.DamageType"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponDamageTypeLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="system.weapon.damageType">
+            {{#each weaponDamageTypeOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{!-- ===================== --}}
+{{!-- EXOTIC-SPECIFIC ROWS  --}}
+{{!-- ===================== --}}
+{{#if weaponIsExotic}}
+  {{!-- Row 4: Attack Skill + Effect --}}
+  <div class="variables-row">
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.AttackSkill"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponAttackSkillLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="system.weapon.attackSkill">
+            {{#each weaponAttackSkillOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.Effect"}}</label>
+      {{#if isLocked}}
+        <div class="dropdown">
+          <span class="dropdown-text">{{selectedWeaponEffectLabel}}</span>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{else}}
+        <div class="dropdown-wrapper">
+          <select class="dropdown-select" name="system.weapon.effect">
+            {{#each weaponEffectOptions}}
+              <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+          <div class="dropdown-chevron">
+            <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Row 5: Charges --}}
+  <div class="variables-row">
+    <div class="variable-field dual-field">
+      <label class="variable-label">{{localize "CYBERPUNK.Charges"}}</label>
+      {{#if isLocked}}
+        <span class="dual-value">{{system.weapon.charges}}</span>
+      {{else}}
+        <input type="number" class="dual-input" name="system.weapon.charges" value="{{system.weapon.charges}}" min="0">
+      {{/if}}
+      <span class="dual-separator">of</span>
+      {{#if isLocked}}
+        <span class="dual-value">{{system.weapon.chargesMax}}</span>
+      {{else}}
+        <input type="number" class="dual-input" name="system.weapon.chargesMax" value="{{system.weapon.chargesMax}}" min="0">
+      {{/if}}
+    </div>
+  </div>
+{{/if}}

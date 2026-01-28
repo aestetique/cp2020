@@ -87,9 +87,10 @@ export async function rollLocation(targetActor, targetArea) {
 
 export function deepLookup(startObject, path) {
     let current = startObject;
-    path.split(".").forEach(segment => {
+    for (const segment of path.split(".")) {
+        if (current == null) return undefined;
         current = current[segment];
-    });
+    }
     return current;
 }
 

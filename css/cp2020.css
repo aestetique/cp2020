@@ -4680,3 +4680,518 @@ input.skill-value.skill-level-input:focus {
   line-height: 16px;
   flex-shrink: 0;
 }
+
+.cyberpunk.cyberware-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+.cyberpunk.cyberware-sheet > .window-header {
+  display: none;
+}
+.cyberpunk.cyberware-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+.cyberpunk.cyberware-sheet > .window-resizable-handle {
+  display: none;
+}
+.cyberpunk.cyberware-sheet button, .cyberpunk.cyberware-sheet a {
+  --button-focus-outline-color: transparent;
+}
+.cyberpunk.cyberware-sheet button:focus, .cyberpunk.cyberware-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+.cyberpunk.cyberware-sheet img {
+  border: none;
+}
+.cyberpunk.cyberware-sheet h1, .cyberpunk.cyberware-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+.cyberware-card .humanity-field {
+  flex: 1 0 0;
+  gap: 7px;
+}
+.cyberware-card .humanity-field .variable-label {
+  width: 83px;
+}
+.cyberware-card .humanity-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cyberware-card .humanity-formula {
+  display: flex;
+  width: 58px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.cyberware-card .humanity-formula-input {
+  width: 58px;
+  height: 26px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+}
+.cyberware-card .humanity-formula-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.cyberware-card .humanity-roll-btn {
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cyberware-card .humanity-roll-btn img {
+  width: 100%;
+  height: 100%;
+}
+.cyberware-card .humanity-roll-btn:hover:not([disabled]) {
+  transform: scale(1.1);
+}
+.cyberware-card .humanity-roll-btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.cyberware-card .humanity-result {
+  display: flex;
+  width: 32px;
+  height: 26px;
+  padding: 5px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.cyberware-card .humanity-result.rolled {
+  color: var(--Chat-Text, #FFF);
+}
+.cyberware-card .cyber-divider {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  margin: 8px 0;
+  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
+}
+.cyberware-card .checkbox-field {
+  display: flex;
+  align-items: center;
+  flex: 1 0 0;
+}
+.cyberware-card .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+.cyberware-card .checkbox-label input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--Sheet-Key, #B9B29D);
+}
+.cyberware-card .checkbox-label input[type=checkbox]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.cyberware-card .variable-value {
+  display: flex;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.cyberware-card .dual-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+.cyberware-card .dual-value {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+}
+.cyberware-card .dual-value-narrow {
+  width: 40px;
+}
+.cyberware-card .dual-input {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+  outline: none;
+}
+.cyberware-card .dual-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.cyberware-card .dual-input::-webkit-inner-spin-button, .cyberware-card .dual-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cyberware-card .dual-input {
+  -moz-appearance: textfield;
+}
+.cyberware-card .dual-input-narrow {
+  width: 40px;
+}
+.cyberware-card .dual-separator {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  flex-shrink: 0;
+}
+.cyberware-card .chipped-skill-row {
+  align-items: stretch;
+}
+.cyberware-card .chipped-skill-field {
+  flex: 2 0 0;
+}
+.cyberware-card .chip-value-field {
+  flex: 1 0 0;
+  max-width: 100px;
+}
+.cyberware-card .skill-drop.filled {
+  display: flex;
+  padding: 5px 8px;
+  gap: 10px;
+  flex: 1 0 0;
+  align-self: stretch;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+}
+.cyberware-card .skill-drop.filled .skill-name {
+  flex: 1;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+}
+.cyberware-card .skill-drop.filled .skill-name:hover {
+  text-decoration: underline;
+}
+.cyberware-card .skill-drop.filled .remove-chipped-skill {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.cyberware-card .skill-drop.filled .remove-chipped-skill img {
+  width: 100%;
+  height: 100%;
+}
+.cyberware-card .skill-drop.filled .remove-chipped-skill:hover {
+  opacity: 1;
+}
+.cyberware-card:not(.unlocked) .skill-drop.filled .skill-name {
+  color: #808090;
+}
+.cyberware-card .skill-drop.empty {
+  display: block;
+  padding: 5px 8px;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+}
+.cyberware-card .skill-drop.empty .placeholder {
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.cyberware-card .bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+}
+.cyberware-card .bonus-row .dropdown-wrapper {
+  flex: 1 0 0;
+}
+.cyberware-card .bonus-row .dropdown-wrapper .dropdown-select {
+  width: 100%;
+}
+.cyberware-card .bonus-row .dropdown {
+  flex: 1 0 0;
+  width: auto;
+}
+.cyberware-card .bonus-value {
+  display: flex;
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.cyberware-card .bonus-value-input {
+  width: 50px;
+  height: 26px;
+  padding: 5px 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+}
+.cyberware-card .bonus-value-input::-webkit-inner-spin-button, .cyberware-card .bonus-value-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cyberware-card .bonus-value-input {
+  -moz-appearance: textfield;
+}
+.cyberware-card .bonus-value-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.cyberware-card .remove-bonus {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.cyberware-card .remove-bonus img {
+  width: 100%;
+  height: 100%;
+}
+.cyberware-card .remove-bonus:hover {
+  opacity: 1;
+}
+.cyberware-card .effect-bonuses {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+.cyberware-card .effect-actions {
+  display: flex;
+  gap: 12px;
+  align-self: stretch;
+}
+.cyberware-card .effect-actions button {
+  flex: 1;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+  background: transparent;
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  cursor: pointer;
+}
+.cyberware-card .effect-actions button:hover {
+  border-color: var(--Sheet-Key, #B9B29D);
+  color: var(--Sheet-Key, #B9B29D);
+  box-shadow: none;
+}
+.cyberware-card .weapon-divider {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
+}
+.cyberware-card .sp-frame {
+  position: relative;
+  display: flex;
+  margin-top: 8px;
+  padding: 24px 0 16px 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+  border-radius: 10px;
+  border: 1px solid var(--Chat-Gray, #444856);
+}
+.cyberware-card .sp-frame-label {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--Chat-Back, #1A1A1A);
+  padding: 0 8px;
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+}
+.cyberware-card .sp-row {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  justify-content: center;
+}
+.cyberware-card .sp-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.cyberware-card .sp-values {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cyberware-card .sp-current,
+.cyberware-card .sp-max {
+  display: flex;
+  width: 40px;
+  height: 26px;
+  padding: 5px 4px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: center;
+}
+.cyberware-card .sp-damaged {
+  color: #B60F3C;
+}
+.cyberware-card .sp-of {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+}
+.cyberware-card .sp-location {
+  color: var(--Sheet-Key, #B9B29D);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: center;
+}
+.cyberware-card .sp-input {
+  display: flex;
+  width: 40px;
+  height: 26px;
+  padding: 5px 4px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: center;
+  outline: none;
+}
+.cyberware-card .sp-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.cyberware-card .sp-input::-webkit-inner-spin-button, .cyberware-card .sp-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cyberware-card .sp-input {
+  -moz-appearance: textfield;
+}

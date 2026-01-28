@@ -1,0 +1,279 @@
+{{!-- Details Tab --}}
+
+{{!-- Row 1: Type + Humanity Loss --}}
+<div class="variables-row">
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.CyberwareType"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedTypeLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.cyberwareType">
+          {{#each cyberwareTypeOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="variable-field humanity-field">
+    <label class="variable-label">{{localize "CYBERPUNK.HumanityLoss"}}</label>
+    <div class="humanity-input-group">
+      {{#if isLocked}}
+        <span class="humanity-formula">{{system.humanityCost}}</span>
+      {{else}}
+        <input type="text" class="humanity-formula-input" name="system.humanityCost" value="{{system.humanityCost}}" placeholder="1d6">
+      {{/if}}
+      <button type="button" class="humanity-roll-btn" {{#if humanityRolled}}disabled{{/if}} title="{{localize 'CYBERPUNK.RollHumanity'}}">
+        <img src="systems/cp2020/img/dice/d10{{#if humanityRolled}}gray.png{{else}}gold.svg{{/if}}" alt="">
+      </button>
+      <span class="humanity-result {{#if humanityRolled}}rolled{{/if}}">{{system.humanityLoss}}</span>
+    </div>
+  </div>
+</div>
+
+{{!-- Row 2: Subtype + Surgery Code --}}
+<div class="variables-row">
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Subtype"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedSubtypeLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.cyberwareSubtype">
+          {{#each cyberwareSubtypeOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="variable-field">
+    <label class="variable-label">{{localize "CYBERPUNK.Surgery"}}</label>
+    {{#if isLocked}}
+      <div class="dropdown">
+        <span class="dropdown-text">{{selectedSurgeryLabel}}</span>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{else}}
+      <div class="dropdown-wrapper">
+        <select class="dropdown-select" name="system.surgeryCode">
+          {{#each surgeryCodeOptions}}
+            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <div class="dropdown-chevron">
+          <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+{{!-- Divider --}}
+<div class="cyber-divider"></div>
+
+{{!-- ===================== --}}
+{{!-- SENSOR / CYBERLIMB    --}}
+{{!-- ===================== --}}
+{{#if canHaveOptions}}
+  {{!-- Row 3: Is Option + Has Slots / Takes Space --}}
+  <div class="variables-row">
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.IsOption"}}</label>
+      {{#if isLocked}}
+        <img class="checkbox-img" src="systems/cp2020/img/ui/checkbox-inactive-{{#if isOption}}checked{{else}}unchecked{{/if}}.svg">
+      {{else}}
+        <img class="checkbox-img checkbox-toggle" data-field="system.isOption"
+             src="systems/cp2020/img/ui/checkbox-active-{{#if isOption}}checked{{else}}unchecked{{/if}}.svg">
+      {{/if}}
+    </div>
+
+    {{#if isOption}}
+      {{!-- Takes Space (for options) --}}
+      <div class="variable-field">
+        <label class="variable-label">{{localize "CYBERPUNK.TakesSpace"}}</label>
+        {{#if isLocked}}
+          <span class="variable-value">{{system.takesSpace}}</span>
+        {{else}}
+          <input type="number" class="variable-input" name="system.takesSpace" value="{{system.takesSpace}}" min="0">
+        {{/if}}
+      </div>
+    {{else}}
+      {{!-- Has Slots (for parent cyberware) --}}
+      <div class="variable-field">
+        <label class="variable-label">{{localize "CYBERPUNK.HasSlots"}}</label>
+        {{#if isLocked}}
+          <span class="variable-value">{{system.hasSlots}}</span>
+        {{else}}
+          <input type="number" class="variable-input" name="system.hasSlots" value="{{system.hasSlots}}" min="0">
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{!-- Cyberlimb-specific rows --}}
+  {{#if isCyberlimb}}
+    {{#if isOption}}
+      {{!-- Row 4: Is Weapon + SDP Bonus (for cyberlimb options) --}}
+      <div class="variables-row">
+        <div class="variable-field">
+          <label class="variable-label">{{localize "CYBERPUNK.IsAWeapon"}}</label>
+          {{#if isLocked}}
+            <img class="checkbox-img" src="systems/cp2020/img/ui/checkbox-inactive-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+          {{else}}
+            <img class="checkbox-img checkbox-toggle" data-field="system.isWeapon"
+                 src="systems/cp2020/img/ui/checkbox-active-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+          {{/if}}
+        </div>
+
+        <div class="variable-field">
+          <label class="variable-label">{{localize "CYBERPUNK.SDPBonus"}}</label>
+          {{#if isLocked}}
+            <span class="variable-value">{{system.sdpBonus}}</span>
+          {{else}}
+            <input type="number" class="variable-input" name="system.sdpBonus" value="{{system.sdpBonus}}">
+          {{/if}}
+        </div>
+      </div>
+    {{else}}
+      {{!-- Row 4: Structure + Disables At (for cyberlimb parent) --}}
+      <div class="variables-row">
+        <div class="variable-field dual-field">
+          <label class="variable-label">{{localize "CYBERPUNK.Structure"}}</label>
+          {{#if isLocked}}
+            <span class="dual-value">{{system.structure.current}}</span>
+          {{else}}
+            <input type="number" class="dual-input" name="system.structure.current" value="{{system.structure.current}}" min="0">
+          {{/if}}
+          <span class="dual-separator">/</span>
+          {{#if isLocked}}
+            <span class="dual-value">{{system.structure.max}}</span>
+          {{else}}
+            <input type="number" class="dual-input" name="system.structure.max" value="{{system.structure.max}}" min="0">
+          {{/if}}
+        </div>
+
+        <div class="variable-field">
+          <label class="variable-label">{{localize "CYBERPUNK.DisablesAt"}}</label>
+          {{#if isLocked}}
+            <span class="variable-value">{{system.disablesAt}}</span>
+          {{else}}
+            <input type="number" class="variable-input" name="system.disablesAt" value="{{system.disablesAt}}">
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+
+  {{!-- Sensor option: Is Weapon checkbox --}}
+  {{#if isSensor}}
+    {{#if isOption}}
+      <div class="variables-row">
+        <div class="variable-field">
+          <label class="variable-label">{{localize "CYBERPUNK.IsAWeapon"}}</label>
+          {{#if isLocked}}
+            <img class="checkbox-img" src="systems/cp2020/img/ui/checkbox-inactive-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+          {{else}}
+            <img class="checkbox-img checkbox-toggle" data-field="system.isWeapon"
+                 src="systems/cp2020/img/ui/checkbox-active-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/if}}
+
+{{!-- ===================== --}}
+{{!-- IMPLANT               --}}
+{{!-- ===================== --}}
+{{#if isImplant}}
+  {{!-- Row 3: Is Weapon + Is Armor --}}
+  <div class="variables-row">
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.IsAWeapon"}}</label>
+      {{#if isLocked}}
+        <img class="checkbox-img" src="systems/cp2020/img/ui/checkbox-inactive-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+      {{else}}
+        <img class="checkbox-img checkbox-toggle" data-field="system.isWeapon"
+             src="systems/cp2020/img/ui/checkbox-active-{{#if system.isWeapon}}checked{{else}}unchecked{{/if}}.svg">
+      {{/if}}
+    </div>
+
+    <div class="variable-field">
+      <label class="variable-label">{{localize "CYBERPUNK.IsArmor"}}</label>
+      {{#if isLocked}}
+        <img class="checkbox-img" src="systems/cp2020/img/ui/checkbox-inactive-{{#if system.isArmor}}checked{{else}}unchecked{{/if}}.svg">
+      {{else}}
+        <img class="checkbox-img checkbox-toggle" data-field="system.isArmor"
+             src="systems/cp2020/img/ui/checkbox-active-{{#if system.isArmor}}checked{{else}}unchecked{{/if}}.svg">
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
+{{!-- ===================== --}}
+{{!-- CHIPWARE              --}}
+{{!-- ===================== --}}
+{{#if isChipware}}
+  {{#if isSkillChip}}
+    {{!-- Row 3: Chipped Skill + Chip Value --}}
+    <div class="variables-row chipped-skill-row">
+      <div class="variable-field chipped-skill-field">
+        <label class="variable-label">{{localize "CYBERPUNK.ChippedSkill"}}</label>
+        {{#if hasChippedSkill}}
+          <div class="skill-drop filled" data-drop-target="chipped-skill">
+            <span class="skill-name" data-uuid="{{system.chippedSkill.uuid}}">{{system.chippedSkill.name}}</span>
+            {{#unless isLocked}}
+              <button type="button" class="remove-chipped-skill" title="Remove">
+                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="">
+              </button>
+            {{/unless}}
+          </div>
+        {{else}}
+          <div class="skill-drop empty" data-drop-target="chipped-skill">
+            <span class="placeholder">{{#if isLocked}}—{{else}}{{localize "CYBERPUNK.DropSkillHere"}}{{/if}}</span>
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="variable-field chip-value-field">
+        <label class="variable-label">{{localize "CYBERPUNK.ChipValue"}}</label>
+        {{#if isLocked}}
+          <span class="variable-value">{{system.chipValue}}</span>
+        {{else}}
+          <div class="dropdown-wrapper">
+            <select class="dropdown-select" name="system.chipValue">
+              {{#each chipValueOptions}}
+                <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+              {{/each}}
+            </select>
+            <div class="dropdown-chevron">
+              <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
+            </div>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+{{/if}}

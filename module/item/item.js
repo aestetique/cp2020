@@ -51,7 +51,7 @@ export class CyberpunkItem extends Item {
 
   isRanged() {
     let system = this.system;
-    return !(system.weaponType === "Melee" || system.weaponType === "Exotic" && Object.keys(meleeAttackTypes).includes(system.attackType));
+    return !((system.weaponType === "Melee") || (system.weaponType === "Exotic" && Object.keys(meleeAttackTypes).includes(system.attackType)));
   }
   
   _prepareWeaponData(data) {
@@ -81,11 +81,12 @@ export class CyberpunkItem extends Item {
     const COVERAGE_CLEANSE_THRESHOLD = 20;
 
     let skipReform = false;
-    // Sometimes this just BREAKS
+    // Check if actor context is valid before proceeding
     try {
       let idCheck = this.actor.id;
     }
-    catch {
+    catch (e) {
+      console.warn("CyberpunkItem: Actor context unavailable for armor reform, skipping", e);
       skipReform = true;
     }
 
@@ -106,7 +107,7 @@ export class CyberpunkItem extends Item {
         for(let armorArea in system.coverage) {
           if(!ownerLocs[armorArea]) {
             console.warn(`ARMOR MORPH: The new owner of this armor (${this.actor.name}) does not have a ${armorArea}. Removing the area from the armor.`)
-            delete system.coverage.armorArea;
+            delete system.coverage[armorArea];
           }
         }
       }
@@ -701,7 +702,7 @@ export class CyberpunkItem extends Item {
     }
 
     if(damageFormula !== "") {
-      let loc = await rollLocation(attackMods.targetArea);
+      let loc = await rollLocation(attackMods.targetActor, attackMods.targetArea);
       results.addRoll(loc.roll, {name: localize("Location"), flavor: loc.areaHit});
       results.addRoll(new Roll(damageFormula, {
         strengthBonus: strengthDamageBonus(system.stats.bt.total),

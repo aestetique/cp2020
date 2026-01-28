@@ -49,9 +49,15 @@ export const preloadHandlebarsTemplates = async function() {
         // Armor parts
         "systems/cp2020/templates/item/parts/armor/summary.hbs",
         "systems/cp2020/templates/item/parts/armor/settings.hbs",
-        // Cyberware
+        // Cyberware (old item sheet parts)
         "systems/cp2020/templates/item/parts/cyberware/summary.hbs",
         "systems/cp2020/templates/item/parts/cyberware/settings.hbs",
+        // Cyberware card partials
+        "systems/cp2020/templates/item/parts/cyberware/tab-description.hbs",
+        "systems/cp2020/templates/item/parts/cyberware/tab-details.hbs",
+        "systems/cp2020/templates/item/parts/cyberware/tab-effect.hbs",
+        "systems/cp2020/templates/item/parts/cyberware/tab-weapon.hbs",
+        "systems/cp2020/templates/item/parts/cyberware/tab-armor.hbs",
         // Vehicle
         "systems/cp2020/templates/item/parts/vehicle/summary.hbs",
         "systems/cp2020/templates/item/parts/vehicle/settings.hbs",
