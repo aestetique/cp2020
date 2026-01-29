@@ -21,7 +21,7 @@
           <span class="skill-attr">{{skill.statLabel}}</span>
           <span class="skill-name skill-roll" data-skill-id="{{skill.id}}">{{skill.name}}</span>
           {{#if ../isLocked}}
-            <span class="skill-value">{{skill.effectiveLevel}}</span>
+            <span class="skill-value">{{skill.computedLevel}}</span>
             <button class="skill-plus" type="button" data-skill-id="{{skill.id}}" title="Increase Skill (+{{skill.ipCost}} IP)">
               <img src="systems/cp2020/img/ui/icon-plus{{#unless skill.canIncrease}}-disabled{{/unless}}.svg" alt="+">
             </button>
@@ -50,7 +50,7 @@
           <span class="skill-attr">{{skill.statLabel}}</span>
           <span class="skill-name skill-roll" data-skill-id="{{skill.id}}">{{skill.name}}</span>
           {{#if ../isLocked}}
-            <span class="skill-value">{{skill.effectiveLevel}}</span>
+            <span class="skill-value">{{skill.computedLevel}}</span>
             <button class="skill-plus" type="button" data-skill-id="{{skill.id}}" title="Increase Skill (+{{skill.ipCost}} IP)">
               <img src="systems/cp2020/img/ui/icon-plus{{#unless skill.canIncrease}}-disabled{{/unless}}.svg" alt="+">
             </button>

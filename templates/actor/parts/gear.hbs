@@ -1,17 +1,13 @@
 {{!-- Gear Tab --}}
 <div class="gear-container">
-  {{!-- WEAPONS Block --}}
+  {{!-- 1. WEAPONS Block --}}
+  {{#if weapons.length}}
   <div class="gear-block">
     <header class="tab-header">
       <span class="tab-title">WEAPONS</span>
       <img class="tab-badge" src="systems/cp2020/img/ui/badge-weapons.svg" alt="">
     </header>
     <div class="tab-content gear-content">
-      {{#unless weapons.length}}
-        <div class="gear-row gear-empty">
-          <span class="gear-empty-text">No weapons in the inventory.</span>
-        </div>
-      {{/unless}}
       {{#each weapons as |weapon|}}
         <div class="gear-row" data-item-id="{{weapon.id}}">
           <div class="gear-icon gear-fire-weapon" data-item-id="{{weapon.id}}">
@@ -33,7 +29,8 @@
             <span class="field-top">{{weapon.damage}}</span>
             <span class="field-bottom">Damage</span>
           </div>
-          {{#if weapon.shots}}
+          {{#if weapon.isRanged}}
+            {{!-- Ranged: Magazine + Reload button --}}
             <div class="gear-field" style="width: 60px;">
               <span class="field-top">{{weapon.shotsLeft}} / {{weapon.shots}}</span>
               <span class="field-bottom">Magazine</span>
@@ -41,8 +38,17 @@
             <div class="gear-action-btn reload-weapon" data-item-id="{{weapon.id}}" data-can-reload="{{weapon.canReload}}">
               <img src="systems/cp2020/img/ui/badge-reload{{#unless weapon.canReload}}-disabled{{/unless}}.svg" alt="Reload">
             </div>
+          {{else if weapon.isExotic}}
+            {{!-- Exotic: Charges + empty action --}}
+            <div class="gear-field" style="width: 60px;">
+              <span class="field-top">{{weapon.chargesDisplay}}</span>
+              <span class="field-bottom">Charges</span>
+            </div>
+            <div class="gear-action-btn"></div>
           {{else}}
-            <div class="gear-spacer" style="width: 100px;"></div>
+            {{!-- Melee: empty field + empty action --}}
+            <div class="gear-field" style="width: 60px;"></div>
+            <div class="gear-action-btn"></div>
           {{/if}}
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{weapon.id}}" title="View">
@@ -56,19 +62,64 @@
       {{/each}}
     </div>
   </div>
+  {{/if}}
 
-  {{!-- OUTFIT Block --}}
+  {{!-- 2. ORDNANCE Block --}}
+  {{#if ordnanceItems.length}}
+  <div class="gear-block">
+    <header class="tab-header">
+      <span class="tab-title">ORDNANCE</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-ordnance.svg" alt="">
+    </header>
+    <div class="tab-content gear-content">
+      {{#each ordnanceItems as |ordnance|}}
+        <div class="gear-row" data-item-id="{{ordnance.id}}">
+          <div class="gear-icon">
+            <img src="{{ordnance.img}}" alt="{{ordnance.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{ordnance.name}}</span>
+            <span class="gear-context">{{ordnance.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{ordnance.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-weight">
+            <span class="price-value">{{ordnance.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
+          <div class="gear-field" style="width: 60px;">
+            <span class="field-top">{{ordnance.damage}}</span>
+            <span class="field-bottom">Damage</span>
+          </div>
+          <div class="gear-field" style="width: 60px;">
+            <span class="field-top">{{ordnance.charges}}</span>
+            <span class="field-bottom">Charges</span>
+          </div>
+          <div class="gear-action-btn"></div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{ordnance.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{ordnance.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- 3. OUTFIT Block --}}
+  {{#if outfitItems.length}}
   <div class="gear-block">
     <header class="tab-header">
       <span class="tab-title">OUTFIT</span>
       <img class="tab-badge" src="systems/cp2020/img/ui/badge-outfit.svg" alt="">
     </header>
     <div class="tab-content gear-content">
-      {{#unless outfitItems.length}}
-        <div class="gear-row gear-empty">
-          <span class="gear-empty-text">No outfits in the inventory.</span>
-        </div>
-      {{/unless}}
       {{#each outfitItems as |armor|}}
         <div class="gear-row" data-item-id="{{armor.id}}">
           <div class="gear-icon">
@@ -94,9 +145,13 @@
             <span class="field-top">{{armor.encumbrance}}</span>
             <span class="field-bottom">EV</span>
           </div>
-          <div class="gear-action-btn toggle-equip" data-item-id="{{armor.id}}" data-equipped="{{armor.equipped}}">
-            <img src="systems/cp2020/img/ui/badge-outfit{{#unless armor.equipped}}-disabled{{/unless}}.svg" alt="Equip">
-          </div>
+          {{#unless armor.isCyberware}}
+            <div class="gear-action-btn toggle-equip" data-item-id="{{armor.id}}" data-equipped="{{armor.equipped}}">
+              <img src="systems/cp2020/img/ui/badge-outfit{{#unless armor.equipped}}-disabled{{/unless}}.svg" alt="Equip">
+            </div>
+          {{else}}
+            <div class="gear-action-btn"></div>
+          {{/unless}}
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{armor.id}}" title="View">
               <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
@@ -109,19 +164,107 @@
       {{/each}}
     </div>
   </div>
+  {{/if}}
 
-  {{!-- GEAR Block --}}
+  {{!-- 4. TOOLS Block --}}
+  {{#if toolItems.length}}
   <div class="gear-block">
     <header class="tab-header">
-      <span class="tab-title">GEAR</span>
-      <img class="tab-badge" src="systems/cp2020/img/ui/badge-gear.svg" alt="">
+      <span class="tab-title">TOOLS</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-tool.svg" alt="">
     </header>
     <div class="tab-content gear-content">
-      {{#unless gearItems.length}}
-        <div class="gear-row gear-empty">
-          <span class="gear-empty-text">No gear in the inventory.</span>
+      {{#each toolItems as |tool|}}
+        <div class="gear-row" data-item-id="{{tool.id}}">
+          <div class="gear-icon">
+            <img src="{{tool.img}}" alt="{{tool.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{tool.name}}</span>
+            <span class="gear-context">{{tool.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{tool.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-weight">
+            <span class="price-value">{{tool.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-action-btn toggle-tool" data-item-id="{{tool.id}}" data-equipped="{{tool.equipped}}">
+            <img src="systems/cp2020/img/ui/badge-{{#if tool.equipped}}on{{else}}off{{/if}}.svg" alt="Toggle">
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{tool.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{tool.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
         </div>
-      {{/unless}}
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- 5. DRUGS Block --}}
+  {{#if drugItems.length}}
+  <div class="gear-block">
+    <header class="tab-header">
+      <span class="tab-title">DRUGS</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-drug.svg" alt="">
+    </header>
+    <div class="tab-content gear-content">
+      {{#each drugItems as |drug|}}
+        <div class="gear-row" data-item-id="{{drug.id}}">
+          <div class="gear-icon">
+            <img src="{{drug.img}}" alt="{{drug.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{drug.name}}</span>
+            <span class="gear-context">{{drug.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{drug.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-weight">
+            <span class="price-value">{{drug.weight}}</span>
+            <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
+          </div>
+          <div class="gear-field" style="width: 60px;">
+            <span class="field-top">{{drug.quantity}}</span>
+            <span class="field-bottom">Qty</span>
+          </div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-action-btn toggle-drug" data-item-id="{{drug.id}}" data-equipped="{{drug.equipped}}">
+            <img src="systems/cp2020/img/ui/badge-{{#if drug.equipped}}used{{else}}wearoff{{/if}}.svg" alt="{{#if drug.equipped}}Wear Off{{else}}Use{{/if}}">
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{drug.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{drug.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- 6. COMMODITIES Block --}}
+  {{#if gearItems.length}}
+  <div class="gear-block">
+    <header class="tab-header">
+      <span class="tab-title">COMMODITIES</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-commodity.svg" alt="">
+    </header>
+    <div class="tab-content gear-content">
       {{#each gearItems as |item|}}
         <div class="gear-row" data-item-id="{{item.id}}">
           <div class="gear-icon">
@@ -139,7 +282,9 @@
             <span class="price-value">{{item.weight}}</span>
             <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
           </div>
-          <div class="gear-spacer"></div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-action-btn"></div>
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{item.id}}" title="View">
               <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
@@ -152,19 +297,16 @@
       {{/each}}
     </div>
   </div>
+  {{/if}}
 
-  {{!-- AMMO Block --}}
+  {{!-- 7. AMMO Block --}}
+  {{#if ammoItems.length}}
   <div class="gear-block">
     <header class="tab-header">
       <span class="tab-title">AMMO</span>
       <img class="tab-badge" src="systems/cp2020/img/ui/badge-ammo.svg" alt="">
     </header>
     <div class="tab-content gear-content">
-      {{#unless ammoItems.length}}
-        <div class="gear-row gear-empty">
-          <span class="gear-empty-text">No ammo in the inventory.</span>
-        </div>
-      {{/unless}}
       {{#each ammoItems as |ammo|}}
         <div class="gear-row" data-item-id="{{ammo.id}}">
           <div class="gear-icon">
@@ -182,14 +324,16 @@
             <span class="price-value">{{ammo.weight}}</span>
             <img src="systems/cp2020/img/ui/badge-weight.svg" alt="kg">
           </div>
-          <div class="gear-field ammo-quantity">
+          <div class="gear-field" style="width: 60px;">
             {{#if ../isUnlocked}}
               <input type="number" class="field-top ammo-quantity-input" data-item-id="{{ammo.id}}" value="{{ammo.quantity}}" min="0">
             {{else}}
               <span class="field-top">{{ammo.quantity}}</span>
             {{/if}}
-            <span class="field-bottom">Qty</span>
+            <span class="field-bottom">Quantity</span>
           </div>
+          <div class="gear-field" style="width: 60px;"></div>
+          <div class="gear-action-btn"></div>
           <div class="gear-actions">
             <button class="gear-view" type="button" data-item-id="{{ammo.id}}" title="View">
               <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
@@ -202,4 +346,12 @@
       {{/each}}
     </div>
   </div>
+  {{/if}}
+
+  {{!-- Empty inventory message --}}
+  {{#unless hasAnyGear}}
+  <div class="gear-empty-state">
+    <span class="gear-empty-text">The inventory is empty.</span>
+  </div>
+  {{/unless}}
 </div>

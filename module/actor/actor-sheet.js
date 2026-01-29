@@ -1,4 +1,4 @@
-import { martialOptions, meleeAttackTypes, meleeBonkOptions, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, weaponToAmmoType } from "../lookups.js"
+import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties } from "../lookups.js"
 import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
@@ -15,6 +15,12 @@ export class CyberpunkActorSheet extends ActorSheet {
    * @type {boolean}
    */
   _isLocked = true;
+
+  /**
+   * Preserved scroll position for gear container
+   * @type {number}
+   */
+  _gearScrollTop = 0;
 
   /**
    * Minimized state for the sheet
@@ -411,6 +417,11 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
     }
 
+    // Get equipped tools and drugs for skill bonus calculation
+    const equippedToolsAndDrugs = this.actor.items.contents.filter(i =>
+      (i.type === "tool" || i.type === "drug") && i.system.equipped
+    );
+
     // Categorize and prepare skills
     const preparedSkills = skills.map(skill => {
       const isCareer = careerSkillNames.has(skill.name.toLowerCase());
@@ -431,6 +442,23 @@ export class CyberpunkActorSheet extends ActorSheet {
       const currentIp = skill.system.ip || 0;
       const canIncrease = currentIp >= ipCost;
 
+      // Calculate skill bonus from equipped tools and drugs
+      let skillBonus = 0;
+      for (const item of equippedToolsAndDrugs) {
+        const bonuses = item.system.bonuses || [];
+        for (const bonus of bonuses) {
+          if (bonus.type === "skill" && bonus.value) {
+            const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
+            const matchByName = bonus.skillName &&
+              bonus.skillName.toLowerCase() === skill.name.toLowerCase();
+            if (matchByUuid || matchByName) {
+              skillBonus += bonus.value;
+            }
+          }
+        }
+      }
+      const computedLevel = effectiveLevel + skillBonus;
+
       return {
         id: skill.id,
         name: skill.name,
@@ -443,6 +471,8 @@ export class CyberpunkActorSheet extends ActorSheet {
         isChipped: skill.system.isChipped,
         chipState,
         effectiveLevel,
+        skillBonus,
+        computedLevel,
         ip: currentIp,
         ipCost,
         diffMod,
@@ -520,19 +550,28 @@ export class CyberpunkActorSheet extends ActorSheet {
     const armor = this.actor.itemTypes.armor || [];
     const commodity = this.actor.itemTypes.misc || [];
     const cyberware = this.actor.itemTypes.cyberware || [];
+    const ordnance = this.actor.itemTypes.ordnance || [];
+    const tools = this.actor.itemTypes.tool || [];
+    const drugs = this.actor.itemTypes.drug || [];
 
     // Filter cyberweapons (cyberware with isWeapon=true)
     const cyberweapons = cyberware.filter(c => c.system.isWeapon);
 
-    // Prepare weapons data
+    // Helper to get loaded ammo type abbreviation
+    const getLoadedAmmoLabel = (loadedAmmoType) => {
+      if (!loadedAmmoType) return '';
+      return ammoAbbreviations[loadedAmmoType] || '';
+    };
+
+    // Prepare weapons data with type-specific context
     const weaponsList = weapons.map(w => {
       const sys = w.system;
-      // Build context: Type · Caliber · Reliability · Concealability · Range
-      const weaponType = weaponTypes[sys.weaponType] || sys.weaponType || '';
-      const ammoKey = weaponToAmmoType[sys.weaponType];
-      const calibers = ammoKey ? (ammoCalibersByWeaponType[ammoKey] || {}) : {};
-      const calLabelKey = calibers[sys.caliber];
-      const caliber = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : '';
+      const wType = sys.weaponType || '';
+      const isRanged = !['Melee', 'Exotic'].includes(wType);
+      const isMelee = wType === 'Melee';
+      const isExotic = wType === 'Exotic';
+
+      // Common fields
       const rel = sys.reliability && reliability[sys.reliability]
         ? game.i18n.localize("CYBERPUNK." + reliability[sys.reliability])
         : '';
@@ -541,8 +580,32 @@ export class CyberpunkActorSheet extends ActorSheet {
         : '';
       const range = sys.range ? `${sys.range} m` : '';
 
-      const contextParts = [weaponType, caliber, rel, conc, range].filter(p => p);
-      const context = contextParts.join(' · ');
+      let context = '';
+      if (isRanged) {
+        // Ranged: Caliber WeaponType · Reliability · Concealability · AmmoType · Range
+        const weaponTypeLabel = weaponTypes[wType] || wType || '';
+        const ammoKey = weaponToAmmoType[wType];
+        const calibers = ammoKey ? (ammoCalibersByWeaponType[ammoKey] || {}) : {};
+        const calLabelKey = calibers[sys.caliber];
+        const caliber = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : '';
+        const loadedAmmoLabel = getLoadedAmmoLabel(sys.loadedAmmoType);
+        // Combine caliber and weapon type as single element (no interpunct between them)
+        const caliberWeaponType = [caliber, weaponTypeLabel].filter(p => p).join(' ');
+        const contextParts = [caliberWeaponType, rel, conc, loadedAmmoLabel, range].filter(p => p);
+        context = contextParts.join(' · ');
+      } else if (isMelee) {
+        // Melee: Melee · DamageType · Reliability · Concealability · Range
+        const damageTypeKey = meleeDamageTypes[sys.damageType];
+        const damageType = damageTypeKey ? game.i18n.localize(`CYBERPUNK.${damageTypeKey}`) : '';
+        const contextParts = ['Melee', damageType, rel, conc, range].filter(p => p);
+        context = contextParts.join(' · ');
+      } else if (isExotic) {
+        // Exotic: Exotic · Effect · Reliability · Concealability · Range
+        const effectKey = exoticEffects[sys.effect];
+        const effect = effectKey ? game.i18n.localize(`CYBERPUNK.${effectKey}`) : '';
+        const contextParts = ['Exotic', effect, rel, conc, range].filter(p => p);
+        context = contextParts.join(' · ');
+      }
 
       return {
         id: w.id,
@@ -551,12 +614,18 @@ export class CyberpunkActorSheet extends ActorSheet {
         context: context,
         price: sys.cost || 0,
         weight: sys.weight || 0,
-        damage: sys.damage || '',
+        damage: sys.damage || '–',
         shotsLeft: sys.shotsLeft ?? 0,
         shots: sys.shots ?? 0,
+        charges: sys.charges ?? 0,
+        chargesMax: sys.chargesMax ?? 0,
+        chargesDisplay: (sys.charges || sys.chargesMax) ? `${sys.charges ?? 0} / ${sys.chargesMax ?? 0}` : '–',
         rof: sys.rof ?? 0,
         canReload: (sys.shotsLeft ?? 0) < (sys.shots ?? 0),
-        isCyberware: false
+        isCyberware: false,
+        isRanged: isRanged,
+        isMelee: isMelee,
+        isExotic: isExotic
       };
     });
 
@@ -564,11 +633,46 @@ export class CyberpunkActorSheet extends ActorSheet {
     const cyberweaponsList = cyberweapons.map(c => {
       const sys = c.system;
       const weapon = sys.weapon || {};
-      const concLabel = weapon.concealability ? game.i18n.localize("CYBERPUNK." + (weapon.concealability.charAt(0).toUpperCase() + weapon.concealability.slice(1))) : '';
-      const relLabel = weapon.reliability ? game.i18n.localize("CYBERPUNK." + (weapon.reliability.charAt(0).toUpperCase() + weapon.reliability.slice(1))) : '';
+      const wType = weapon.weaponType || '';
+      const isRanged = !['Melee', 'Exotic'].includes(wType);
+      const isMelee = wType === 'Melee';
+      const isExotic = wType === 'Exotic';
+
+      const rel = weapon.reliability && reliability[weapon.reliability]
+        ? game.i18n.localize("CYBERPUNK." + reliability[weapon.reliability])
+        : '';
+      const conc = weapon.concealability && concealability[weapon.concealability]
+        ? game.i18n.localize("CYBERPUNK." + concealability[weapon.concealability])
+        : '';
       const range = weapon.range ? `${weapon.range} m` : '';
-      const contextParts = ['Cyberweapon', concLabel, relLabel, range].filter(p => p);
-      const context = contextParts.join(' · ');
+
+      let context = '';
+      if (isRanged) {
+        const weaponTypeLabel = weaponTypes[wType] || wType || '';
+        const ammoKey = weaponToAmmoType[wType];
+        const calibers = ammoKey ? (ammoCalibersByWeaponType[ammoKey] || {}) : {};
+        const calLabelKey = calibers[weapon.caliber];
+        const caliber = calLabelKey ? game.i18n.localize(`CYBERPUNK.${calLabelKey}`) : '';
+        const loadedAmmoLabel = getLoadedAmmoLabel(weapon.loadedAmmoType);
+        // Combine caliber and weapon type as single element (no interpunct between them)
+        const caliberWeaponType = [caliber, weaponTypeLabel].filter(p => p).join(' ');
+        const contextParts = [caliberWeaponType, rel, conc, loadedAmmoLabel, range].filter(p => p);
+        context = contextParts.join(' · ');
+      } else if (isMelee) {
+        const damageTypeKey = meleeDamageTypes[weapon.damageType];
+        const damageType = damageTypeKey ? game.i18n.localize(`CYBERPUNK.${damageTypeKey}`) : '';
+        const contextParts = ['Melee', damageType, rel, conc, range].filter(p => p);
+        context = contextParts.join(' · ');
+      } else if (isExotic) {
+        const effectKey = exoticEffects[weapon.effect];
+        const effect = effectKey ? game.i18n.localize(`CYBERPUNK.${effectKey}`) : '';
+        const contextParts = ['Exotic', effect, rel, conc, range].filter(p => p);
+        context = contextParts.join(' · ');
+      } else {
+        // Fallback for unknown type
+        const contextParts = [rel, conc, range].filter(p => p);
+        context = contextParts.join(' · ');
+      }
 
       return {
         id: c.id,
@@ -577,17 +681,108 @@ export class CyberpunkActorSheet extends ActorSheet {
         context: context,
         price: sys.cost || 0,
         weight: sys.weight || 0,
-        damage: weapon.damage || '',
+        damage: weapon.damage || '–',
         shotsLeft: weapon.shotsLeft ?? 0,
         shots: weapon.shots ?? 0,
+        charges: weapon.charges ?? 0,
+        chargesMax: weapon.chargesMax ?? 0,
+        chargesDisplay: (weapon.charges || weapon.chargesMax) ? `${weapon.charges ?? 0} / ${weapon.chargesMax ?? 0}` : '–',
         rof: weapon.rof ?? 1,
         canReload: (weapon.shotsLeft ?? 0) < (weapon.shots ?? 0),
-        isCyberware: true
+        isCyberware: true,
+        isRanged: isRanged,
+        isMelee: isMelee,
+        isExotic: isExotic
       };
     });
 
     // Combine regular weapons and cyberweapons
     sheetData.weapons = [...weaponsList, ...cyberweaponsList];
+
+    // Prepare ordnance data
+    sheetData.ordnanceItems = ordnance.map(o => {
+      const sys = o.system;
+      const templateLabel = ordnanceTemplateTypes[sys.templateType]
+        ? game.i18n.localize(`CYBERPUNK.${ordnanceTemplateTypes[sys.templateType]}`)
+        : '';
+      const radiusStr = sys.radius ? `${sys.radius} m` : '';
+      const effectKey = exoticEffects[sys.effect];
+      const effectLabel = effectKey ? game.i18n.localize(`CYBERPUNK.${effectKey}`) : '';
+      const relLabel = reliability[sys.reliability]
+        ? game.i18n.localize(`CYBERPUNK.${reliability[sys.reliability]}`)
+        : '';
+      const concLabel = concealability[sys.concealability]
+        ? game.i18n.localize(`CYBERPUNK.${concealability[sys.concealability]}`)
+        : '';
+      const range = sys.range ? `${sys.range} m` : '';
+      const contextParts = [templateLabel, radiusStr, effectLabel, relLabel, concLabel, range].filter(p => p);
+
+      return {
+        id: o.id,
+        img: o.img,
+        name: o.name,
+        context: contextParts.join(' · '),
+        price: sys.cost || 0,
+        weight: sys.weight || 0,
+        damage: sys.damage && sys.damage !== '0' ? sys.damage : '–',
+        charges: sys.charges || 0
+      };
+    });
+
+    // Prepare tool data
+    sheetData.toolItems = tools.map(t => {
+      const sys = t.system;
+      const bonuses = sys.bonuses || [];
+      const effectLabels = bonuses.slice(0, 2).map(b => {
+        if (b.type === "property") {
+          const propKey = toolBonusProperties[b.property];
+          const propLabel = propKey ? game.i18n.localize(`CYBERPUNK.${propKey}`) : b.property;
+          return `${propLabel} ${b.value >= 0 ? '+' : ''}${b.value}`;
+        } else if (b.skillName) {
+          return `${b.skillName} ${b.value >= 0 ? '+' : ''}${b.value}`;
+        }
+        return '';
+      }).filter(l => l);
+      const contextParts = ['Tool', ...effectLabels];
+
+      return {
+        id: t.id,
+        img: t.img,
+        name: t.name,
+        context: contextParts.join(' · '),
+        price: sys.cost || 0,
+        weight: sys.weight || 0,
+        equipped: sys.equipped ?? false
+      };
+    });
+
+    // Prepare drug data
+    sheetData.drugItems = drugs.map(d => {
+      const sys = d.system;
+      const bonuses = sys.bonuses || [];
+      const effectLabels = bonuses.slice(0, 2).map(b => {
+        if (b.type === "property") {
+          const propKey = toolBonusProperties[b.property];
+          const propLabel = propKey ? game.i18n.localize(`CYBERPUNK.${propKey}`) : b.property;
+          return `${propLabel} ${b.value >= 0 ? '+' : ''}${b.value}`;
+        } else if (b.skillName) {
+          return `${b.skillName} ${b.value >= 0 ? '+' : ''}${b.value}`;
+        }
+        return '';
+      }).filter(l => l);
+      const contextParts = ['Drug', ...effectLabels];
+
+      return {
+        id: d.id,
+        img: d.img,
+        name: d.name,
+        context: contextParts.join(' · '),
+        price: sys.cost || 0,
+        weight: sys.weight || 0,
+        quantity: sys.quantity ?? 0,
+        equipped: sys.equipped ?? false
+      };
+    });
 
     // Prepare armor/outfit data
     sheetData.outfitItems = armor.map(a => {
@@ -656,7 +851,7 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
 
       const armorType = armorData.armorType === 'hard' ? 'Hard Armor' : 'Soft Armor';
-      const contextParts = ['Cyberware', armorType, ...areas];
+      const contextParts = [armorType, ...areas];
       const context = contextParts.join(' · ');
 
       return {
@@ -714,6 +909,16 @@ export class CyberpunkActorSheet extends ActorSheet {
         quantity: quantity
       };
     });
+
+    // Flag to check if there's any gear at all
+    sheetData.hasAnyGear =
+      sheetData.weapons.length > 0 ||
+      sheetData.ordnanceItems.length > 0 ||
+      sheetData.outfitItems.length > 0 ||
+      sheetData.toolItems.length > 0 ||
+      sheetData.drugItems.length > 0 ||
+      sheetData.gearItems.length > 0 ||
+      sheetData.ammoItems.length > 0;
   }
 
   _prepareCharacterItems(sheetData) {
@@ -733,6 +938,14 @@ export class CyberpunkActorSheet extends ActorSheet {
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
+
+    // Restore gear container scroll position after DOM layout completes
+    const gearContainer = html.find('.gear-container')[0];
+    if (gearContainer && this._gearScrollTop) {
+      requestAnimationFrame(() => {
+        gearContainer.scrollTop = this._gearScrollTop;
+      });
+    }
 
     // ----- Custom Window Dragging -----
     // Set up draggable for our custom header since we're hiding Foundry's default window chrome
@@ -1304,6 +1517,9 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
       new Dialog({
         title: localize("ItemDeleteConfirmTitle"),
         content: `<p>${localizeParam("ItemDeleteConfirmText", {itemName: item.name})}</p>`,
@@ -1327,6 +1543,9 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
       // If the weapon uses ammo, open the reload dialog
       const ammoWT = weaponToAmmoType[item.system.weaponType];
       if (ammoWT) {
@@ -1344,6 +1563,9 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     // Ammo quantity input (gear tab)
     html.find('.ammo-quantity-input').change(async ev => {
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
       const itemId = ev.currentTarget.dataset.itemId;
       const newQty = Math.max(0, Number(ev.currentTarget.value) || 0);
       await this.actor.updateEmbeddedDocuments("Item", [{
@@ -1358,25 +1580,51 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
       const currentEquipped = item.system.equipped ?? false;
-
-      // Drug consumption: on turn-off, decrement quantity
-      if (currentEquipped && item.type === "drug") {
-        const qty = (item.system.quantity ?? 1) - 1;
-        if (qty <= 0) {
-          await item.update({ "system.equipped": false, "system.quantity": 0 });
-          await item.delete();
-          return;
-        } else {
-          await item.update({ "system.equipped": false, "system.quantity": qty });
-          return;
-        }
-      }
-
       await this.actor.updateEmbeddedDocuments("Item", [{
         _id: itemId,
         "system.equipped": !currentEquipped
       }]);
+    });
+
+    // Toggle tool on/off (gear tab)
+    html.find('.toggle-tool').click(async ev => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
+      const currentEquipped = item.system.equipped ?? false;
+      await item.update({ "system.equipped": !currentEquipped });
+    });
+
+    // Toggle drug use/wearoff (gear tab)
+    html.find('.toggle-drug').click(async ev => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      // Save scroll position before update
+      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
+
+      const isActive = item.system.equipped ?? false;
+      if (isActive) {
+        // Wearoff: deactivate and decrement quantity
+        const newQty = (item.system.quantity ?? 1) - 1;
+        if (newQty <= 0) {
+          await item.delete();
+        } else {
+          await item.update({ "system.equipped": false, "system.quantity": newQty });
+        }
+      } else {
+        // Use: activate the drug
+        await item.update({ "system.equipped": true });
+      }
     });
 
     // Fire weapon (gear tab) - clicking on icon or name
@@ -1645,6 +1893,12 @@ export class CyberpunkActorSheet extends ActorSheet {
   async _onDropItem(event, data) {
     event.preventDefault();
 
+    // Save scroll position before any updates
+    const gearContainer = this.element.find('.gear-container')[0];
+    if (gearContainer) {
+      this._gearScrollTop = gearContainer.scrollTop;
+    }
+
     // Get dropped item first to check its type
     const item = await Item.implementation.fromDropData(data);
     if (!item) return;
@@ -1704,6 +1958,57 @@ export class CyberpunkActorSheet extends ActorSheet {
       // Add career skills from the role
       await this.applyCareerSkills(item.uuid);
       return;
+    }
+
+    // Handle drug drops — stack by name, add unused by default
+    if (item.type === "drug") {
+      const existingDrug = this.actor.items.find(i =>
+        i.type === "drug" && i.name === item.name
+      );
+      if (existingDrug) {
+        const currentQty = existingDrug.system.quantity || 0;
+        return this.actor.updateEmbeddedDocuments("Item", [{
+          _id: existingDrug.id,
+          "system.quantity": currentQty + 1
+        }]);
+      }
+      // Create new with quantity=1, equipped=false
+      const newData = item.toObject();
+      newData.system.quantity = 1;
+      newData.system.equipped = false;
+      return this.actor.createEmbeddedDocuments("Item", [newData]);
+    }
+
+    // Handle ordnance drops — stack by name, increase charges
+    if (item.type === "ordnance") {
+      const existingOrdnance = this.actor.items.find(i =>
+        i.type === "ordnance" && i.name === item.name
+      );
+      if (existingOrdnance) {
+        const currentCharges = existingOrdnance.system.charges || 0;
+        return this.actor.updateEmbeddedDocuments("Item", [{
+          _id: existingOrdnance.id,
+          "system.charges": currentCharges + 1
+        }]);
+      }
+      // Create new with charges=1
+      const newData = item.toObject();
+      newData.system.charges = 1;
+      return this.actor.createEmbeddedDocuments("Item", [newData]);
+    }
+
+    // Handle tool drops — add turned off by default
+    if (item.type === "tool") {
+      const newData = item.toObject();
+      newData.system.equipped = false;
+      return this.actor.createEmbeddedDocuments("Item", [newData]);
+    }
+
+    // Handle armor drops — add unequipped by default
+    if (item.type === "armor") {
+      const newData = item.toObject();
+      newData.system.equipped = false;
+      return this.actor.createEmbeddedDocuments("Item", [newData]);
     }
 
     const dropTarget = event.target.closest("[data-drop-target]");

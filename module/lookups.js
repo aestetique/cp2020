@@ -235,6 +235,13 @@ export const ammoTypes = {
     rubberSlug: "AmmoRubberSlug"
 };
 
+export const ammoAbbreviations = {
+    standard: "SD",
+    armorPiercing: "AP",
+    hollowPoint: "HP",
+    rubberSlug: "RS"
+};
+
 /**
  * Validity matrix: which ammo types are valid for a given weaponType + caliber.
  */

@@ -76,6 +76,35 @@ export class CyberpunkActor extends Actor {
       return item.system.equipped;
     });
 
+    // Apply bonuses from equipped tools and drugs
+    const equippedToolsAndDrugs = equippedItems.filter(i => i.type === "tool" || i.type === "drug");
+    equippedToolsAndDrugs.forEach(item => {
+      const bonuses = item.system.bonuses || [];
+      bonuses.forEach(bonus => {
+        if (bonus.type === "property" && bonus.property) {
+          // Property bonuses modify stats directly
+          // Format: "stats.int.tempMod", "initiativeMod", etc.
+          const parts = bonus.property.split('.');
+          if (parts[0] === "stats" && parts.length === 3) {
+            // e.g., "stats.int.tempMod"
+            const statKey = parts[1];
+            if (stats[statKey]) {
+              stats[statKey].tempMod = (stats[statKey].tempMod || 0) + (bonus.value || 0);
+            }
+          } else if (parts.length === 1) {
+            // Direct property like "initiativeMod"
+            system[bonus.property] = (system[bonus.property] || 0) + (bonus.value || 0);
+          }
+        }
+        // Note: Skill bonuses require separate handling during skill rolls
+      });
+    });
+
+    // Recalculate stat totals after applying bonuses
+    for (const stat of Object.values(stats)) {
+      stat.total = stat.base + (stat.tempMod || 0);
+    }
+
     // Reflex is affected by encumbrance values too
     stats.ref.armorMod = 0;
     equippedItems.filter(i => i.type === "armor").forEach(armor => {
@@ -432,13 +461,34 @@ export class CyberpunkActor extends Actor {
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
+    // Calculate skill bonuses from equipped tools and drugs
+    let skillBonus = 0;
+    const equippedItems = this.items.contents.filter(i =>
+      (i.type === "tool" || i.type === "drug") && i.system.equipped
+    );
+    for (const item of equippedItems) {
+      const bonuses = item.system.bonuses || [];
+      for (const bonus of bonuses) {
+        if (bonus.type === "skill" && bonus.value) {
+          // Match by UUID or by name (case-insensitive)
+          const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
+          const matchByName = bonus.skillName &&
+            bonus.skillName.toLowerCase() === skill.name.toLowerCase();
+          if (matchByUuid || matchByName) {
+            skillBonus += bonus.value;
+          }
+        }
+      }
+    }
+
     // generate the list of modifiers
     const parts = [
       CyberpunkActor.realSkillValue(skill),
       skill.system.stat ? `@stats.${skill.system.stat}.total` : null,
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
       extraMod || null,
-      actionSurgePenalty || null
+      actionSurgePenalty || null,
+      skillBonus || null
     ].filter(Boolean);
 
     const makeRoll = () => makeD10Roll(parts, this.system);   // d10 + parts

@@ -2752,10 +2752,10 @@ input.skill-value.skill-level-input:focus {
 .gear-row {
   width: 100%;
   height: 48px;
-  padding: 0 8px;
+  padding: 0 11px 0 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   border-bottom: 1px dashed #26282F;
 }
 
@@ -2885,11 +2885,6 @@ input.skill-value.skill-level-input:focus {
   text-align: center;
 }
 
-.ammo-quantity {
-  width: 176px;
-  padding-right: 116px;
-}
-
 .gear-action-btn {
   width: 40px;
   height: 30px;
@@ -2909,11 +2904,6 @@ input.skill-value.skill-level-input:focus {
 }
 .gear-action-btn[data-can-reload=true] {
   cursor: pointer;
-}
-
-.gear-spacer {
-  width: 176px;
-  flex-shrink: 0;
 }
 
 .gear-actions {
@@ -5195,3 +5185,5 @@ input.skill-value.skill-level-input:focus {
 .cyberware-card .sp-input {
   -moz-appearance: textfield;
 }
+
+/*# sourceMappingURL=cp2020.css.map */
