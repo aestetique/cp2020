@@ -146,13 +146,15 @@ export class CyberpunkDrugSheet extends CyberpunkItemSheet {
             await this.item.update({ "system.bonuses": bonuses });
         });
 
-        // Bonus value change
-        html.find('.bonus-value-input').change(async ev => {
+        // Bonus value change - save on change or blur
+        html.find('.bonus-value-input').on('change blur', async ev => {
             const index = parseInt(ev.currentTarget.dataset.index);
             const value = parseInt(ev.currentTarget.value) || 0;
             const bonuses = [...(this.item.system.bonuses || [])];
-            bonuses[index] = { ...bonuses[index], value };
-            await this.item.update({ "system.bonuses": bonuses });
+            if (bonuses[index] && bonuses[index].value !== value) {
+                bonuses[index] = { ...bonuses[index], value };
+                await this.item.update({ "system.bonuses": bonuses });
+            }
         });
     }
 
