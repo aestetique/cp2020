@@ -30,6 +30,7 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/chat/save-roll.hbs",
         "systems/cp2020/templates/chat/suppressive.hbs",
         "systems/cp2020/templates/chat/formula-roll.hbs",
+        "systems/cp2020/templates/chat/humanity-roll.hbs",
 
         // Chat card partials
         "systems/cp2020/templates/chat/partials/card-header.hbs",

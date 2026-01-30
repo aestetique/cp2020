@@ -1,5 +1,6 @@
 import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes } from "../lookups.js"
 import { localize, localizeParam, tabBeautifying } from "../utils.js"
+import { processFormulaRoll } from "../dice.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
 import { SortOrders } from "./skill-sort.js";
@@ -2148,10 +2149,17 @@ export class CyberpunkActorSheet extends ActorSheet {
             "system.stats.emp.humanityDamage": currentDamage + roll.total
           });
 
-          // Show roll in chat
-          roll.toMessage({
+          // Show roll in chat with custom humanity template
+          const templateData = processFormulaRoll(roll);
+          const content = await renderTemplate(
+            "systems/cp2020/templates/chat/humanity-roll.hbs",
+            templateData
+          );
+          await ChatMessage.create({
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-            flavor: `${item.name} - Humanity Loss`
+            content: content,
+            rolls: [roll],
+            sound: CONFIG.sounds.dice
           });
 
           return; // Already updated equipped state above
@@ -2180,9 +2188,17 @@ export class CyberpunkActorSheet extends ActorSheet {
       const roll = new Roll(formula);
       await roll.evaluate();
 
-      await roll.toMessage({
+      // Show roll in chat with custom humanity template
+      const templateData = processFormulaRoll(roll);
+      const content = await renderTemplate(
+        "systems/cp2020/templates/chat/humanity-roll.hbs",
+        templateData
+      );
+      await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-        flavor: `${item.name} - Humanity Loss`
+        content: content,
+        rolls: [roll],
+        sound: CONFIG.sounds.dice
       });
 
       // Store roll result on item

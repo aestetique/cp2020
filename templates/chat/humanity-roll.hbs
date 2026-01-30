@@ -1,0 +1,43 @@
+<div class="cyberpunk-card cyberpunk-card--humanity">
+    {{!-- Section Bar: Humanity Loss --}}
+    {{> (CPTemplate "chat/partials/section-bar.hbs") label=(CPLocal "HumanityLoss") icon="humanity"}}
+
+    {{!-- Collapsible Roll Container --}}
+    <div class="roll-container roll-container--collapsed">
+        {{!-- Expandable Details (hidden by default) --}}
+        <div class="roll-expandable">
+            <div class="roll-expandable__inner">
+                {{!-- Formula Bar --}}
+                <div class="formula-bar">
+                    <span class="formula-bar__text">{{cleanFormula formula}}</span>
+                </div>
+
+                {{!-- Each dice group (4d6, 2d10, etc.) --}}
+                {{#each diceGroups}}
+                <div class="roll-details">
+                    <div class="roll-details__row">
+                        <span class="roll-details__label">{{this.label}}</span>
+                        <span class="roll-details__value">
+                            <span class="roll-details__value-text">{{this.subtotal}}</span>
+                        </span>
+                    </div>
+                    {{#if this.dice}}
+                    <div class="roll-details__row roll-details__row--dice">
+                        {{#each this.dice}}
+                        <div class="dice-badge dice-badge--d{{this.faces}} {{this.classes}}">
+                            <span class="dice-badge__value">{{{this.result}}}</span>
+                        </div>
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        {{!-- Result Row (always visible, clickable to expand) --}}
+        <div class="result-row result-row--neutral roll-toggle">
+            <span class="result-row__value">{{total}}</span>
+        </div>
+    </div>
+</div>
