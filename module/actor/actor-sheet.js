@@ -178,15 +178,24 @@ export class CyberpunkActorSheet extends ActorSheet {
       sheetData.initiativeMod = initiativeMod;
       sheetData.initiativeTotal = refTotal + combatSenseMod + initiativeMod + fastDrawMod;
 
-      // Stun Save total: BT + Stun Save Mod
+      // Calculate effective thresholds (using actor methods)
+      const stunThreshold = actor.stunThreshold();
+      const deathThreshold = actor.deathThreshold();
+
+      // Stun Save: threshold + Stun Save Mod
       const stunSaveMod = foundry.utils.getProperty(system, "stunSaveMod") || 0;
       sheetData.stunSaveMod = stunSaveMod;
-      sheetData.stunSaveTotal = btTotal + stunSaveMod;
+      sheetData.stunSaveTotal = stunThreshold + stunSaveMod;
 
-      // Death Save total: BT + Death Save Mod
+      // Poison Save: same threshold as Stun + Poison Save Mod
+      const poisonSaveMod = foundry.utils.getProperty(system, "poisonSaveMod") || 0;
+      sheetData.poisonSaveMod = poisonSaveMod;
+      sheetData.poisonSaveTotal = stunThreshold + poisonSaveMod;
+
+      // Death Save: death threshold + Death Save Mod
       const deathSaveMod = foundry.utils.getProperty(system, "deathSaveMod") || 0;
       sheetData.deathSaveMod = deathSaveMod;
-      sheetData.deathSaveTotal = btTotal + deathSaveMod;
+      sheetData.deathSaveTotal = deathThreshold + deathSaveMod;
 
       // Overriding B.T to body and M.A to Move so it matches the design
       const stats = system.stats || {};
@@ -465,9 +474,9 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
     }
 
-    // Get equipped tools and drugs for skill bonus calculation
-    const equippedToolsAndDrugs = this.actor.items.contents.filter(i =>
-      (i.type === "tool" || i.type === "drug") && i.system.equipped
+    // Get equipped tools, drugs, and cyberware for skill bonus calculation
+    const equippedWithBonuses = this.actor.items.contents.filter(i =>
+      (i.type === "tool" || i.type === "drug" || i.type === "cyberware") && i.system.equipped
     );
 
     // Get equipped chipware with skill effects for chipping mechanic
@@ -538,10 +547,10 @@ export class CyberpunkActorSheet extends ActorSheet {
       const currentIp = skill.system.ip || 0;
       const canIncrease = currentIp >= ipCost;
 
-      // Calculate skill bonus from equipped tools and drugs (NOT applied to chipped skills)
+      // Calculate skill bonus from equipped tools, drugs, and cyberware (NOT applied to chipped skills)
       let skillBonus = 0;
       if (!isChipped) {
-        for (const item of equippedToolsAndDrugs) {
+        for (const item of equippedWithBonuses) {
           const bonuses = item.system.bonuses || [];
           for (const bonus of bonuses) {
             if (bonus.type === "skill" && bonus.value) {
@@ -1522,20 +1531,20 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
     });
 
-    // ----- Action Buttons (Initiative, Death Save, Stun Save) -----
-
-    // Initiative roll (simplified - no modifier input in new design)
-    html.find(".roll-initiative").click(ev => {
-      ev.preventDefault();
-      const modifier = this.actor.system.initiativeMod || 0;
-      this.actor.addToCombatAndRollInitiative(modifier);
-    });
+    // ----- Action Buttons (Stun Save, Poison Save, Death Save) -----
 
     // Stun Save roll
     html.find(".stun-save").click(ev => {
       ev.preventDefault();
       const modifier = this.actor.system.stunSaveMod || 0;
       this.actor.rollStunSave(modifier);
+    });
+
+    // Poison Save roll
+    html.find(".poison-save").click(ev => {
+      ev.preventDefault();
+      const modifier = this.actor.system.poisonSaveMod || 0;
+      this.actor.rollPoisonSave(modifier);
     });
 
     // Death Save roll

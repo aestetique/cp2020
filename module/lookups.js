@@ -77,7 +77,8 @@ export const toolBonusProperties = {
     "stats.emp.tempMod": "PropEMP",
     "initiativeMod": "PropInitiative",
     "stunSaveMod": "PropStunSave",
-    "deathSaveMod": "PropDeathSave"
+    "deathSaveMod": "PropDeathSave",
+    "poisonSaveMod": "PropPoisonSave"
 };
 
 /** Program class types */

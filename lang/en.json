@@ -402,6 +402,7 @@
     "CYBERPUNK.StunDeathSave": "Stun/Death Save",
     "CYBERPUNK.StunSave": "Stun Save",
     "CYBERPUNK.ShockSave": "Shock Save",
+    "CYBERPUNK.PoisonSave": "Poison Save",
     "CYBERPUNK.DeathSave": "Death Save",
     "CYBERPUNK.UnderThresholdMessage": "Roll under the thresholds to succeed.",
     "CYBERPUNK.Save": "Save",
@@ -559,6 +560,7 @@
     "CYBERPUNK.Conditions.LostRightLeg": "Lost Right Leg",
     "CYBERPUNK.Conditions.FastDraw": "Fast Draw",
     "CYBERPUNK.Conditions.ActionSurge": "Action Surge",
+    "CYBERPUNK.Conditions.Poisoned": "Poisoned",
     "CYBERPUNK.Stabilized": "Stabilized",
     "CYBERPUNK.FastDraw": "Fast Draw",
     "CYBERPUNK.ActionSurge": "Action Surge",
@@ -668,6 +670,7 @@
     "CYBERPUNK.PropInitiative": "Initiative",
     "CYBERPUNK.PropStunSave": "Stun Save",
     "CYBERPUNK.PropDeathSave": "Death Save",
+    "CYBERPUNK.PropPoisonSave": "Poison Save",
 
     "TYPES.Item.drug": "Drug",
     "CYBERPUNK.Drug": "DRUG",

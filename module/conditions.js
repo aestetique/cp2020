@@ -153,6 +153,12 @@ export const CP2020_CONDITIONS = [
         name: "CYBERPUNK.Conditions.ActionSurge",
         icon: "systems/cp2020/img/conditions/action-surge.svg",
         statuses: ["action-surge"]
+    },
+    {
+        id: "poisoned",
+        name: "CYBERPUNK.Conditions.Poisoned",
+        icon: "systems/cp2020/img/conditions/poisoned.svg",
+        statuses: ["poisoned"]
     }
 ];
 
@@ -264,6 +270,12 @@ export const CONDITION_EFFECTS = {
     "action-surge": {
         // -3 on all rolls - applied manually in rolls
         changes: []
+    },
+    "poisoned": {
+        // REF -4
+        changes: [
+            { key: "system.stats.ref.value", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-4" }
+        ]
     }
 };
 

@@ -76,9 +76,9 @@ export class CyberpunkActor extends Actor {
       return item.system.equipped;
     });
 
-    // Apply bonuses from equipped tools and drugs
-    const equippedToolsAndDrugs = equippedItems.filter(i => i.type === "tool" || i.type === "drug");
-    equippedToolsAndDrugs.forEach(item => {
+    // Apply bonuses from equipped tools, drugs, and cyberware
+    const equippedWithBonuses = equippedItems.filter(i => i.type === "tool" || i.type === "drug" || i.type === "cyberware");
+    equippedWithBonuses.forEach(item => {
       const bonuses = item.system.bonuses || [];
       bonuses.forEach(bonus => {
         if (bonus.type === "property" && bonus.property) {
@@ -567,11 +567,11 @@ export class CyberpunkActor extends Actor {
       ? chipValue
       : CyberpunkActor.realSkillValue(skill);
 
-    // Calculate skill bonuses from equipped tools and drugs (NOT applied to chipped skills)
+    // Calculate skill bonuses from equipped tools, drugs, and cyberware (NOT applied to chipped skills)
     let skillBonus = 0;
     if (!isChipped) {
       const equippedItems = this.items.contents.filter(i =>
-        (i.type === "tool" || i.type === "drug") && i.system.equipped
+        (i.type === "tool" || i.type === "drug" || i.type === "cyberware") && i.system.equipped
       );
       for (const item of equippedItems) {
         const bonuses = item.system.bonuses || [];
@@ -780,6 +780,41 @@ export class CyberpunkActor extends Actor {
     } else {
       // Apply Shocked condition on failure
       await this.toggleStatusEffect("shocked", { active: true });
+    }
+  }
+
+  /**
+   * Roll a Poison Save
+   * Must roll UNDER the threshold to succeed
+   * On failure, applies the Poisoned condition (-4 REF)
+   * @param {number} modifier - Optional modifier to the roll
+   */
+  async rollPoisonSave(modifier = 0) {
+    const threshold = this.stunThreshold(); // Same threshold as Stun (BT-based)
+    const roll = await new Roll(modifier ? `1d10 + ${modifier}` : "1d10").evaluate();
+    const success = roll.total < threshold;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+
+    new Multiroll(localize("PoisonSave"))
+      .addRoll(roll, { name: localize("Save") })
+      .execute(speaker, "systems/cp2020/templates/chat/save-roll.hbs", {
+        saveType: "poison",
+        saveLabel: localize("PoisonSave"),
+        threshold: threshold,
+        success: success,
+        hint: localize("UnderThresholdMessage")
+      });
+
+    // Apply or remove Poisoned condition based on result
+    if (success) {
+      // Remove Poisoned condition on success
+      if (this.statuses.has("poisoned")) {
+        await this.toggleStatusEffect("poisoned", { active: false });
+      }
+    } else {
+      // Apply Poisoned condition on failure
+      await this.toggleStatusEffect("poisoned", { active: true });
     }
   }
 
