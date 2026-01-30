@@ -114,7 +114,8 @@ export const cyberwareSubtypes = {
         rightArm: "CyberSubRightArm",
         leftLeg: "CyberSubLeftLeg",
         rightLeg: "CyberSubRightLeg",
-        extraArm: "CyberSubExtraArm"
+        extraArm: "CyberSubExtraArm",
+        meatLimbs: "CyberSubMeatLimbs"
     },
     implant: {
         fashionware: "CyberSubFashionware",

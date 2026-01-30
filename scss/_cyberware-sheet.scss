@@ -162,6 +162,7 @@
   // ============================================
   .variable-value {
     display: flex;
+    flex: 1 0 0;
     height: 26px;
     padding: 5px 8px;
     align-items: center;
@@ -251,89 +252,21 @@
     flex-shrink: 0;
   }
 
-  // ============================================
-  // Chipped Skill Row
-  // ============================================
-  .chipped-skill-row {
-    align-items: stretch;
+  // Bonus indicator for SDP bonuses from attached options
+  .bonus-indicator {
+    color: #6B8E23; // Olive green for positive bonus
+    font-family: var(--font-blender);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    margin-left: 4px;
+    flex-shrink: 0;
   }
 
-  .chipped-skill-field {
-    flex: 2 0 0;
-  }
-
-  .chip-value-field {
-    flex: 1 0 0;
-    max-width: 100px;
-  }
-
-  .skill-drop.filled {
-    display: flex;
-    padding: 5px 8px;
-    gap: 10px;
-    flex: 1 0 0;
-    align-self: stretch;
-    align-items: center;
-    border-radius: 4px;
-    background: var(--Chat-Front, #26282F);
-    border: none;
-
-    .skill-name {
-      flex: 1;
-      color: var(--Chat-Text, #FFF);
-      font-family: var(--font-blender);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 16px;
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .remove-chipped-skill {
-      width: 16px;
-      height: 16px;
-      padding: 0;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      opacity: 0.6;
-      flex-shrink: 0;
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
-
-  // Locked filled state
-  &:not(.unlocked) .skill-drop.filled .skill-name {
-    color: #808090;
-  }
-
-  .skill-drop.empty {
-    display: block;
-    padding: 5px 8px;
-    align-items: center;
-    gap: 10px;
-    flex: 1 0 0;
-    border-radius: 4px;
-    border: 1px dashed var(--Chat-Gray, #444856);
-
-    .placeholder {
-      color: var(--Chat-Gray, #444856);
-      font-family: var(--font-blender);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 16px;
-    }
+  // Boosted value styling (green text)
+  .dual-value.with-bonus,
+  .variable-value.with-bonus {
+    color: #6B8E23;
   }
 
   // ============================================
@@ -453,6 +386,59 @@
       border-color: var(--Sheet-Key, #B9B29D);
       color: var(--Sheet-Key, #B9B29D);
       box-shadow: none;
+    }
+  }
+
+  // ============================================
+  // Skill Drop Zones (for Effect tab skill bonuses)
+  // ============================================
+  .skill-drop.filled {
+    display: block;
+    padding: 0 8px;
+    gap: 10px;
+    flex: 1 0 0;
+    align-self: stretch;
+    border-radius: 4px;
+    background: var(--Chat-Front, #26282F);
+    border: none;
+
+    .skill-name {
+      flex: 1;
+      color: var(--Chat-Text, #FFF);
+      font-family: var(--font-blender);
+      font-size: 14px;
+      font-weight: 400;
+      height: 26px;
+      line-height: 14px;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // Locked filled state - gray text
+  &:not(.unlocked) .skill-drop.filled .skill-name {
+    color: #808090;
+  }
+
+  // Empty state — dashed border
+  .skill-drop.empty {
+    display: block;
+    padding: 0 8px;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 4px;
+    border: 1px dashed var(--Chat-Gray, #444856);
+
+    .placeholder {
+      color: var(--Chat-Gray, #444856);
+      font-family: var(--font-blender);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
     }
   }
 

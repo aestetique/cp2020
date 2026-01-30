@@ -639,14 +639,20 @@ export class CyberpunkChatMessage extends ChatMessage {
      * @private
      */
     _calculateDamagePreview(actor, damageData, ammoType = "standard", damageType = "") {
-        let total = 0;
+        let woundTotal = 0;      // Damage going to wounds
+        let cyberlimbTotal = 0;  // Damage going to cyberlimb structure
         const hintParts = [];
         const byLocation = {}; // Track final damage per location for limb loss detection
 
         for (const [location, hits] of Object.entries(damageData)) {
             if (!Array.isArray(hits)) continue;
 
-            let locationTotal = 0;
+            let locationWoundDamage = 0;
+            let locationCyberlimbDamage = 0;
+
+            // Check if this location has an active cyberlimb with SDP > 0
+            const cyberlimbData = actor.system?.cyberlimbs?.[location];
+            const hasCyberlimb = cyberlimbData?.hasCyberlimb && cyberlimbData?.sdp > 0;
 
             for (const hit of hits) {
                 const rawDamage = hit.damage || 0;
@@ -706,12 +712,16 @@ export class CyberpunkChatMessage extends ChatMessage {
                     let finalDamageRubber = 0;
                     if (afterArmorRubber > 0) {
                         finalDamageRubber = 1;
-                        hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1`);
+                        if (hasCyberlimb) {
+                            hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1 SDP`);
+                            locationCyberlimbDamage += finalDamageRubber;
+                        } else {
+                            hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1`);
+                            locationWoundDamage += finalDamageRubber;
+                        }
                     } else {
                         hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 0`);
                     }
-                    total += finalDamageRubber;
-                    locationTotal += finalDamageRubber;
                     continue;
                 }
 
@@ -731,12 +741,18 @@ export class CyberpunkChatMessage extends ChatMessage {
                     modifiedDamage = Math.floor(modifiedDamage / 2);
                 }
 
-                // Apply BTM if damage penetrated
+                // Apply BTM only if NOT a cyberlimb location
                 let finalDamage = 0;
                 const btm = actor.system?.stats?.bt?.modifier || 0;
 
                 if (modifiedDamage > 0) {
-                    finalDamage = Math.max(1, modifiedDamage - btm);
+                    if (hasCyberlimb) {
+                        // Cyberlimb: no BTM, damage goes to structure
+                        finalDamage = modifiedDamage;
+                    } else {
+                        // Normal: apply BTM, damage goes to wounds
+                        finalDamage = Math.max(1, modifiedDamage - btm);
+                    }
                 }
 
                 // Build hint string
@@ -748,32 +764,61 @@ export class CyberpunkChatMessage extends ChatMessage {
                             ? `${effectiveSP} SP(HP)`
                             : `${armorSP} SP`;
 
-                if (damageType === "spike" && afterArmor > 0) {
-                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
-                } else if (ammoType === "armorPiercing") {
-                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
-                } else if (ammoType === "hollowPoint") {
-                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
-                } else if (modifiedDamage > 0 && btm !== 0) {
-                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} - ${btm} BTM = ${finalDamage}`);
-                } else if (armorSP > 0 || dmgTypeLabel) {
-                    hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${finalDamage}`);
+                // Cyberlimb damage hint (no BTM, shows SDP)
+                if (hasCyberlimb && finalDamage > 0) {
+                    if (damageType === "spike" && afterArmor > 0) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋ = ${finalDamage} SDP`);
+                    } else if (ammoType === "armorPiercing") {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋ = ${finalDamage} SDP`);
+                    } else if (ammoType === "hollowPoint") {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋ = ${finalDamage} SDP`);
+                    } else if (armorSP > 0 || dmgTypeLabel) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${finalDamage} SDP`);
+                    } else {
+                        hintParts.push(`${location}: ${rawDamage} = ${finalDamage} SDP`);
+                    }
+                    locationCyberlimbDamage += finalDamage;
+                } else if (finalDamage > 0) {
+                    // Normal wound damage hint (with BTM)
+                    if (damageType === "spike" && afterArmor > 0) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                    } else if (ammoType === "armorPiercing") {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                    } else if (ammoType === "hollowPoint") {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                    } else if (modifiedDamage > 0 && btm !== 0) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} - ${btm} BTM = ${finalDamage}`);
+                    } else if (armorSP > 0 || dmgTypeLabel) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${finalDamage}`);
+                    } else {
+                        hintParts.push(`${location}: ${rawDamage} = ${finalDamage}`);
+                    }
+                    locationWoundDamage += finalDamage;
                 } else {
-                    hintParts.push(`${location}: ${rawDamage} = ${finalDamage}`);
+                    // No damage penetrated
+                    if (armorSP > 0 || dmgTypeLabel) {
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} = 0`);
+                    } else {
+                        hintParts.push(`${location}: ${rawDamage} = 0`);
+                    }
                 }
-
-                total += finalDamage;
-                locationTotal += finalDamage;
             }
 
-            // Store the total final damage for this location
-            byLocation[location] = { finalDamage: locationTotal };
+            // Store damage breakdown for this location
+            byLocation[location] = {
+                finalDamage: locationWoundDamage + locationCyberlimbDamage, // For limb loss check
+                woundDamage: locationWoundDamage,
+                cyberlimbDamage: locationCyberlimbDamage
+            };
+
+            woundTotal += locationWoundDamage;
+            cyberlimbTotal += locationCyberlimbDamage;
         }
 
         // Each hit on its own line for clarity
         const hint = hintParts.length > 0 ? hintParts.join("\n") : "";
 
-        return { total, hint, byLocation };
+        return { total: woundTotal, cyberlimbTotal, hint, byLocation };
     }
 
     /**
@@ -829,19 +874,69 @@ export class CyberpunkChatMessage extends ChatMessage {
 
             // Calculate total damage for this actor (includes per-location breakdown)
             const preview = this._calculateDamagePreview(actor, damageData, ammoType, damageType);
-            const totalDamage = preview.total;
+            const woundDamage = preview.total;        // Damage to wounds (not cyberlimb)
+            const cyberlimbDamage = preview.cyberlimbTotal || 0;  // Damage to cyberlimb structure
 
-            if (totalDamage <= 0) continue;
+            // Track if we need to roll Death Save (only once per apply)
+            let needsDeathSave = false;
 
-            // Get current damage and add new damage
-            const currentDamage = actor.system.damage || 0;
-            const newDamage = Math.min(currentDamage + totalDamage, 40);
+            // Apply cyberlimb structural damage first
+            for (const [location, locDamage] of Object.entries(preview.byLocation)) {
+                if (!locDamage.cyberlimbDamage || locDamage.cyberlimbDamage <= 0) continue;
+
+                const cyberlimbData = actor.system?.cyberlimbs?.[location];
+                if (!cyberlimbData?.itemId) continue;
+
+                const cyberlimb = actor.items.get(cyberlimbData.itemId);
+                if (!cyberlimb) continue;
+
+                const currentSdp = cyberlimb.system.structure?.current ?? 0;
+                const newSdp = Math.max(0, currentSdp - locDamage.cyberlimbDamage);
+                const disablesAt = cyberlimb.system.disablesAt ?? 0;
+
+                if (newSdp <= 0) {
+                    // Cyberlimb destroyed - delete it and attached options
+                    const attachedOptions = actor.items.filter(i =>
+                        i.type === 'cyberware' &&
+                        i.getFlag('cp2020', 'attachedTo') === cyberlimb.id
+                    );
+
+                    // Delete attached options first
+                    for (const opt of attachedOptions) {
+                        await opt.delete();
+                    }
+
+                    // Delete the cyberlimb
+                    await cyberlimb.delete();
+
+                    // Apply Lost Limb condition
+                    const conditionId = limbConditions[location];
+                    if (conditionId && !actor.statuses.has(conditionId)) {
+                        await actor.toggleStatusEffect(conditionId, { active: true });
+                        needsDeathSave = true;
+                    }
+                } else {
+                    // Update cyberlimb structure
+                    await cyberlimb.update({
+                        "system.structure.current": newSdp
+                    });
+                }
+            }
+
+            // Only apply wound damage to actor (not cyberlimb damage)
+            if (woundDamage <= 0 && cyberlimbDamage <= 0) continue;
 
             // Check wound state before update
             const previousWoundState = actor.woundState();
 
-            // Update actor damage
-            await actor.update({ "system.damage": newDamage });
+            if (woundDamage > 0) {
+                // Get current damage and add new wound damage
+                const currentDamage = actor.system.damage || 0;
+                const newDamage = Math.min(currentDamage + woundDamage, 40);
+
+                // Update actor damage
+                await actor.update({ "system.damage": newDamage });
+            }
 
             // Ablate armor on penetration
             // For each location that took damage, find equipped armor and increase ablation
@@ -898,24 +993,26 @@ export class CyberpunkChatMessage extends ChatMessage {
             // Get new wound state
             const newWoundState = actor.woundState();
 
-            // Remove Stabilized if actor takes any damage
-            if (actor.statuses.has("stabilized")) {
+            // Remove Stabilized if actor takes any damage (wound or cyberlimb)
+            if ((woundDamage > 0 || cyberlimbDamage > 0) && actor.statuses.has("stabilized")) {
                 await actor.toggleStatusEffect("stabilized", { active: false });
             }
 
-            // Roll Shock Save only if actor is NOT already shocked
-            if (totalDamage > 0 && !actor.statuses.has("shocked")) {
+            // Roll Shock Save only if actor is NOT already shocked (any damage triggers this)
+            if ((woundDamage > 0 || cyberlimbDamage > 0) && !actor.statuses.has("shocked")) {
                 const modifier = actor.system.stunSaveMod || 0;
                 await actor.rollStunSave(modifier);
             }
 
-            // Track if we need to roll Death Save (only once per apply)
-            let needsDeathSave = false;
-
-            // Check for limb loss (8+ final damage to a limb)
+            // Check for limb loss (8+ wound damage to a non-cyberlimb limb)
+            // Cyberlimb locations are handled separately above
             for (const [location, conditionId] of Object.entries(limbConditions)) {
-                const locationDamage = preview.byLocation[location]?.finalDamage || 0;
-                if (locationDamage >= 8 && !actor.statuses.has(conditionId)) {
+                const locDamage = preview.byLocation[location];
+                // Skip if this location has a cyberlimb (handled by SDP system)
+                if (locDamage?.cyberlimbDamage > 0) continue;
+
+                const woundDamageAtLoc = locDamage?.woundDamage || 0;
+                if (woundDamageAtLoc >= 8 && !actor.statuses.has(conditionId)) {
                     await actor.toggleStatusEffect(conditionId, { active: true });
                     needsDeathSave = true;
                 }
@@ -926,7 +1023,7 @@ export class CyberpunkChatMessage extends ChatMessage {
                 needsDeathSave = true;
             }
 
-            // Roll Death Save once if needed (limb loss or entering mortal state)
+            // Roll Death Save once if needed (limb loss, cyberlimb destruction, or entering mortal state)
             if (needsDeathSave) {
                 const modifier = actor.system.deathSaveMod || 0;
                 await actor.rollDeathSave(modifier);

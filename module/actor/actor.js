@@ -225,20 +225,81 @@ export class CyberpunkActor extends Actor {
     else if(woundState == 2) {
       woundStat(stats.ref, total => total - 2);
     }
-    // calculate and configure the humanity
+    // Calculate and configure humanity
+    // Humanity damage is PERMANENT (only restored through therapy)
     const emp = stats.emp;
-    emp.humanity = {base: emp.base * 10};
-    // calculate total HL from cyberware
-    let hl = 0;
-    equippedItems.filter(i => i.type === "cyberware").forEach(cyberware => {
-      const cyber = cyberware.system;
-      hl += (cyber.humanityLoss) ? cyber.humanityLoss : 0;
-    });
+    const humanityDamage = emp.humanityDamage || 0;
 
-    emp.humanity.loss = hl;
-    // calculate current Humanity and current EMP
-    emp.humanity.total = emp.humanity.base - emp.humanity.loss;
-    emp.total = emp.base + emp.tempMod - Math.floor(emp.humanity.loss/10);
+    emp.humanity = {
+      base: emp.base * 10,           // Max humanity = EMP × 10
+      damage: humanityDamage,        // Permanent damage (from cyberware + other sources)
+      total: (emp.base * 10) - humanityDamage  // Current humanity
+    };
+
+    // EMP reduction: -1 per 10 humanity lost
+    emp.total = emp.base + emp.tempMod - Math.floor(humanityDamage / 10);
+
+    // Calculate cyberlimb data from equipped cyberware items
+    const subtypeToLocation = {
+      'leftArm': 'lArm',
+      'rightArm': 'rArm',
+      'leftLeg': 'lLeg',
+      'rightLeg': 'rLeg'
+    };
+
+    // Initialize cyberlimbs data
+    system.cyberlimbs = {
+      lArm: { hasCyberlimb: false, sdp: 0, maxSdp: 0, disablesAt: 0, isBroken: false, itemId: null },
+      rArm: { hasCyberlimb: false, sdp: 0, maxSdp: 0, disablesAt: 0, isBroken: false, itemId: null },
+      lLeg: { hasCyberlimb: false, sdp: 0, maxSdp: 0, disablesAt: 0, isBroken: false, itemId: null },
+      rLeg: { hasCyberlimb: false, sdp: 0, maxSdp: 0, disablesAt: 0, isBroken: false, itemId: null }
+    };
+
+    // Find equipped cyberlimbs (only specific subtypes count)
+    const equippedCyberlimbs = equippedItems.filter(i =>
+      i.type === 'cyberware' &&
+      i.system.cyberwareType === 'cyberlimb' &&
+      !i.system.isOption &&
+      Object.keys(subtypeToLocation).includes(i.system.cyberwareSubtype)
+    );
+
+    for (const limb of equippedCyberlimbs) {
+      const loc = subtypeToLocation[limb.system.cyberwareSubtype];
+      if (!loc) continue;
+
+      // Only take the first active cyberlimb per location
+      if (system.cyberlimbs[loc].hasCyberlimb) continue;
+
+      const current = limb.system.structure?.current ?? 0;
+      const baseMax = limb.system.structure?.max ?? 0;
+      const baseDisablesAt = limb.system.disablesAt ?? 0;
+
+      // Find attached options and sum their SDP bonuses
+      const attachedOptions = this.items.filter(i =>
+        i.type === 'cyberware' &&
+        i.system.isOption &&
+        i.getFlag('cp2020', 'attachedTo') === limb.id
+      );
+
+      const sdpBonusTotal = attachedOptions.reduce((sum, opt) => {
+        return sum + (opt.system.sdpBonus || 0);
+      }, 0);
+
+      // Add SDP bonus to both maxSdp and disablesAt
+      const max = baseMax + sdpBonusTotal;
+      const disablesAt = baseDisablesAt + sdpBonusTotal;
+
+      const isBroken = current > 0 && current <= disablesAt;
+
+      system.cyberlimbs[loc] = {
+        hasCyberlimb: true,
+        sdp: current,
+        maxSdp: max,
+        disablesAt: disablesAt,
+        isBroken: isBroken,
+        itemId: limb.id
+      };
+    }
 
     // Determine armor state per location (for visual display)
     const armorState = {};
@@ -284,7 +345,15 @@ export class CyberpunkActor extends Actor {
       if (isLost) {
         state = 'lost';
       } else if (hasCyber) {
-        state = sp === 0 ? 'cyber-exposed' : (hasHardArmor ? 'cyber-hard' : 'cyber-soft');
+        const isBroken = cyberlimb?.isBroken || false;
+        if (sp === 0) {
+          // Exposed: use broken variant when cyberlimb is broken
+          state = isBroken ? 'cyber-exposed-broken' : 'cyber-exposed';
+        } else if (hasHardArmor) {
+          state = isBroken ? 'cyber-hard-broken' : 'cyber-hard';
+        } else {
+          state = isBroken ? 'cyber-soft-broken' : 'cyber-soft';
+        }
       } else {
         state = sp === 0 ? 'exposed' : (hasHardArmor ? 'hard' : 'soft');
       }
@@ -293,7 +362,10 @@ export class CyberpunkActor extends Actor {
         sp,
         state,
         hasCyber,
-        cyberSdp: cyberlimb?.sdp || 0
+        isBroken: cyberlimb?.isBroken || false,
+        cyberSdp: cyberlimb?.sdp || 0,
+        cyberMaxSdp: cyberlimb?.maxSdp || 0,
+        cyberItemId: cyberlimb?.itemId || null
       };
     }
 
@@ -455,27 +527,63 @@ export class CyberpunkActor extends Actor {
    * @param {boolean} disadvantage
    */
   async rollSkill(skillId, extraMod = 0, advantage = false, disadvantage = false) {
+    // Handle virtual skills (from equipped chipware)
+    if (skillId.startsWith('virtual-')) {
+      return this._rollVirtualSkill(skillId, extraMod, advantage, disadvantage);
+    }
+
     const skill = this.items.get(skillId);
     if (!skill) return;
 
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
-    // Calculate skill bonuses from equipped tools and drugs
-    let skillBonus = 0;
-    const equippedItems = this.items.contents.filter(i =>
-      (i.type === "tool" || i.type === "drug") && i.system.equipped
+    // Check if this skill is chipped by equipped chipware
+    const equippedChipware = this.items.contents.filter(i =>
+      i.type === "cyberware" &&
+      i.system.cyberwareType === "chipware" &&
+      i.system.equipped
     );
-    for (const item of equippedItems) {
-      const bonuses = item.system.bonuses || [];
+
+    let chipValue = null;
+    for (const chip of equippedChipware) {
+      const bonuses = chip.system.bonuses || [];
       for (const bonus of bonuses) {
-        if (bonus.type === "skill" && bonus.value) {
-          // Match by UUID or by name (case-insensitive)
-          const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
-          const matchByName = bonus.skillName &&
-            bonus.skillName.toLowerCase() === skill.name.toLowerCase();
-          if (matchByUuid || matchByName) {
-            skillBonus += bonus.value;
+        if (bonus.type === "skill" &&
+            bonus.skillName?.toLowerCase() === skill.name.toLowerCase() &&
+            bonus.value) {
+          // Use highest chip value if multiple chips affect same skill
+          if (chipValue === null || bonus.value > chipValue) {
+            chipValue = bonus.value;
+          }
+        }
+      }
+    }
+
+    const isChipped = chipValue !== null;
+
+    // If chipped, use chip value INSTEAD of skill level
+    const skillValue = isChipped
+      ? chipValue
+      : CyberpunkActor.realSkillValue(skill);
+
+    // Calculate skill bonuses from equipped tools and drugs (NOT applied to chipped skills)
+    let skillBonus = 0;
+    if (!isChipped) {
+      const equippedItems = this.items.contents.filter(i =>
+        (i.type === "tool" || i.type === "drug") && i.system.equipped
+      );
+      for (const item of equippedItems) {
+        const bonuses = item.system.bonuses || [];
+        for (const bonus of bonuses) {
+          if (bonus.type === "skill" && bonus.value) {
+            // Match by UUID or by name (case-insensitive)
+            const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
+            const matchByName = bonus.skillName &&
+              bonus.skillName.toLowerCase() === skill.name.toLowerCase();
+            if (matchByUuid || matchByName) {
+              skillBonus += bonus.value;
+            }
           }
         }
       }
@@ -483,7 +591,7 @@ export class CyberpunkActor extends Actor {
 
     // generate the list of modifiers
     const parts = [
-      CyberpunkActor.realSkillValue(skill),
+      skillValue,
       skill.system.stat ? `@stats.${skill.system.stat}.total` : null,
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
       extraMod || null,
@@ -520,6 +628,80 @@ export class CyberpunkActor extends Actor {
     new Multiroll(skill.name)
       .addRoll(makeRoll())
       .defaultExecute({ statIcon: skill.system.stat }, this);
+  }
+
+  /**
+   * Roll a virtual skill from equipped chipware
+   * Virtual skills are skills the character doesn't own but can use via chipware
+   * @param {string}  virtualId - Format: "virtual-{chipwareId}-{skillName}"
+   * @param {number}  extraMod
+   * @param {boolean} advantage
+   * @param {boolean} disadvantage
+   */
+  async _rollVirtualSkill(virtualId, extraMod = 0, advantage = false, disadvantage = false) {
+    // Parse virtualId: "virtual-{chipwareId}-{skillName}"
+    const parts = virtualId.split('-');
+    const chipwareId = parts[1];
+    const skillName = parts.slice(2).join('-');
+
+    const chipware = this.items.get(chipwareId);
+    if (!chipware) {
+      console.warn(`CyberpunkActor: Chipware ${chipwareId} not found for virtual skill`);
+      return;
+    }
+
+    // Find the skill bonus in chipware
+    const bonus = chipware.system.bonuses?.find(b =>
+      b.type === "skill" && b.skillName === skillName
+    );
+    if (!bonus) {
+      console.warn(`CyberpunkActor: Skill bonus for ${skillName} not found in chipware`);
+      return;
+    }
+
+    // Use stored stat or default to ref
+    const stat = bonus.skillStat || 'ref';
+
+    // Action Surge: -3 penalty on all skill rolls
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    // Build roll parts
+    const rollParts = [
+      bonus.value,
+      `@stats.${stat}.total`,
+      extraMod || null,
+      actionSurgePenalty || null
+    ].filter(Boolean);
+
+    const makeRoll = () => makeD10Roll(rollParts, this.system);
+
+    // if both are accidentally marked — ignore
+    if (advantage && disadvantage) { advantage = disadvantage = false; }
+
+    // Advantage / Disadvantage
+    if (advantage || disadvantage) {
+      const r1 = makeRoll();
+      const r2 = makeRoll();
+
+      try {
+        await Promise.all([r1.evaluate(), r2.evaluate()]);
+        const chosen = advantage
+          ? (r1.total >= r2.total ? r1 : r2)
+          : (r1.total <= r2.total ? r1 : r2);
+
+        new Multiroll(skillName)
+          .addRoll(chosen)
+          .defaultExecute({ statIcon: stat }, this);
+      } catch (e) {
+        console.error("CyberpunkActor: Failed to evaluate advantage/disadvantage rolls", e);
+      }
+      return;
+    }
+
+    // normal roll
+    new Multiroll(skillName)
+      .addRoll(makeRoll())
+      .defaultExecute({ statIcon: stat }, this);
   }
 
   rollStat(statName) {

@@ -40,7 +40,8 @@
 					},
 					"emp": {
 						"base": 5,
-						"tempMod": 0
+						"tempMod": 0,
+						"humanityDamage": 0
 					}
 				}
 			},
@@ -779,7 +780,7 @@
 				"cost": 0,
 				"weight": 0,
 				"availability": "common",
-				"equipped": true,
+				"equipped": false,
 				"source": ""
 			}
 		},
@@ -876,6 +877,7 @@
 				"max": 0
 			},
 			"disablesAt": 0,
+			"repaired": false,
 			"sdpBonus": 0,
 			"isWeapon": false,
 			"isArmor": false,

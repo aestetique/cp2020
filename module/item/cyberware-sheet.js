@@ -51,6 +51,33 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
         data.showStructure = cyberType === "cyberlimb" && !sys.isOption;
         data.showSdpBonus = cyberType === "cyberlimb" && sys.isOption;
 
+        // --- Calculate effective structure values (base + SDP bonuses from attached options) ---
+        if (data.showStructure && this.item.actor) {
+            const baseMax = sys.structure?.max ?? 0;
+            const baseDisablesAt = sys.disablesAt ?? 0;
+
+            // Find attached options and sum their SDP bonuses
+            const attachedOptions = this.item.actor.items.filter(i =>
+                i.type === 'cyberware' &&
+                i.system.isOption &&
+                i.getFlag('cp2020', 'attachedTo') === this.item.id
+            );
+
+            const sdpBonusTotal = attachedOptions.reduce((sum, opt) => {
+                return sum + (opt.system.sdpBonus || 0);
+            }, 0);
+
+            data.sdpBonusTotal = sdpBonusTotal;
+            data.effectiveMaxStructure = baseMax + sdpBonusTotal;
+            data.effectiveDisablesAt = baseDisablesAt + sdpBonusTotal;
+            data.hasBonus = sdpBonusTotal > 0;
+        } else {
+            data.sdpBonusTotal = 0;
+            data.effectiveMaxStructure = sys.structure?.max ?? 0;
+            data.effectiveDisablesAt = sys.disablesAt ?? 0;
+            data.hasBonus = false;
+        }
+
         // --- Weapon/Armor Capability ---
         data.canBeWeapon = canBeWeapon(cyberType, sys.isOption);
         data.canBeArmor = canBeArmor(cyberType);
@@ -113,16 +140,6 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
         }));
         const selectedAvail = availability[sys.availability] || "Common";
         data.selectedAvailabilityLabel = game.i18n.localize(`CYBERPUNK.${selectedAvail}`);
-
-        // --- Chipware Skill Chip ---
-        if (data.isSkillChip) {
-            data.chipValueOptions = [1, 2, 3].map(v => ({
-                value: v,
-                label: v.toString(),
-                selected: sys.chipValue === v
-            }));
-            data.hasChippedSkill = !!(sys.chippedSkill?.uuid || sys.chippedSkill?.name);
-        }
 
         // --- Bonuses (Effect Tab) ---
         data.bonuses = this._prepareBonuses(sys.bonuses || []);
@@ -343,14 +360,6 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
             }
         });
 
-        // Humanity roll button
-        html.find('.humanity-roll-btn').click(async ev => {
-            ev.preventDefault();
-            if (this._isLocked) return;
-            if (this.item.system.humanityRolled) return;
-            await this._rollHumanity();
-        });
-
         // Click skill name to open its sheet
         html.find('.skill-name[data-uuid]').click(async ev => {
             ev.preventDefault();
@@ -477,33 +486,6 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
             bonuses[index] = { ...bonuses[index], value };
             await this.item.update({ "system.bonuses": bonuses });
         });
-
-        // --- Clear chipped skill ---
-        html.find('.remove-chipped-skill').click(async ev => {
-            ev.preventDefault();
-            await this.item.update({ "system.chippedSkill": { uuid: "", name: "" } });
-        });
-    }
-
-    /**
-     * Roll humanity cost and save the result
-     */
-    async _rollHumanity() {
-        const formula = this.item.system.humanityCost;
-        if (!formula) return;
-
-        const roll = new Roll(formula);
-        await roll.evaluate();
-
-        await roll.toMessage({
-            speaker: ChatMessage.getSpeaker(),
-            flavor: `${this.item.name} - Humanity Loss`
-        });
-
-        await this.item.update({
-            "system.humanityLoss": roll.total,
-            "system.humanityRolled": true
-        });
     }
 
     /** @override */
@@ -528,22 +510,7 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
             return;
         }
 
-        // Determine drop target
-        const dropTarget = event.target.closest('[data-drop-target]');
-        const targetType = dropTarget?.dataset.dropTarget;
-
-        // Chipped skill for chipware
-        if (targetType === "chipped-skill") {
-            await this.item.update({
-                "system.chippedSkill": {
-                    uuid: item.uuid,
-                    name: item.name
-                }
-            });
-            return;
-        }
-
-        // Effect bonus skill
+        // Effect bonus skill - store UUID, name, stat, and default value
         const bonuses = [...(this.item.system.bonuses || [])];
         const isDuplicate = bonuses.some(b =>
             b.type === "skill" && b.skillUuid && (
@@ -556,11 +523,25 @@ export class CyberpunkCyberwareSheet extends CyberpunkItemSheet {
             return;
         }
 
+        // Store the skill's stat for virtual skill rolls
+        const skillStat = item.system?.stat || "ref";
+
         const emptyIndex = bonuses.findIndex(b => b.type === "skill" && !b.skillUuid);
         if (emptyIndex >= 0) {
-            bonuses[emptyIndex] = { ...bonuses[emptyIndex], skillUuid: item.uuid, skillName: item.name };
+            bonuses[emptyIndex] = {
+                ...bonuses[emptyIndex],
+                skillUuid: item.uuid,
+                skillName: item.name,
+                skillStat: skillStat
+            };
         } else {
-            bonuses.push({ type: "skill", skillUuid: item.uuid, skillName: item.name, value: 0 });
+            bonuses.push({
+                type: "skill",
+                skillUuid: item.uuid,
+                skillName: item.name,
+                skillStat: skillStat,
+                value: 0
+            });
         }
 
         await this.item.update({ "system.bonuses": bonuses });
