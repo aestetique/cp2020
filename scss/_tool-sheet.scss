@@ -102,7 +102,7 @@
 .tool-card .skill-drop.filled,
 .drug-card .skill-drop.filled {
   display: block;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   flex: 1 0 0;
   align-self: stretch;
@@ -136,7 +136,7 @@
 .tool-card .skill-drop.empty,
 .drug-card .skill-drop.empty {
   display: block;
-  padding: 5px 8px;
+  padding: 0 8px;
   align-items: center;
   gap: 10px;
   flex: 1 0 0;

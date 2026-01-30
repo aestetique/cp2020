@@ -1,1 +1,439 @@
-{{!-- Cyberware tab - placeholder --}}
+{{!-- Cyberware Tab --}}
+<div class="cyberware-container">
+  {{!-- 1. SENSORS Block --}}
+  <div class="gear-block cyberware-block" data-cyberware-type="sensor">
+    <header class="tab-header">
+      <span class="tab-title">{{cyberwareCategories.sensor.title}}</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-sensor.svg" alt="">
+    </header>
+    <div class="tab-content gear-content" data-drop-target="cyberware-sensor">
+      {{#each cyberwareCategories.sensor.items as |cyber|}}
+        {{!-- Base cyberware row --}}
+        <div class="gear-row cyberware-row" data-item-id="{{cyber.id}}" data-is-base="true" data-cyberware-type="sensor">
+          <div class="option-icon-spacer"></div>
+          <div class="gear-icon">
+            <img src="{{cyber.img}}" alt="{{cyber.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{cyber.name}}</span>
+            <span class="gear-context">{{cyber.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{cyber.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-field humanity-field" style="width: 70px;">
+            {{#if cyber.humanityRolled}}
+              <span class="field-top">{{cyber.humanityLoss}}</span>
+            {{else}}
+              <button class="field-top humanity-roll-btn" type="button" data-item-id="{{cyber.id}}" title="Roll Humanity Loss">
+                <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+              </button>
+            {{/if}}
+            <span class="field-bottom">Humanity Loss</span>
+          </div>
+          <div class="gear-field" style="width: 80px;">
+            <span class="field-top">{{cyber.slotDisplay}}</span>
+            <span class="field-bottom">Option Slots</span>
+          </div>
+          <div class="gear-action-btn toggle-cyberware" data-item-id="{{cyber.id}}" data-equipped="{{cyber.equipped}}" data-structurally-broken="{{cyber.isStructurallyBroken}}">
+            {{#if cyber.isStructurallyBroken}}
+              {{#if cyber.equipped}}
+                <img src="systems/cp2020/img/ui/badge-off-broken.svg" alt="Broken">
+              {{else}}
+                <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+              {{/if}}
+            {{else if cyber.equipped}}
+              <img src="systems/cp2020/img/ui/badge-on.svg" alt="On">
+            {{else}}
+              <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+            {{/if}}
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{cyber.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{cyber.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+
+        {{!-- Attached options (displayed directly below base item) --}}
+        {{#each cyber.attachedOptions as |opt|}}
+          <div class="gear-row cyberware-row cyberware-option attached" data-item-id="{{opt.id}}" data-parent-id="{{opt.parentId}}">
+            <div class="option-icon detach-option" data-item-id="{{opt.id}}" title="Detach Option">
+              <img src="systems/cp2020/img/ui/badge-option-on.svg" alt="Attached">
+            </div>
+            <div class="gear-icon">
+              <img src="{{opt.img}}" alt="{{opt.name}}">
+            </div>
+            <div class="gear-info">
+              <span class="gear-name">{{opt.name}}</span>
+              <span class="gear-context">{{opt.context}}</span>
+            </div>
+            <div class="gear-price">
+              <span class="price-value">{{opt.price}}</span>
+              <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+            </div>
+            <div class="gear-field humanity-field" style="width: 70px;">
+              {{#if opt.humanityRolled}}
+                <span class="field-top">{{opt.humanityLoss}}</span>
+              {{else}}
+                <button class="field-top humanity-roll-btn" type="button" data-item-id="{{opt.id}}" title="Roll Humanity Loss">
+                  <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+                </button>
+              {{/if}}
+              <span class="field-bottom">Humanity Loss</span>
+            </div>
+            <div class="gear-field" style="width: 80px;">
+              <span class="field-top">{{opt.takesSpace}}</span>
+              <span class="field-bottom">Spaces Taken</span>
+            </div>
+            <div class="gear-action-btn"></div>
+            <div class="gear-actions">
+              <button class="gear-view" type="button" data-item-id="{{opt.id}}" title="View">
+                <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+              </button>
+              <button class="gear-delete" type="button" data-item-id="{{opt.id}}" title="Delete">
+                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{/each}}
+
+      {{!-- Detached Options Section --}}
+      {{#if cyberwareCategories.sensor.detachedOptions.length}}
+        <div class="detached-options-header">
+          <span>DETACHED OPTIONS</span>
+        </div>
+        {{#each cyberwareCategories.sensor.detachedOptions as |opt|}}
+          <div class="gear-row cyberware-row cyberware-option detached" data-item-id="{{opt.id}}" data-cyberware-type="sensor" draggable="true">
+            <div class="option-icon">
+              <img src="systems/cp2020/img/ui/badge-option-off.svg" alt="Detached">
+            </div>
+            <div class="gear-icon">
+              <img src="{{opt.img}}" alt="{{opt.name}}">
+            </div>
+            <div class="gear-info">
+              <span class="gear-name">{{opt.name}}</span>
+              <span class="gear-context">{{opt.context}}</span>
+            </div>
+            <div class="gear-price">
+              <span class="price-value">{{opt.price}}</span>
+              <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+            </div>
+            <div class="gear-field humanity-field" style="width: 70px;">
+              {{#if opt.humanityRolled}}
+                <span class="field-top">{{opt.humanityLoss}}</span>
+              {{else}}
+                <button class="field-top humanity-roll-btn" type="button" data-item-id="{{opt.id}}" title="Roll Humanity Loss">
+                  <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+                </button>
+              {{/if}}
+              <span class="field-bottom">Humanity Loss</span>
+            </div>
+            <div class="gear-field" style="width: 80px;">
+              <span class="field-top">{{opt.takesSpace}}</span>
+              <span class="field-bottom">Spaces Taken</span>
+            </div>
+            <div class="gear-action-btn"></div>
+            <div class="gear-actions">
+              <button class="gear-view" type="button" data-item-id="{{opt.id}}" title="View">
+                <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+              </button>
+              <button class="gear-delete" type="button" data-item-id="{{opt.id}}" title="Delete">
+                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{/if}}
+
+      {{!-- Empty state for sensors --}}
+      {{#unless cyberwareCategories.sensor.items.length}}
+        {{#unless cyberwareCategories.sensor.detachedOptions.length}}
+          <div class="gear-row gear-empty">
+            <span class="gear-empty-text">No sensors installed</span>
+          </div>
+        {{/unless}}
+      {{/unless}}
+    </div>
+  </div>
+
+  {{!-- 2. CYBERLIMBS Block --}}
+  <div class="gear-block cyberware-block" data-cyberware-type="cyberlimb">
+    <header class="tab-header">
+      <span class="tab-title">{{cyberwareCategories.cyberlimb.title}}</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-cyberlimb.svg" alt="">
+    </header>
+    <div class="tab-content gear-content" data-drop-target="cyberware-cyberlimb">
+      {{#each cyberwareCategories.cyberlimb.items as |cyber|}}
+        {{!-- Base cyberware row --}}
+        <div class="gear-row cyberware-row" data-item-id="{{cyber.id}}" data-is-base="true" data-cyberware-type="cyberlimb">
+          <div class="option-icon-spacer"></div>
+          <div class="gear-icon">
+            <img src="{{cyber.img}}" alt="{{cyber.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{cyber.name}}</span>
+            <span class="gear-context">{{cyber.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{cyber.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-field humanity-field" style="width: 70px;">
+            {{#if cyber.humanityRolled}}
+              <span class="field-top">{{cyber.humanityLoss}}</span>
+            {{else}}
+              <button class="field-top humanity-roll-btn" type="button" data-item-id="{{cyber.id}}" title="Roll Humanity Loss">
+                <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+              </button>
+            {{/if}}
+            <span class="field-bottom">Humanity Loss</span>
+          </div>
+          <div class="gear-field" style="width: 80px;">
+            <span class="field-top">{{cyber.slotDisplay}}</span>
+            <span class="field-bottom">Option Slots</span>
+          </div>
+          <div class="gear-action-btn toggle-cyberware" data-item-id="{{cyber.id}}" data-equipped="{{cyber.equipped}}" data-structurally-broken="{{cyber.isStructurallyBroken}}">
+            {{#if cyber.isStructurallyBroken}}
+              {{#if cyber.equipped}}
+                <img src="systems/cp2020/img/ui/badge-off-broken.svg" alt="Broken">
+              {{else}}
+                <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+              {{/if}}
+            {{else if cyber.equipped}}
+              <img src="systems/cp2020/img/ui/badge-on.svg" alt="On">
+            {{else}}
+              <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+            {{/if}}
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{cyber.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{cyber.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+
+        {{!-- Attached options --}}
+        {{#each cyber.attachedOptions as |opt|}}
+          <div class="gear-row cyberware-row cyberware-option attached" data-item-id="{{opt.id}}" data-parent-id="{{opt.parentId}}">
+            <div class="option-icon detach-option" data-item-id="{{opt.id}}" title="Detach Option">
+              <img src="systems/cp2020/img/ui/badge-option-on.svg" alt="Attached">
+            </div>
+            <div class="gear-icon">
+              <img src="{{opt.img}}" alt="{{opt.name}}">
+            </div>
+            <div class="gear-info">
+              <span class="gear-name">{{opt.name}}</span>
+              <span class="gear-context">{{opt.context}}</span>
+            </div>
+            <div class="gear-price">
+              <span class="price-value">{{opt.price}}</span>
+              <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+            </div>
+            <div class="gear-field humanity-field" style="width: 70px;">
+              {{#if opt.humanityRolled}}
+                <span class="field-top">{{opt.humanityLoss}}</span>
+              {{else}}
+                <button class="field-top humanity-roll-btn" type="button" data-item-id="{{opt.id}}" title="Roll Humanity Loss">
+                  <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+                </button>
+              {{/if}}
+              <span class="field-bottom">Humanity Loss</span>
+            </div>
+            <div class="gear-field" style="width: 80px;">
+              <span class="field-top">{{opt.takesSpace}}</span>
+              <span class="field-bottom">Spaces Taken</span>
+            </div>
+            <div class="gear-action-btn"></div>
+            <div class="gear-actions">
+              <button class="gear-view" type="button" data-item-id="{{opt.id}}" title="View">
+                <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+              </button>
+              <button class="gear-delete" type="button" data-item-id="{{opt.id}}" title="Delete">
+                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{/each}}
+
+      {{!-- Detached Options Section --}}
+      {{#if cyberwareCategories.cyberlimb.detachedOptions.length}}
+        <div class="detached-options-header">
+          <span>DETACHED OPTIONS</span>
+        </div>
+        {{#each cyberwareCategories.cyberlimb.detachedOptions as |opt|}}
+          <div class="gear-row cyberware-row cyberware-option detached" data-item-id="{{opt.id}}" data-cyberware-type="cyberlimb" draggable="true">
+            <div class="option-icon">
+              <img src="systems/cp2020/img/ui/badge-option-off.svg" alt="Detached">
+            </div>
+            <div class="gear-icon">
+              <img src="{{opt.img}}" alt="{{opt.name}}">
+            </div>
+            <div class="gear-info">
+              <span class="gear-name">{{opt.name}}</span>
+              <span class="gear-context">{{opt.context}}</span>
+            </div>
+            <div class="gear-price">
+              <span class="price-value">{{opt.price}}</span>
+              <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+            </div>
+            <div class="gear-field humanity-field" style="width: 70px;">
+              {{#if opt.humanityRolled}}
+                <span class="field-top">{{opt.humanityLoss}}</span>
+              {{else}}
+                <button class="field-top humanity-roll-btn" type="button" data-item-id="{{opt.id}}" title="Roll Humanity Loss">
+                  <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+                </button>
+              {{/if}}
+              <span class="field-bottom">Humanity Loss</span>
+            </div>
+            <div class="gear-field" style="width: 80px;">
+              <span class="field-top">{{opt.takesSpace}}</span>
+              <span class="field-bottom">Spaces Taken</span>
+            </div>
+            <div class="gear-action-btn"></div>
+            <div class="gear-actions">
+              <button class="gear-view" type="button" data-item-id="{{opt.id}}" title="View">
+                <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+              </button>
+              <button class="gear-delete" type="button" data-item-id="{{opt.id}}" title="Delete">
+                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{/if}}
+
+      {{#unless cyberwareCategories.cyberlimb.items.length}}
+        {{#unless cyberwareCategories.cyberlimb.detachedOptions.length}}
+          <div class="gear-row gear-empty">
+            <span class="gear-empty-text">No cyberlimbs installed</span>
+          </div>
+        {{/unless}}
+      {{/unless}}
+    </div>
+  </div>
+
+  {{!-- 3. IMPLANTS Block (no options system) --}}
+  <div class="gear-block cyberware-block" data-cyberware-type="implant">
+    <header class="tab-header">
+      <span class="tab-title">{{cyberwareCategories.implant.title}}</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-implant.svg" alt="">
+    </header>
+    <div class="tab-content gear-content" data-drop-target="cyberware-implant">
+      {{#each cyberwareCategories.implant.items as |cyber|}}
+        <div class="gear-row cyberware-row" data-item-id="{{cyber.id}}">
+          <div class="gear-icon">
+            <img src="{{cyber.img}}" alt="{{cyber.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{cyber.name}}</span>
+            <span class="gear-context">{{cyber.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{cyber.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-field humanity-field" style="width: 70px;">
+            {{#if cyber.humanityRolled}}
+              <span class="field-top">{{cyber.humanityLoss}}</span>
+            {{else}}
+              <button class="field-top humanity-roll-btn" type="button" data-item-id="{{cyber.id}}" title="Roll Humanity Loss">
+                <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+              </button>
+            {{/if}}
+            <span class="field-bottom">Humanity Loss</span>
+          </div>
+          <div class="gear-field" style="width: 80px;"></div>
+          <div class="gear-action-btn toggle-cyberware" data-item-id="{{cyber.id}}" data-equipped="{{cyber.equipped}}">
+            {{#if cyber.equipped}}
+              <img src="systems/cp2020/img/ui/badge-on.svg" alt="On">
+            {{else}}
+              <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+            {{/if}}
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{cyber.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{cyber.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+      {{/each}}
+
+      {{#unless cyberwareCategories.implant.items.length}}
+        <div class="gear-row gear-empty">
+          <span class="gear-empty-text">No implants installed</span>
+        </div>
+      {{/unless}}
+    </div>
+  </div>
+
+  {{!-- 4. CHIPWARE Block (no options system) --}}
+  <div class="gear-block cyberware-block" data-cyberware-type="chipware">
+    <header class="tab-header">
+      <span class="tab-title">{{cyberwareCategories.chipware.title}}</span>
+      <img class="tab-badge" src="systems/cp2020/img/ui/badge-chipware.svg" alt="">
+    </header>
+    <div class="tab-content gear-content" data-drop-target="cyberware-chipware">
+      {{#each cyberwareCategories.chipware.items as |cyber|}}
+        <div class="gear-row cyberware-row" data-item-id="{{cyber.id}}">
+          <div class="gear-icon">
+            <img src="{{cyber.img}}" alt="{{cyber.name}}">
+          </div>
+          <div class="gear-info">
+            <span class="gear-name">{{cyber.name}}</span>
+            <span class="gear-context">{{cyber.context}}</span>
+          </div>
+          <div class="gear-price">
+            <span class="price-value">{{cyber.price}}</span>
+            <img src="systems/cp2020/img/ui/badge-eurodollar.svg" alt="eb">
+          </div>
+          <div class="gear-field humanity-field" style="width: 70px;">
+            {{#if cyber.humanityRolled}}
+              <span class="field-top">{{cyber.humanityLoss}}</span>
+            {{else}}
+              <button class="field-top humanity-roll-btn" type="button" data-item-id="{{cyber.id}}" title="Roll Humanity Loss">
+                <img src="systems/cp2020/img/dice/d10gold.svg" alt="Roll">
+              </button>
+            {{/if}}
+            <span class="field-bottom">Humanity Loss</span>
+          </div>
+          <div class="gear-field" style="width: 80px;"></div>
+          <div class="gear-action-btn toggle-cyberware" data-item-id="{{cyber.id}}" data-equipped="{{cyber.equipped}}">
+            {{#if cyber.equipped}}
+              <img src="systems/cp2020/img/ui/badge-on.svg" alt="On">
+            {{else}}
+              <img src="systems/cp2020/img/ui/badge-off.svg" alt="Off">
+            {{/if}}
+          </div>
+          <div class="gear-actions">
+            <button class="gear-view" type="button" data-item-id="{{cyber.id}}" title="View">
+              <img src="systems/cp2020/img/ui/icon-view.svg" alt="View">
+            </button>
+            <button class="gear-delete" type="button" data-item-id="{{cyber.id}}" title="Delete">
+              <img src="systems/cp2020/img/ui/icon-trash.svg" alt="Delete">
+            </button>
+          </div>
+        </div>
+      {{/each}}
+
+      {{#unless cyberwareCategories.chipware.items.length}}
+        <div class="gear-row gear-empty">
+          <span class="gear-empty-text">No chipware installed</span>
+        </div>
+      {{/unless}}
+    </div>
+  </div>
+</div>

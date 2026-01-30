@@ -1,4 +1,4 @@
-import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties } from "../lookups.js"
+import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes } from "../lookups.js"
 import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
@@ -21,6 +21,12 @@ export class CyberpunkActorSheet extends ActorSheet {
    * @type {number}
    */
   _gearScrollTop = 0;
+
+  /**
+   * Preserved scroll position for cyberware container
+   * @type {number}
+   */
+  _cyberwareScrollTop = 0;
 
   /**
    * Minimized state for the sheet
@@ -72,10 +78,19 @@ export class CyberpunkActorSheet extends ActorSheet {
   /* -------------------------------------------- */
 
   /**
-   * Override _getHeaderButtons to use remembered height or minimum
+   * Override _render to preserve scroll positions across re-renders
+   * Scroll is SAVED in click handlers (before update), RESTORED here (after render)
    * @override
    */
   async _render(force = false, options = {}) {
+    // Save scroll positions BEFORE re-render from the correct elements (.tab, not inner containers)
+    if (this.rendered && this.element?.length) {
+      const gearTab = this.element.find('.tab.gear')[0];
+      const cyberTab = this.element.find('.tab.cyber')[0];
+      if (gearTab) this._gearScrollTop = gearTab.scrollTop;
+      if (cyberTab) this._cyberwareScrollTop = cyberTab.scrollTop;
+    }
+
     // On first render, use remembered height or default minimum
     if (!this.rendered) {
       const rememberedHeight = CyberpunkActorSheet._sheetHeights.get(this.actor.id);
@@ -86,7 +101,22 @@ export class CyberpunkActorSheet extends ActorSheet {
         options.height = this.constructor.defaultOptions.height;
       }
     }
-    return super._render(force, options);
+
+    const result = await super._render(force, options);
+
+    // Restore scroll positions AFTER render completes
+    if (this.element?.length) {
+      const gearTab = this.element.find('.tab.gear')[0];
+      const cyberTab = this.element.find('.tab.cyber')[0];
+      if (gearTab && this._gearScrollTop) {
+        gearTab.scrollTop = this._gearScrollTop;
+      }
+      if (cyberTab && this._cyberwareScrollTop) {
+        cyberTab.scrollTop = this._cyberwareScrollTop;
+      }
+    }
+
+    return result;
   }
 
   /* -------------------------------------------- */
@@ -124,6 +154,7 @@ export class CyberpunkActorSheet extends ActorSheet {
       this._addWoundTrack(sheetData);
       this._prepareSkills(sheetData);
       this._prepareGearData(sheetData);
+      this._prepareCyberwareData(sheetData);
 
       sheetData.weaponTypes = weaponTypes;
 
@@ -230,10 +261,15 @@ export class CyberpunkActorSheet extends ActorSheet {
             image = '0'; // Empty/lost
           }
 
+          // A dot is "lost" if it's not fully filled (any damage at all)
+          // For restoration: clicking a lost dot will restore humanity to that value
+          const isLost = image !== '100' && image !== 'off';
+
           dots.push({
             value: dotValue,
             image,
-            disabled: dotValue > humanityLimit
+            disabled: dotValue > humanityLimit,
+            lost: isLost
           });
         }
 
@@ -311,7 +347,10 @@ export class CyberpunkActorSheet extends ActorSheet {
           key: 'larm',
           sp: hitLocs.lArm?.stoppingPower || 0,
           sdp: cyberlimbs.lArm?.sdp || 0,
+          maxSdp: cyberlimbs.lArm?.maxSdp || 0,
           hasCyber: cyberlimbs.lArm?.hasCyberlimb || false,
+          isBroken: cyberlimbs.lArm?.isBroken || false,
+          isDamaged: cyberlimbs.lArm?.sdp > 0 && cyberlimbs.lArm?.sdp < cyberlimbs.lArm?.maxSdp,
           state: armorState.lArm?.state || 'exposed',
           isLost: armorState.lArm?.state === 'lost'
         },
@@ -319,7 +358,10 @@ export class CyberpunkActorSheet extends ActorSheet {
           key: 'lleg',
           sp: hitLocs.lLeg?.stoppingPower || 0,
           sdp: cyberlimbs.lLeg?.sdp || 0,
+          maxSdp: cyberlimbs.lLeg?.maxSdp || 0,
           hasCyber: cyberlimbs.lLeg?.hasCyberlimb || false,
+          isBroken: cyberlimbs.lLeg?.isBroken || false,
+          isDamaged: cyberlimbs.lLeg?.sdp > 0 && cyberlimbs.lLeg?.sdp < cyberlimbs.lLeg?.maxSdp,
           state: armorState.lLeg?.state || 'exposed',
           isLost: armorState.lLeg?.state === 'lost'
         },
@@ -338,7 +380,10 @@ export class CyberpunkActorSheet extends ActorSheet {
           key: 'rarm',
           sp: hitLocs.rArm?.stoppingPower || 0,
           sdp: cyberlimbs.rArm?.sdp || 0,
+          maxSdp: cyberlimbs.rArm?.maxSdp || 0,
           hasCyber: cyberlimbs.rArm?.hasCyberlimb || false,
+          isBroken: cyberlimbs.rArm?.isBroken || false,
+          isDamaged: cyberlimbs.rArm?.sdp > 0 && cyberlimbs.rArm?.sdp < cyberlimbs.rArm?.maxSdp,
           state: armorState.rArm?.state || 'exposed',
           isLost: armorState.rArm?.state === 'lost'
         },
@@ -346,7 +391,10 @@ export class CyberpunkActorSheet extends ActorSheet {
           key: 'rleg',
           sp: hitLocs.rLeg?.stoppingPower || 0,
           sdp: cyberlimbs.rLeg?.sdp || 0,
+          maxSdp: cyberlimbs.rLeg?.maxSdp || 0,
           hasCyber: cyberlimbs.rLeg?.hasCyberlimb || false,
+          isBroken: cyberlimbs.rLeg?.isBroken || false,
+          isDamaged: cyberlimbs.rLeg?.sdp > 0 && cyberlimbs.rLeg?.sdp < cyberlimbs.rLeg?.maxSdp,
           state: armorState.rLeg?.state || 'exposed',
           isLost: armorState.rLeg?.state === 'lost'
         }
@@ -422,37 +470,87 @@ export class CyberpunkActorSheet extends ActorSheet {
       (i.type === "tool" || i.type === "drug") && i.system.equipped
     );
 
+    // Get equipped chipware with skill effects for chipping mechanic
+    const equippedChipware = this.actor.items.contents.filter(i =>
+      i.type === "cyberware" &&
+      i.system.cyberwareType === "chipware" &&
+      i.system.equipped
+    );
+
+    // Build chipped skills map: skillName (lowercase) -> { chipValue, chipwareId, skillStat }
+    const chippedSkillsMap = new Map();
+    const virtualSkillsData = []; // Skills from chipware not owned by character
+
+    for (const chip of equippedChipware) {
+      const bonuses = chip.system.bonuses || [];
+      for (const bonus of bonuses) {
+        if (bonus.type === "skill" && bonus.skillName && bonus.value) {
+          const skillNameLower = bonus.skillName.toLowerCase();
+          // Check if character has this skill
+          const ownedSkill = skills.find(s => s.name.toLowerCase() === skillNameLower);
+
+          if (ownedSkill) {
+            // Mark existing skill as chipped (use highest chip value if multiple)
+            const existing = chippedSkillsMap.get(skillNameLower);
+            if (!existing || bonus.value > existing.chipValue) {
+              chippedSkillsMap.set(skillNameLower, {
+                chipValue: bonus.value,
+                chipwareId: chip.id,
+                skillStat: bonus.skillStat || ownedSkill.system.stat || 'ref'
+              });
+            }
+          } else {
+            // Create virtual skill entry for display
+            virtualSkillsData.push({
+              id: `virtual-${chip.id}-${bonus.skillName}`,
+              name: bonus.skillName,
+              chipValue: bonus.value,
+              chipwareId: chip.id,
+              stat: bonus.skillStat || 'ref'
+            });
+          }
+        }
+      }
+    }
+
     // Categorize and prepare skills
     const preparedSkills = skills.map(skill => {
-      const isCareer = careerSkillNames.has(skill.name.toLowerCase());
+      const skillNameLower = skill.name.toLowerCase();
+      const isCareer = careerSkillNames.has(skillNameLower);
       // Special icon only shows if skill name matches the role's special skill
-      const isSpecial = specialSkillName && skill.name.toLowerCase() === specialSkillName;
-      const chipState = skill.system.isChipped ? (skill.system.chipLevel || 1) : 0;
+      const isSpecial = specialSkillName && skillNameLower === specialSkillName;
+
+      // Check if this skill is chipped by equipped chipware
+      const chipInfo = chippedSkillsMap.get(skillNameLower);
+      const isChipped = !!chipInfo;
+
       // Base level (manually set) and IP-earned level
       const baseLevel = skill.system.level || 0;
       const ipLevel = skill.system.ipLevel || 0;
       const totalLevel = baseLevel + ipLevel;
-      // When chipped, chip value is always used regardless of learned level
-      const effectiveLevel = skill.system.isChipped
-        ? skill.system.chipLevel
-        : totalLevel;
+
+      // When chipped, chip value OVERRIDES learned level entirely
+      const effectiveLevel = isChipped ? chipInfo.chipValue : totalLevel;
+
       const diffMod = skill.system.diffMod || 1;
       // IP cost for next level: total level × 10 × difficulty mod (minimum 10 × diffMod for level 0)
       const ipCost = totalLevel === 0 ? 10 * diffMod : totalLevel * 10 * diffMod;
       const currentIp = skill.system.ip || 0;
       const canIncrease = currentIp >= ipCost;
 
-      // Calculate skill bonus from equipped tools and drugs
+      // Calculate skill bonus from equipped tools and drugs (NOT applied to chipped skills)
       let skillBonus = 0;
-      for (const item of equippedToolsAndDrugs) {
-        const bonuses = item.system.bonuses || [];
-        for (const bonus of bonuses) {
-          if (bonus.type === "skill" && bonus.value) {
-            const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
-            const matchByName = bonus.skillName &&
-              bonus.skillName.toLowerCase() === skill.name.toLowerCase();
-            if (matchByUuid || matchByName) {
-              skillBonus += bonus.value;
+      if (!isChipped) {
+        for (const item of equippedToolsAndDrugs) {
+          const bonuses = item.system.bonuses || [];
+          for (const bonus of bonuses) {
+            if (bonus.type === "skill" && bonus.value) {
+              const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
+              const matchByName = bonus.skillName &&
+                bonus.skillName.toLowerCase() === skillNameLower;
+              if (matchByUuid || matchByName) {
+                skillBonus += bonus.value;
+              }
             }
           }
         }
@@ -467,9 +565,9 @@ export class CyberpunkActorSheet extends ActorSheet {
         level: baseLevel,
         ipLevel,
         totalLevel,
-        chipLevel: skill.system.chipLevel,
-        isChipped: skill.system.isChipped,
-        chipState,
+        chipValue: chipInfo?.chipValue,
+        isChipped,
+        isVirtual: false,
         effectiveLevel,
         skillBonus,
         computedLevel,
@@ -482,7 +580,33 @@ export class CyberpunkActorSheet extends ActorSheet {
       };
     });
 
+    // Add virtual skills from chipware (skills the character doesn't own)
+    for (const vs of virtualSkillsData) {
+      preparedSkills.push({
+        id: vs.id,
+        name: vs.name,
+        stat: vs.stat,
+        statLabel: statLabels[vs.stat] || vs.stat?.toUpperCase() || 'REF',
+        level: 0,
+        ipLevel: 0,
+        totalLevel: 0,
+        chipValue: vs.chipValue,
+        isChipped: true,
+        isVirtual: true,
+        effectiveLevel: vs.chipValue,
+        skillBonus: 0,
+        computedLevel: vs.chipValue,
+        ip: 0,
+        ipCost: 10,
+        diffMod: 1,
+        canIncrease: false,
+        isCareer: false,
+        isSpecial: false
+      });
+    }
+
     // Sort: special first, then career alphabetically, then rest alphabetically
+    // (Chipped skills stay in their normal position)
     preparedSkills.sort((a, b) => {
       if (a.isSpecial && !b.isSpecial) return -1;
       if (!a.isSpecial && b.isSpecial) return 1;
@@ -554,8 +678,20 @@ export class CyberpunkActorSheet extends ActorSheet {
     const tools = this.actor.itemTypes.tool || [];
     const drugs = this.actor.itemTypes.drug || [];
 
-    // Filter cyberweapons (cyberware with isWeapon=true)
-    const cyberweapons = cyberware.filter(c => c.system.isWeapon);
+    // Filter cyberweapons (base cyberware with isWeapon=true and equipped)
+    const cyberweapons = cyberware.filter(c => c.system.isWeapon && c.system.equipped && !c.system.isOption);
+
+    // Also include cyberware OPTIONS with isWeapon=true when their parent is equipped
+    const cyberweaponOptions = cyberware.filter(c => {
+      if (!c.system.isWeapon || !c.system.isOption) return false;
+      const parentId = c.getFlag('cp2020', 'attachedTo');
+      if (!parentId) return false; // Detached options never appear in gear list
+      const parent = cyberware.find(p => p.id === parentId);
+      return parent && parent.system.equipped;
+    });
+
+    // Combine base cyberweapons and attached cyberweapon options
+    const allCyberweapons = [...cyberweapons, ...cyberweaponOptions];
 
     // Helper to get loaded ammo type abbreviation
     const getLoadedAmmoLabel = (loadedAmmoType) => {
@@ -630,7 +766,7 @@ export class CyberpunkActorSheet extends ActorSheet {
     });
 
     // Prepare cyberweapons data (cyberware with embedded weapon)
-    const cyberweaponsList = cyberweapons.map(c => {
+    const cyberweaponsList = allCyberweapons.map(c => {
       const sys = c.system;
       const weapon = sys.weapon || {};
       const wType = weapon.weaponType || '';
@@ -828,10 +964,22 @@ export class CyberpunkActorSheet extends ActorSheet {
       };
     });
 
-    // Add cyberware with armor capability to outfit items
+    // Add cyberware with armor capability to outfit items (only if equipped)
     // Note: cyberware was already declared above at line 522
-    const cyberarmor = cyberware.filter(c => c.system.isArmor);
-    const cyberarmorItems = cyberarmor.map(c => {
+    const cyberarmor = cyberware.filter(c => c.system.isArmor && c.system.equipped && !c.system.isOption);
+
+    // Also include cyberware OPTIONS with isArmor=true when their parent is equipped
+    const cyberarmorOptions = cyberware.filter(c => {
+      if (!c.system.isArmor || !c.system.isOption) return false;
+      const parentId = c.getFlag('cp2020', 'attachedTo');
+      if (!parentId) return false; // Detached options never appear in gear list
+      const parent = cyberware.find(p => p.id === parentId);
+      return parent && parent.system.equipped;
+    });
+
+    // Combine base cyberarmor and attached cyberarmor options
+    const allCyberarmor = [...cyberarmor, ...cyberarmorOptions];
+    const cyberarmorItems = allCyberarmor.map(c => {
       const sys = c.system;
       const armorData = sys.armor || {};
       const coverage = armorData.coverage || {};
@@ -921,6 +1069,230 @@ export class CyberpunkActorSheet extends ActorSheet {
       sheetData.ammoItems.length > 0;
   }
 
+  /**
+   * Prepare cyberware data for the cyberware tab
+   * Organizes cyberware into four fixed categories with options attachment system
+   * @param {Object} sheetData - The sheet data object to augment
+   */
+  _prepareCyberwareData(sheetData) {
+    const cyberware = this.actor.itemTypes.cyberware || [];
+
+    // Initialize category containers
+    const categories = {
+      sensor: { items: [], detachedOptions: [], badge: 'badge-sensor.svg', title: 'SENSORS' },
+      cyberlimb: { items: [], detachedOptions: [], badge: 'badge-cyberlimb.svg', title: 'CYBERLIMBS' },
+      implant: { items: [], badge: 'badge-implant.svg', title: 'IMPLANTS' },
+      chipware: { items: [], badge: 'badge-chipware.svg', title: 'CHIPWARE' }
+    };
+
+    // Helper: Get surgery code label
+    const getSurgeryLabel = (code) => {
+      const labelKey = surgeryCodes[code];
+      return labelKey ? game.i18n.localize(`CYBERPUNK.${labelKey}`) : code || '';
+    };
+
+    // Helper: Get subtype label
+    const getSubtypeLabel = (cyberType, subtype) => {
+      const subtypes = getCyberwareSubtypes(cyberType);
+      const labelKey = subtypes[subtype];
+      return labelKey ? game.i18n.localize(`CYBERPUNK.${labelKey}`) : subtype || '';
+    };
+
+    // Helper: Build context string based on cyberware type
+    const buildContext = (item) => {
+      const sys = item.system;
+      const cyberType = sys.cyberwareType || 'implant';
+      const subtypeLabel = getSubtypeLabel(cyberType, sys.cyberwareSubtype);
+      const surgeryLabel = getSurgeryLabel(sys.surgeryCode);
+      const baseOrOption = sys.isOption ? 'Option' : 'Base';
+
+      const parts = [];
+
+      switch (cyberType) {
+        case 'sensor':
+          // Subtype · Base/Option · Surgery [· Weapon if weapon]
+          if (subtypeLabel) parts.push(subtypeLabel);
+          parts.push(baseOrOption);
+          if (surgeryLabel) parts.push(surgeryLabel);
+          if (sys.isWeapon) parts.push('Weapon');
+          break;
+
+        case 'cyberlimb':
+          // Subtype · Base/Option · Surgery
+          if (subtypeLabel) parts.push(subtypeLabel);
+          parts.push(baseOrOption);
+          if (surgeryLabel) parts.push(surgeryLabel);
+          break;
+
+        case 'implant':
+          // Subtype · Surgery [· "Weapon" if weapon] [· "Armor" if armor]
+          if (subtypeLabel) parts.push(subtypeLabel);
+          if (surgeryLabel) parts.push(surgeryLabel);
+          if (sys.isWeapon) parts.push('Weapon');
+          if (sys.isArmor) parts.push('Armor');
+          break;
+
+        case 'chipware':
+          // Subtype · {Effects summary}
+          if (subtypeLabel) parts.push(subtypeLabel);
+          // Summarize bonuses (first 2 effects)
+          const bonuses = sys.bonuses || [];
+          const effectLabels = bonuses.slice(0, 2).map(b => {
+            if (b.type === "property") {
+              const propKey = toolBonusProperties[b.property];
+              const propLabel = propKey ? game.i18n.localize(`CYBERPUNK.${propKey}`) : b.property;
+              return `${propLabel} ${b.value >= 0 ? '+' : ''}${b.value}`;
+            } else if (b.skillName) {
+              return `${b.skillName} ${b.value >= 0 ? '+' : ''}${b.value}`;
+            }
+            return '';
+          }).filter(l => l);
+          parts.push(...effectLabels);
+          break;
+      }
+
+      return parts.join(' · ');
+    };
+
+    // Helper: Check if cyberlimb is STRUCTURALLY broken (SDP <= disablesAt)
+    // This determines if the limb CAN be turned on at all
+    const isStructurallyBroken = (item) => {
+      const sys = item.system;
+      if (sys.cyberwareType !== 'cyberlimb') return false;
+      if (sys.isOption) return false;
+      const current = sys.structure?.current ?? 0;
+      const disablesAt = sys.disablesAt ?? 0;
+      return current > 0 && current <= disablesAt;
+    };
+
+    // Separate base items and options
+    const baseItems = cyberware.filter(c => !c.system.isOption);
+    const options = cyberware.filter(c => c.system.isOption);
+
+    // Build attachment map: parentId -> [option items]
+    const attachmentMap = new Map();
+    const detachedOptions = [];
+
+    for (const opt of options) {
+      const parentId = opt.getFlag('cp2020', 'attachedTo') || null;
+      if (parentId && baseItems.some(b => b.id === parentId)) {
+        if (!attachmentMap.has(parentId)) attachmentMap.set(parentId, []);
+        attachmentMap.get(parentId).push(opt);
+      } else {
+        detachedOptions.push(opt);
+      }
+    }
+
+    // Process each base cyberware item
+    for (const item of baseItems) {
+      const sys = item.system;
+      const cyberType = sys.cyberwareType || 'implant';
+
+      // Build prepared item data
+      const preparedItem = {
+        id: item.id,
+        img: item.img,
+        name: item.name,
+        context: buildContext(item),
+        price: sys.cost || 0,
+        cyberwareType: cyberType,
+        isOption: false,
+        isBase: true,
+
+        // Humanity fields
+        humanityLoss: sys.humanityLoss || 0,
+        humanityCost: sys.humanityCost || '',
+        humanityRolled: sys.humanityRolled || false,
+
+        // Slots (for sensors/cyberlimbs)
+        hasSlots: sys.hasSlots || 0,
+        usedSlots: 0, // Will calculate from attached options
+
+        // Status
+        equipped: sys.equipped ?? true,
+        isStructurallyBroken: isStructurallyBroken(item),
+
+        // Attached options
+        attachedOptions: []
+      };
+
+      // Get attached options for this base item
+      const attached = attachmentMap.get(item.id) || [];
+      for (const opt of attached) {
+        const optSys = opt.system;
+        preparedItem.usedSlots += (optSys.takesSpace || 1);
+        preparedItem.attachedOptions.push({
+          id: opt.id,
+          img: opt.img,
+          name: opt.name,
+          context: buildContext(opt),
+          price: optSys.cost || 0,
+          isOption: true,
+          isAttached: true,
+          parentId: item.id,
+          humanityLoss: optSys.humanityLoss || 0,
+          humanityCost: optSys.humanityCost || '',
+          humanityRolled: optSys.humanityRolled || false,
+          takesSpace: optSys.takesSpace || 1,
+          equipped: optSys.equipped ?? true
+        });
+      }
+
+      // Update slot display with used/total
+      if (cyberType === 'sensor' || cyberType === 'cyberlimb') {
+        preparedItem.slotDisplay = `${preparedItem.usedSlots} / ${preparedItem.hasSlots}`;
+      } else {
+        preparedItem.slotDisplay = '';
+      }
+
+      // Add to appropriate category
+      if (categories[cyberType]) {
+        categories[cyberType].items.push(preparedItem);
+      }
+    }
+
+    // Process detached options (for sensors and cyberlimbs only)
+    for (const opt of detachedOptions) {
+      const optSys = opt.system;
+      const cyberType = optSys.cyberwareType || 'implant';
+
+      // Only sensor and cyberlimb options can be detached
+      if (cyberType !== 'sensor' && cyberType !== 'cyberlimb') continue;
+
+      const preparedOption = {
+        id: opt.id,
+        img: opt.img,
+        name: opt.name,
+        context: buildContext(opt),
+        price: optSys.cost || 0,
+        isOption: true,
+        isAttached: false,
+        parentId: null,
+        humanityLoss: optSys.humanityLoss || 0,
+        humanityCost: optSys.humanityCost || '',
+        humanityRolled: optSys.humanityRolled || false,
+        takesSpace: optSys.takesSpace || 1,
+        equipped: optSys.equipped ?? true
+      };
+
+      if (categories[cyberType]) {
+        categories[cyberType].detachedOptions.push(preparedOption);
+      }
+    }
+
+    // Sort items alphabetically within each category
+    for (const cat of Object.values(categories)) {
+      cat.items.sort((a, b) => a.name.localeCompare(b.name));
+      if (cat.detachedOptions) {
+        cat.detachedOptions.sort((a, b) => a.name.localeCompare(b.name));
+      }
+    }
+
+    // Add to sheet data
+    sheetData.cyberwareCategories = categories;
+    sheetData.hasCyberware = cyberware.length > 0;
+  }
+
   _prepareCharacterItems(sheetData) {
     let sortedItems = sheetData.actor.itemTypes;
 
@@ -938,14 +1310,6 @@ export class CyberpunkActorSheet extends ActorSheet {
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
-
-    // Restore gear container scroll position after DOM layout completes
-    const gearContainer = html.find('.gear-container')[0];
-    if (gearContainer && this._gearScrollTop) {
-      requestAnimationFrame(() => {
-        gearContainer.scrollTop = this._gearScrollTop;
-      });
-    }
 
     // ----- Custom Window Dragging -----
     // Set up draggable for our custom header since we're hiding Foundry's default window chrome
@@ -1482,6 +1846,44 @@ export class CyberpunkActorSheet extends ActorSheet {
       });
     });
 
+    // Humanity restoration (therapy) - click lost dots to restore
+    html.find('.humanity-dot.lost').click(async ev => {
+      const targetHumanity = Number(ev.currentTarget.dataset.humanity);
+      const emp = this.actor.system.stats.emp;
+      const maxHumanity = emp.humanity?.base || (emp.base * 10);
+      const currentHumanity = emp.humanity?.total || maxHumanity;
+
+      if (targetHumanity > currentHumanity) {
+        // Calculate new humanity damage to achieve target humanity
+        const newDamage = maxHumanity - targetHumanity;
+        await this.actor.update({
+          "system.stats.emp.humanityDamage": Math.max(0, newDamage)
+        });
+      }
+    });
+
+    // Humanity restoration hover preview
+    html.find('.humanity-dot').on('mouseenter', ev => {
+      const targetHumanity = Number(ev.currentTarget.dataset.humanity);
+      const emp = this.actor.system.stats.emp;
+      const currentHumanity = emp.humanity?.total || 0;
+
+      // Only show preview for lost dots when hovering
+      if (targetHumanity <= currentHumanity) return;
+
+      // Highlight all dots that would be restored
+      html.find('.humanity-dot').each((i, dot) => {
+        const dotValue = Number(dot.dataset.humanity);
+        if (dotValue > currentHumanity && dotValue <= targetHumanity) {
+          $(dot).addClass('restore-preview');
+        }
+      });
+    });
+
+    html.find('.humanity-dot').on('mouseleave', ev => {
+      html.find('.humanity-dot').removeClass('restore-preview');
+    });
+
     // Generic item roll
     html.find('.item-roll').click(ev => {
       ev.stopPropagation();
@@ -1517,9 +1919,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
-
       new Dialog({
         title: localize("ItemDeleteConfirmTitle"),
         content: `<p>${localizeParam("ItemDeleteConfirmText", {itemName: item.name})}</p>`,
@@ -1543,9 +1942,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
-
       // If the weapon uses ammo, open the reload dialog
       const ammoWT = weaponToAmmoType[item.system.weaponType];
       if (ammoWT) {
@@ -1563,9 +1959,6 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     // Ammo quantity input (gear tab)
     html.find('.ammo-quantity-input').change(async ev => {
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
-
       const itemId = ev.currentTarget.dataset.itemId;
       const newQty = Math.max(0, Number(ev.currentTarget.value) || 0);
       await this.actor.updateEmbeddedDocuments("Item", [{
@@ -1580,9 +1973,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
-
       const currentEquipped = item.system.equipped ?? false;
       await this.actor.updateEmbeddedDocuments("Item", [{
         _id: itemId,
@@ -1596,9 +1986,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       const item = this.actor.items.get(itemId);
       if (!item) return;
 
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
-
       const currentEquipped = item.system.equipped ?? false;
       await item.update({ "system.equipped": !currentEquipped });
     });
@@ -1608,9 +1995,6 @@ export class CyberpunkActorSheet extends ActorSheet {
       const itemId = ev.currentTarget.dataset.itemId;
       const item = this.actor.items.get(itemId);
       if (!item) return;
-
-      // Save scroll position before update
-      this._gearScrollTop = html.find('.gear-container')[0]?.scrollTop || 0;
 
       const isActive = item.system.equipped ?? false;
       if (isActive) {
@@ -1689,6 +2073,266 @@ export class CyberpunkActorSheet extends ActorSheet {
         onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
       });
       dialog.render(true);
+    });
+
+    // ----- Cyberware Tab Event Listeners -----
+
+    // Toggle cyberware on/off
+    html.find('.toggle-cyberware').click(async ev => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      const currentEquipped = item.system.equipped ?? true;
+      const turningOn = !currentEquipped;
+      const isStructurallyBroken = ev.currentTarget.dataset.structurallyBroken === 'true';
+
+      // Broken limbs can be turned OFF but not ON
+      if (turningOn && isStructurallyBroken) {
+        ui.notifications.error(`Cannot activate: ${item.name} is broken and must be repaired first.`);
+        return;
+      }
+
+      // Check for cyberlimb subtype limit BEFORE humanity roll
+      if (turningOn) {
+        const sys = item.system;
+        if (sys.cyberwareType === 'cyberlimb' && !sys.isOption) {
+          const subtype = sys.cyberwareSubtype;
+          const limitedSubtypes = ['leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+
+          if (limitedSubtypes.includes(subtype)) {
+            // Check if there's already an active cyberlimb of the same subtype
+            const existingActive = this.actor.items.find(i =>
+              i.type === 'cyberware' &&
+              i.id !== item.id &&
+              i.system.cyberwareType === 'cyberlimb' &&
+              !i.system.isOption &&
+              i.system.cyberwareSubtype === subtype &&
+              i.system.equipped
+            );
+
+            if (existingActive) {
+              ui.notifications.error(`Cannot activate: ${existingActive.name} is already active for this location. Turn it off first.`);
+              return;
+            }
+          }
+        }
+      }
+
+      // If turning ON and humanity not yet rolled, auto-roll and apply permanently
+      if (turningOn && !item.system.humanityRolled) {
+        const formula = item.system.humanityCost;
+        if (formula) {
+          const roll = new Roll(formula);
+          await roll.evaluate();
+
+          // Store roll result on item and turn it on
+          await item.update({
+            "system.humanityLoss": roll.total,
+            "system.humanityRolled": true,
+            "system.equipped": true
+          });
+
+          // Apply PERMANENT humanity damage to actor
+          const currentDamage = this.actor.system.stats.emp.humanityDamage || 0;
+          await this.actor.update({
+            "system.stats.emp.humanityDamage": currentDamage + roll.total
+          });
+
+          // Show roll in chat
+          roll.toMessage({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+            flavor: `${item.name} - Humanity Loss`
+          });
+
+          return; // Already updated equipped state above
+        }
+      }
+
+      // Normal toggle (humanity already rolled or no humanity cost)
+      await this.actor.updateEmbeddedDocuments("Item", [{
+        _id: itemId,
+        "system.equipped": !currentEquipped
+      }]);
+    });
+
+    // Roll humanity loss for cyberware (manual roll button)
+    html.find('.humanity-roll-btn').click(async ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      const itemId = ev.currentTarget.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      const formula = item.system.humanityCost;
+      if (!formula || item.system.humanityRolled) return;
+
+      const roll = new Roll(formula);
+      await roll.evaluate();
+
+      await roll.toMessage({
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        flavor: `${item.name} - Humanity Loss`
+      });
+
+      // Store roll result on item
+      await this.actor.updateEmbeddedDocuments("Item", [{
+        _id: itemId,
+        "system.humanityLoss": roll.total,
+        "system.humanityRolled": true
+      }]);
+
+      // Apply PERMANENT humanity damage to actor
+      const currentDamage = this.actor.system.stats.emp.humanityDamage || 0;
+      await this.actor.update({
+        "system.stats.emp.humanityDamage": currentDamage + roll.total
+      });
+    });
+
+    // Detach option from base cyberware
+    html.find('.detach-option').click(async ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      const itemId = ev.currentTarget.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      // Get parent cyberlimb before detaching (for SDP cap check)
+      const parentId = item.getFlag('cp2020', 'attachedTo');
+      const parent = parentId ? this.actor.items.get(parentId) : null;
+      const optionSdpBonus = item.system.sdpBonus || 0;
+
+      // Remove the attachment flag
+      await item.unsetFlag('cp2020', 'attachedTo');
+
+      // If parent is a cyberlimb and option had SDP bonus, cap current SDP to new max
+      if (parent && parent.system.cyberwareType === 'cyberlimb' && optionSdpBonus > 0) {
+        const baseMax = parent.system.structure?.max ?? 0;
+        const currentSdp = parent.system.structure?.current ?? 0;
+
+        // Calculate remaining SDP bonus from other attached options (excluding the one just detached)
+        const remainingOptions = this.actor.items.filter(i =>
+          i.type === 'cyberware' &&
+          i.system.isOption &&
+          i.id !== item.id &&
+          i.getFlag('cp2020', 'attachedTo') === parentId
+        );
+        const remainingBonus = remainingOptions.reduce((sum, opt) => sum + (opt.system.sdpBonus || 0), 0);
+        const newMaxSdp = baseMax + remainingBonus;
+
+        // Cap current SDP if it exceeds new maximum
+        if (currentSdp > newMaxSdp) {
+          await parent.update({ "system.structure.current": newMaxSdp });
+        }
+      }
+    });
+
+    // Make detached options draggable
+    html.find('.cyberware-option.detached').each((_, optionEl) => {
+      optionEl.setAttribute('draggable', 'true');
+
+      optionEl.addEventListener('dragstart', ev => {
+        const itemId = optionEl.dataset.itemId;
+        const cyberType = optionEl.dataset.cyberwareType;
+        ev.dataTransfer.setData('text/plain', JSON.stringify({
+          type: 'cyberware-option',
+          itemId: itemId,
+          cyberwareType: cyberType,
+          actorId: this.actor.id
+        }));
+        optionEl.classList.add('is-dragging');
+      });
+
+      optionEl.addEventListener('dragend', () => {
+        optionEl.classList.remove('is-dragging');
+      });
+    });
+
+    // Make base cyberware drop targets for options
+    html.find('.cyberware-row[data-is-base="true"]').each((_, baseEl) => {
+      baseEl.addEventListener('dragover', ev => {
+        ev.preventDefault();
+        baseEl.classList.add('drag-over');
+      });
+
+      baseEl.addEventListener('dragleave', () => {
+        baseEl.classList.remove('drag-over');
+      });
+
+      baseEl.addEventListener('drop', async ev => {
+        ev.preventDefault();
+        baseEl.classList.remove('drag-over');
+
+        let data;
+        try {
+          data = JSON.parse(ev.dataTransfer.getData('text/plain'));
+        } catch (err) {
+          return;
+        }
+
+        if (data.type !== 'cyberware-option') return;
+        if (data.actorId !== this.actor.id) return;
+
+        const optionItem = this.actor.items.get(data.itemId);
+        const baseItem = this.actor.items.get(baseEl.dataset.itemId);
+
+        if (!optionItem || !baseItem) return;
+
+        // Validate: option must match base cyberware type
+        if (optionItem.system.cyberwareType !== baseItem.system.cyberwareType) {
+          ui.notifications.warn("Option type must match base cyberware type.");
+          return;
+        }
+
+        // Validate: option must be an option
+        if (!optionItem.system.isOption) {
+          ui.notifications.warn("Only options can be attached to base cyberware.");
+          return;
+        }
+
+        // Validate: base must not be an option
+        if (baseItem.system.isOption) {
+          ui.notifications.warn("Cannot attach options to other options.");
+          return;
+        }
+
+        // Validate: check available slots
+        const usedSlots = this.actor.items
+          .filter(i => i.type === 'cyberware' && i.getFlag('cp2020', 'attachedTo') === baseItem.id)
+          .reduce((sum, i) => sum + (i.system.takesSpace || 1), 0);
+        const availableSlots = baseItem.system.hasSlots || 0;
+        const neededSlots = optionItem.system.takesSpace || 1;
+
+        if (usedSlots + neededSlots > availableSlots) {
+          ui.notifications.warn(`Not enough option slots. Available: ${availableSlots - usedSlots}, Needed: ${neededSlots}`);
+          return;
+        }
+
+        // Attach option to base
+        await optionItem.setFlag('cp2020', 'attachedTo', baseItem.id);
+
+        // If option has SDP bonus and base is a cyberlimb, increase current SDP
+        const optionSdpBonus = optionItem.system.sdpBonus || 0;
+        if (optionSdpBonus > 0 && baseItem.system.cyberwareType === 'cyberlimb') {
+          const currentSdp = baseItem.system.structure?.current ?? 0;
+          const baseMax = baseItem.system.structure?.max ?? 0;
+
+          // Calculate new max (base + all attached options' bonuses including this one)
+          const allAttachedOptions = this.actor.items.filter(i =>
+            i.type === 'cyberware' &&
+            i.system.isOption &&
+            i.getFlag('cp2020', 'attachedTo') === baseItem.id
+          );
+          const totalBonus = allAttachedOptions.reduce((sum, opt) => sum + (opt.system.sdpBonus || 0), 0);
+          const newMaxSdp = baseMax + totalBonus;
+
+          // Increase current SDP by the bonus (capped at new max)
+          const newCurrentSdp = Math.min(currentSdp + optionSdpBonus, newMaxSdp);
+          await baseItem.update({ "system.structure.current": newCurrentSdp });
+        }
+      });
     });
 
     function getNetrunProgramItem(sheet, ev) {
@@ -1892,12 +2536,6 @@ export class CyberpunkActorSheet extends ActorSheet {
    */
   async _onDropItem(event, data) {
     event.preventDefault();
-
-    // Save scroll position before any updates
-    const gearContainer = this.element.find('.gear-container')[0];
-    if (gearContainer) {
-      this._gearScrollTop = gearContainer.scrollTop;
-    }
 
     // Get dropped item first to check its type
     const item = await Item.implementation.fromDropData(data);

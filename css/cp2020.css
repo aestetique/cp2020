@@ -2017,7 +2017,7 @@ div.statderive .value.rightborder {
   height: 40px;
   font-family: var(--font-blender);
   font-weight: bold;
-  font-size: 30px;
+  font-size: 28px;
   line-height: 40px;
   text-align: center;
   color: #FFFFFF;
@@ -2059,10 +2059,14 @@ div.statderive .value.rightborder {
   height: 43px;
   font-family: var(--font-blender);
   font-weight: bold;
-  font-size: 30px;
+  font-size: 28px;
   line-height: 43px;
   text-align: center;
   color: #FFFFFF;
+}
+
+.armor-sdp.damaged {
+  color: #B60F3C;
 }
 
 .armor-head,
@@ -2352,6 +2356,19 @@ input.stat-value.stat-input::-webkit-outer-spin-button, input.stat-value.stat-in
 .humanity-dot {
   width: 10px;
   height: 10px;
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+.humanity-dot.lost {
+  cursor: pointer;
+  opacity: 0.4;
+}
+.humanity-dot.lost:hover, .humanity-dot.lost.restore-preview {
+  opacity: 0.8;
+  filter: brightness(1.3) saturate(1.2);
+}
+.humanity-dot.disabled {
+  cursor: default;
+  opacity: 0.2;
 }
 
 .tracker-state {
@@ -2564,6 +2581,9 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
   column-gap: 8px;
   border-bottom: 1px dashed #26282F;
 }
+.skill-row.virtual-skill {
+  padding: 0 62px 0 8px;
+}
 
 .skill-type-icon {
   width: 12px;
@@ -2595,10 +2615,10 @@ input.info-value.info-input::-webkit-outer-spin-button, input.info-value.info-in
   flex: 1;
   min-width: 0;
   height: 24px;
+  line-height: 24px !important;
   font-family: var(--font-blender);
   font-weight: 300;
   font-size: 16px;
-  line-height: 24px;
   color: #FFFFFF;
   cursor: pointer;
   white-space: nowrap;
@@ -2723,6 +2743,7 @@ input.skill-value.skill-level-input:focus {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-y: auto;
 }
 
 .gear-block {
@@ -2736,15 +2757,23 @@ input.skill-value.skill-level-input:focus {
   flex-direction: column;
 }
 
+.gear-empty-state {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
 .gear-row.gear-empty {
   justify-content: center;
 }
 
 .gear-empty-text {
-  font-family: var(--font-blender);
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 12px;
+  font-family: var(--font-orbitron);
+  font-weight: 400;
+  font-size: 8px;
+  line-height: 8px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
   color: #808090;
   text-align: center;
 }
@@ -2939,6 +2968,103 @@ input.skill-value.skill-level-input:focus {
   width: 100%;
   height: 100%;
   border: none;
+}
+
+.cyberware-container {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.option-icon-spacer {
+  width: 36px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.cyberware-row[data-is-base=true] .option-icon-spacer {
+  display: none;
+}
+
+.option-icon {
+  width: 36px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.option-icon img {
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+.option-icon.detach-option:hover {
+  opacity: 0.8;
+}
+
+.cyberware-option.detached {
+  cursor: grab;
+}
+.cyberware-option.detached.is-dragging {
+  opacity: 0.5;
+}
+
+.detached-options-header {
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1E1F24;
+  margin-top: 4px;
+}
+.detached-options-header span {
+  font-family: var(--font-orbitron);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: #808090;
+}
+
+.cyberware-row.drag-over {
+  background-color: rgba(185, 178, 157, 0.1);
+  box-shadow: inset 0 0 0 1px var(--sheet-gilt);
+}
+
+.humanity-field .humanity-roll-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  box-shadow: none;
+  transition: transform 0.15s ease;
+}
+.humanity-field .humanity-roll-btn img {
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+.humanity-field .humanity-roll-btn:hover {
+  transform: scale(1.15);
+  box-shadow: none;
+}
+.humanity-field .humanity-roll-btn:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .item-card {
@@ -3630,7 +3756,7 @@ input.skill-value.skill-level-input:focus {
 
 .role-card .skill-drop.filled {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   flex: 1 0 0;
   align-self: stretch;
@@ -3675,7 +3801,7 @@ input.skill-value.skill-level-input:focus {
 
 .role-card .skill-drop.empty {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
@@ -3744,7 +3870,7 @@ input.skill-value.skill-level-input:focus {
 
 .role-card .career-skill-item {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   border-radius: 4px;
   background: var(--Chat-Front, #26282F);
@@ -4427,7 +4553,7 @@ input.skill-value.skill-level-input:focus {
 .tool-card .skill-drop.filled,
 .drug-card .skill-drop.filled {
   display: block;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   flex: 1 0 0;
   align-self: stretch;
@@ -4459,7 +4585,7 @@ input.skill-value.skill-level-input:focus {
 .tool-card .skill-drop.empty,
 .drug-card .skill-drop.empty {
   display: block;
-  padding: 5px 8px;
+  padding: 0 8px;
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
@@ -4821,6 +4947,7 @@ input.skill-value.skill-level-input:focus {
 }
 .cyberware-card .variable-value {
   display: flex;
+  flex: 1 0 0;
   height: 26px;
   padding: 5px 8px;
   align-items: center;
@@ -4898,74 +5025,18 @@ input.skill-value.skill-level-input:focus {
   line-height: 16px;
   flex-shrink: 0;
 }
-.cyberware-card .chipped-skill-row {
-  align-items: stretch;
-}
-.cyberware-card .chipped-skill-field {
-  flex: 2 0 0;
-}
-.cyberware-card .chip-value-field {
-  flex: 1 0 0;
-  max-width: 100px;
-}
-.cyberware-card .skill-drop.filled {
-  display: flex;
-  padding: 5px 8px;
-  gap: 10px;
-  flex: 1 0 0;
-  align-self: stretch;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  border: none;
-}
-.cyberware-card .skill-drop.filled .skill-name {
-  flex: 1;
-  color: var(--Chat-Text, #FFF);
+.cyberware-card .bonus-indicator {
+  color: #6B8E23;
   font-family: var(--font-blender);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 16px;
-  cursor: pointer;
-}
-.cyberware-card .skill-drop.filled .skill-name:hover {
-  text-decoration: underline;
-}
-.cyberware-card .skill-drop.filled .remove-chipped-skill {
-  width: 16px;
-  height: 16px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  opacity: 0.6;
+  margin-left: 4px;
   flex-shrink: 0;
 }
-.cyberware-card .skill-drop.filled .remove-chipped-skill img {
-  width: 100%;
-  height: 100%;
-}
-.cyberware-card .skill-drop.filled .remove-chipped-skill:hover {
-  opacity: 1;
-}
-.cyberware-card:not(.unlocked) .skill-drop.filled .skill-name {
-  color: #808090;
-}
-.cyberware-card .skill-drop.empty {
-  display: block;
-  padding: 5px 8px;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-  border-radius: 4px;
-  border: 1px dashed var(--Chat-Gray, #444856);
-}
-.cyberware-card .skill-drop.empty .placeholder {
-  color: var(--Chat-Gray, #444856);
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
+.cyberware-card .dual-value.with-bonus,
+.cyberware-card .variable-value.with-bonus {
+  color: #6B8E23;
 }
 .cyberware-card .bonus-row {
   display: flex;
@@ -5069,6 +5140,48 @@ input.skill-value.skill-level-input:focus {
   border-color: var(--Sheet-Key, #B9B29D);
   color: var(--Sheet-Key, #B9B29D);
   box-shadow: none;
+}
+.cyberware-card .skill-drop.filled {
+  display: block;
+  padding: 0 8px;
+  gap: 10px;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  border: none;
+}
+.cyberware-card .skill-drop.filled .skill-name {
+  flex: 1;
+  color: var(--Chat-Text, #FFF);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  height: 26px;
+  line-height: 14px;
+  cursor: pointer;
+}
+.cyberware-card .skill-drop.filled .skill-name:hover {
+  text-decoration: underline;
+}
+.cyberware-card:not(.unlocked) .skill-drop.filled .skill-name {
+  color: #808090;
+}
+.cyberware-card .skill-drop.empty {
+  display: block;
+  padding: 0 8px;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  border: 1px dashed var(--Chat-Gray, #444856);
+}
+.cyberware-card .skill-drop.empty .placeholder {
+  color: var(--Chat-Gray, #444856);
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
 }
 .cyberware-card .weapon-divider {
   width: 100%;
@@ -5185,5 +5298,3 @@ input.skill-value.skill-level-input:focus {
 .cyberware-card .sp-input {
   -moz-appearance: textfield;
 }
-
-/*# sourceMappingURL=cp2020.css.map */

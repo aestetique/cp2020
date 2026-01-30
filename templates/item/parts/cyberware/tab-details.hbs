@@ -33,9 +33,7 @@
       {{else}}
         <input type="text" class="humanity-formula-input" name="system.humanityCost" value="{{system.humanityCost}}" placeholder="1d6">
       {{/if}}
-      <button type="button" class="humanity-roll-btn" {{#if humanityRolled}}disabled{{/if}} title="{{localize 'CYBERPUNK.RollHumanity'}}">
-        <img src="systems/cp2020/img/dice/d10{{#if humanityRolled}}gray.png{{else}}gold.svg{{/if}}" alt="">
-      </button>
+      {{!-- Roll button removed - humanity is auto-rolled on first turn-on from inventory --}}
       <span class="humanity-result {{#if humanityRolled}}rolled{{/if}}">{{system.humanityLoss}}</span>
     </div>
   </div>
@@ -168,18 +166,32 @@
           {{/if}}
           <span class="dual-separator">/</span>
           {{#if isLocked}}
-            <span class="dual-value">{{system.structure.max}}</span>
+            {{#if hasBonus}}
+              <span class="dual-value with-bonus">{{effectiveMaxStructure}}</span>
+            {{else}}
+              <span class="dual-value">{{system.structure.max}}</span>
+            {{/if}}
           {{else}}
             <input type="number" class="dual-input" name="system.structure.max" value="{{system.structure.max}}" min="0">
+            {{#if hasBonus}}
+              <span class="bonus-indicator">(+{{sdpBonusTotal}})</span>
+            {{/if}}
           {{/if}}
         </div>
 
         <div class="variable-field">
           <label class="variable-label">{{localize "CYBERPUNK.DisablesAt"}}</label>
           {{#if isLocked}}
-            <span class="variable-value">{{system.disablesAt}}</span>
+            {{#if hasBonus}}
+              <span class="variable-value with-bonus">{{effectiveDisablesAt}}</span>
+            {{else}}
+              <span class="variable-value">{{system.disablesAt}}</span>
+            {{/if}}
           {{else}}
             <input type="number" class="variable-input" name="system.disablesAt" value="{{system.disablesAt}}">
+            {{#if hasBonus}}
+              <span class="bonus-indicator">(+{{sdpBonusTotal}})</span>
+            {{/if}}
           {{/if}}
         </div>
       </div>
@@ -235,45 +247,4 @@
 {{!-- ===================== --}}
 {{!-- CHIPWARE              --}}
 {{!-- ===================== --}}
-{{#if isChipware}}
-  {{#if isSkillChip}}
-    {{!-- Row 3: Chipped Skill + Chip Value --}}
-    <div class="variables-row chipped-skill-row">
-      <div class="variable-field chipped-skill-field">
-        <label class="variable-label">{{localize "CYBERPUNK.ChippedSkill"}}</label>
-        {{#if hasChippedSkill}}
-          <div class="skill-drop filled" data-drop-target="chipped-skill">
-            <span class="skill-name" data-uuid="{{system.chippedSkill.uuid}}">{{system.chippedSkill.name}}</span>
-            {{#unless isLocked}}
-              <button type="button" class="remove-chipped-skill" title="Remove">
-                <img src="systems/cp2020/img/ui/icon-trash.svg" alt="">
-              </button>
-            {{/unless}}
-          </div>
-        {{else}}
-          <div class="skill-drop empty" data-drop-target="chipped-skill">
-            <span class="placeholder">{{#if isLocked}}—{{else}}{{localize "CYBERPUNK.DropSkillHere"}}{{/if}}</span>
-          </div>
-        {{/if}}
-      </div>
-
-      <div class="variable-field chip-value-field">
-        <label class="variable-label">{{localize "CYBERPUNK.ChipValue"}}</label>
-        {{#if isLocked}}
-          <span class="variable-value">{{system.chipValue}}</span>
-        {{else}}
-          <div class="dropdown-wrapper">
-            <select class="dropdown-select" name="system.chipValue">
-              {{#each chipValueOptions}}
-                <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
-              {{/each}}
-            </select>
-            <div class="dropdown-chevron">
-              <img src="systems/cp2020/img/ui/icon-down.svg" alt="">
-            </div>
-          </div>
-        {{/if}}
-      </div>
-    </div>
-  {{/if}}
-{{/if}}
+{{!-- Chipware uses Effects tab for skill chips --}}

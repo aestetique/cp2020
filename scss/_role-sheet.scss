@@ -30,7 +30,7 @@
 // Filled state
 .role-card .skill-drop.filled {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   flex: 1 0 0;
   align-self: stretch;
@@ -82,7 +82,7 @@
 // Empty state - dashed border
 .role-card .skill-drop.empty {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   align-items: center;
   gap: 10px;
   flex: 1 0 0;
@@ -160,7 +160,7 @@
 // Individual career skill item
 .role-card .career-skill-item {
   display: flex;
-  padding: 5px 8px;
+  padding: 0 8px;
   gap: 10px;
   border-radius: 4px;
   background: var(--Chat-Front, #26282F);

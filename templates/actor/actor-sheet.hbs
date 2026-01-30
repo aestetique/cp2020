@@ -60,7 +60,7 @@
                   <img class="armor-bg" src="systems/cp2020/img/armor/larm-{{armorBlocks.lArm.state}}.svg" alt="Left Arm">
                   {{#unless armorBlocks.lArm.isLost}}
                     {{#if armorBlocks.lArm.sdp}}
-                      <span class="armor-sdp">{{armorBlocks.lArm.sdp}}</span>
+                      <span class="armor-sdp{{#if armorBlocks.lArm.isDamaged}} damaged{{/if}}">{{armorBlocks.lArm.sdp}}</span>
                     {{/if}}
                     {{#if armorBlocks.lArm.sp}}
                       <span class="armor-sp armor-sp-arm">{{armorBlocks.lArm.sp}}</span>
@@ -74,7 +74,7 @@
                       <span class="armor-sp armor-sp-leg">{{armorBlocks.lLeg.sp}}</span>
                     {{/if}}
                     {{#if armorBlocks.lLeg.sdp}}
-                      <span class="armor-sdp armor-sdp-leg">{{armorBlocks.lLeg.sdp}}</span>
+                      <span class="armor-sdp armor-sdp-leg{{#if armorBlocks.lLeg.isDamaged}} damaged{{/if}}">{{armorBlocks.lLeg.sdp}}</span>
                     {{/if}}
                   {{/unless}}
                 </div>
@@ -108,7 +108,7 @@
                   <img class="armor-bg" src="systems/cp2020/img/armor/rarm-{{armorBlocks.rArm.state}}.svg" alt="Right Arm">
                   {{#unless armorBlocks.rArm.isLost}}
                     {{#if armorBlocks.rArm.sdp}}
-                      <span class="armor-sdp">{{armorBlocks.rArm.sdp}}</span>
+                      <span class="armor-sdp{{#if armorBlocks.rArm.isDamaged}} damaged{{/if}}">{{armorBlocks.rArm.sdp}}</span>
                     {{/if}}
                     {{#if armorBlocks.rArm.sp}}
                       <span class="armor-sp armor-sp-arm">{{armorBlocks.rArm.sp}}</span>
@@ -122,7 +122,7 @@
                       <span class="armor-sp armor-sp-leg">{{armorBlocks.rLeg.sp}}</span>
                     {{/if}}
                     {{#if armorBlocks.rLeg.sdp}}
-                      <span class="armor-sdp armor-sdp-leg">{{armorBlocks.rLeg.sdp}}</span>
+                      <span class="armor-sdp armor-sdp-leg{{#if armorBlocks.rLeg.isDamaged}} damaged{{/if}}">{{armorBlocks.rLeg.sdp}}</span>
                     {{/if}}
                   {{/unless}}
                 </div>
@@ -198,15 +198,17 @@
               {{/each}}
             </div>
 
-            {{!-- Humanity Row (read-only) --}}
+            {{!-- Humanity Row (click lost dots to restore via therapy) --}}
             <div class="tracker-row humanity-row">
               <img class="tracker-badge" src="systems/cp2020/img/ui/badge-humanity.svg" alt="Humanity">
               {{#each humanityBlocks as |block|}}
               <div class="tracker-block {{#if block.active}}active{{/if}} {{#if block.disabled}}disabled{{/if}}">
                 <div class="dot-row">
                   {{#each block.dots as |dot|}}
-                  <img class="humanity-dot"
+                  <img class="humanity-dot {{#if dot.lost}}lost{{/if}} {{#if dot.disabled}}disabled{{/if}}"
                        src="systems/cp2020/img/ui/humanity-{{dot.image}}.svg"
+                       data-humanity="{{dot.value}}"
+                       title="{{dot.value}}"
                        alt="">
                   {{/each}}
                 </div>
