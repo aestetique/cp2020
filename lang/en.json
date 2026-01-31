@@ -637,6 +637,9 @@
     "CYBERPUNK.ReloadApply": "APPLY",
     "CYBERPUNK.ReloadRoundsAvailable": "{count} rounds",
 
+    "CYBERPUNK.RangedAttack": "Ranged Attack",
+    "CYBERPUNK.OutOfAmmo": "Out of ammo",
+
     "TYPES.Item.ordnance": "Ordnance",
     "CYBERPUNK.Ordnance": "ORDNANCE",
     "CYBERPUNK.OrdnanceSheet": "Ordnance Sheet",

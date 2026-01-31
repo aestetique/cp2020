@@ -3,6 +3,7 @@ import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { processFormulaRoll } from "../dice.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
+import { RangedAttackDialog } from "../dialog/ranged-attack-dialog.js"
 import { SortOrders } from "./skill-sort.js";
 
 /**
@@ -2029,17 +2030,20 @@ export class CyberpunkActorSheet extends ActorSheet {
       if (!item) return;
 
       const isRanged = item.isRanged();
-      const targetTokens = Array.from(game.users.current.targets.values()).map(target => {
-        return {
-          name: target.document.name,
-          id: target.id
-        };
-      });
+      const targetTokens = Array.from(game.users.current.targets.values()).map(target => ({
+        name: target.document.name,
+        id: target.id
+      }));
 
-      let modifierGroups;
+      // For ranged weapons, show fire mode selection first
       if (isRanged) {
-        modifierGroups = rangedModifiers(item, targetTokens);
-      } else if (item.system.attackType === meleeAttackTypes.martial) {
+        new RangedAttackDialog(this.actor, item, targetTokens).render(true);
+        return;
+      }
+
+      // Melee/Exotic unchanged
+      let modifierGroups;
+      if (item.system.attackType === meleeAttackTypes.martial) {
         modifierGroups = martialOptions(this.actor);
       } else {
         modifierGroups = meleeBonkOptions();

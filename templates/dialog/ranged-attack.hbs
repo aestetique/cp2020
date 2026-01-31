@@ -1,0 +1,32 @@
+<div class="ranged-attack-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{localize "CYBERPUNK.RangedAttack"}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+
+  {{#if showFullAuto}}
+    <button type="button" class="fire-mode-btn" data-mode="fullAuto">
+      {{localize "CYBERPUNK.FullAuto"}}
+    </button>
+  {{/if}}
+
+  {{#if showBurst}}
+    <button type="button" class="fire-mode-btn" data-mode="threeRoundBurst">
+      {{localize "CYBERPUNK.ThreeRoundBurst"}}
+    </button>
+  {{/if}}
+
+  {{#if showSingleShot}}
+    <button type="button" class="fire-mode-btn" data-mode="singleShot">
+      {{localize "CYBERPUNK.SingleShot"}}
+    </button>
+  {{else}}
+    <div class="reload-empty">{{localize "CYBERPUNK.OutOfAmmo"}}</div>
+  {{/if}}
+
+  {{#if showReload}}
+    <button type="button" class="fire-mode-btn reload-btn">
+      {{localize "CYBERPUNK.Reload"}}
+    </button>
+  {{/if}}
+</div>
