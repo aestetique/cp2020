@@ -11,11 +11,12 @@
 }
 
 // ============================================
-// Reload Dialog - Custom Application Window
+// Reload Dialog & Ranged Attack Dialog
 // ============================================
 
 // Override Foundry's default Application window chrome
-.app.window-app.reload-dialog {
+.app.window-app.reload-dialog,
+.app.window-app.ranged-attack-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -35,8 +36,9 @@
   }
 }
 
-// Dialog content wrapper
-.reload-dialog-wrapper {
+// Dialog content wrapper (shared by Reload and Ranged Attack dialogs)
+.reload-dialog-wrapper,
+.ranged-attack-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -162,9 +164,35 @@
     text-transform: uppercase;
   }
 
+  // Fire mode buttons (Ranged Attack dialog) - centered text
+  .fire-mode-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    background: var(--chat-gray, #444856);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    font-family: var(--font-blender);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: var(--chat-text, #FFF);
+    text-transform: uppercase;
+
+    &:hover {
+      background: lighten(#444856, 5%);
+    }
+  }
+
   // Remove default red box-shadow from interactive elements
   .reload-ammo-btn,
-  .reload-apply-btn {
+  .reload-apply-btn,
+  .fire-mode-btn {
     box-shadow: none;
   }
 }

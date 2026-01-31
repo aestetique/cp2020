@@ -4180,29 +4180,34 @@ input.skill-value.skill-level-input:focus {
   height: 400px;
 }
 
-.app.window-app.reload-dialog {
+.app.window-app.reload-dialog,
+.app.window-app.ranged-attack-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
-.app.window-app.reload-dialog .window-header {
+.app.window-app.reload-dialog .window-header,
+.app.window-app.ranged-attack-dialog .window-header {
   display: none;
 }
-.app.window-app.reload-dialog .window-content {
+.app.window-app.reload-dialog .window-content,
+.app.window-app.ranged-attack-dialog .window-content {
   background: transparent;
   padding: 0;
   margin: 0;
   overflow: visible;
 }
 
-.reload-dialog-wrapper {
+.reload-dialog-wrapper,
+.ranged-attack-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 8px;
 }
-.reload-dialog-wrapper .reload-header {
+.reload-dialog-wrapper .reload-header,
+.ranged-attack-wrapper .reload-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4210,7 +4215,8 @@ input.skill-value.skill-level-input:focus {
   height: 26px;
   cursor: move;
 }
-.reload-dialog-wrapper .reload-header .reload-title {
+.reload-dialog-wrapper .reload-header .reload-title,
+.ranged-attack-wrapper .reload-header .reload-title {
   font-family: var(--font-refinery);
   font-size: 16px;
   font-weight: 500;
@@ -4218,7 +4224,8 @@ input.skill-value.skill-level-input:focus {
   color: var(--chat-text, #FFF);
   text-align: center;
 }
-.reload-dialog-wrapper .reload-header .header-control.close {
+.reload-dialog-wrapper .reload-header .header-control.close,
+.ranged-attack-wrapper .reload-header .header-control.close {
   position: absolute;
   right: 0;
   top: 50%;
@@ -4234,10 +4241,12 @@ input.skill-value.skill-level-input:focus {
   opacity: 0.7;
   transition: opacity 0.15s;
 }
-.reload-dialog-wrapper .reload-header .header-control.close:hover {
+.reload-dialog-wrapper .reload-header .header-control.close:hover,
+.ranged-attack-wrapper .reload-header .header-control.close:hover {
   opacity: 1;
 }
-.reload-dialog-wrapper .reload-ammo-btn {
+.reload-dialog-wrapper .reload-ammo-btn,
+.ranged-attack-wrapper .reload-ammo-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4249,17 +4258,22 @@ input.skill-value.skill-level-input:focus {
   cursor: pointer;
   transition: background 0.15s;
 }
-.reload-dialog-wrapper .reload-ammo-btn:hover {
+.reload-dialog-wrapper .reload-ammo-btn:hover,
+.ranged-attack-wrapper .reload-ammo-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
-.reload-dialog-wrapper .reload-ammo-btn.selected {
+.reload-dialog-wrapper .reload-ammo-btn.selected,
+.ranged-attack-wrapper .reload-ammo-btn.selected {
   background: var(--chat-green, #24563D);
 }
-.reload-dialog-wrapper .reload-ammo-btn.selected:hover {
+.reload-dialog-wrapper .reload-ammo-btn.selected:hover,
+.ranged-attack-wrapper .reload-ammo-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .reload-ammo-btn .ammo-name,
-.reload-dialog-wrapper .reload-ammo-btn .ammo-qty {
+.reload-dialog-wrapper .reload-ammo-btn .ammo-qty,
+.ranged-attack-wrapper .reload-ammo-btn .ammo-name,
+.ranged-attack-wrapper .reload-ammo-btn .ammo-qty {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4267,7 +4281,8 @@ input.skill-value.skill-level-input:focus {
   color: var(--chat-text, #FFF);
   text-transform: uppercase;
 }
-.reload-dialog-wrapper .reload-apply-btn {
+.reload-dialog-wrapper .reload-apply-btn,
+.ranged-attack-wrapper .reload-apply-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4285,10 +4300,12 @@ input.skill-value.skill-level-input:focus {
   color: var(--chat-text, #FFF);
   text-transform: uppercase;
 }
-.reload-dialog-wrapper .reload-apply-btn:hover {
+.reload-dialog-wrapper .reload-apply-btn:hover,
+.ranged-attack-wrapper .reload-apply-btn:hover {
   background: rgb(154.3392857143, 39.1607142857, 70.2589285714);
 }
-.reload-dialog-wrapper .reload-empty {
+.reload-dialog-wrapper .reload-empty,
+.ranged-attack-wrapper .reload-empty {
   display: flex;
   height: 36px;
   padding: 0 6px;
@@ -4304,8 +4321,35 @@ input.skill-value.skill-level-input:focus {
   text-align: center;
   text-transform: uppercase;
 }
+.reload-dialog-wrapper .fire-mode-btn,
+.ranged-attack-wrapper .fire-mode-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--chat-gray, #444856);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--chat-text, #FFF);
+  text-transform: uppercase;
+}
+.reload-dialog-wrapper .fire-mode-btn:hover,
+.ranged-attack-wrapper .fire-mode-btn:hover {
+  background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
+}
 .reload-dialog-wrapper .reload-ammo-btn,
-.reload-dialog-wrapper .reload-apply-btn {
+.reload-dialog-wrapper .reload-apply-btn,
+.reload-dialog-wrapper .fire-mode-btn,
+.ranged-attack-wrapper .reload-ammo-btn,
+.ranged-attack-wrapper .reload-apply-btn,
+.ranged-attack-wrapper .fire-mode-btn {
   box-shadow: none;
 }
 
