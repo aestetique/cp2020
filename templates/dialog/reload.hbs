@@ -1,0 +1,18 @@
+<div class="reload-dialog-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{localize "CYBERPUNK.ReloadTitle"}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+
+  {{#if hasAmmo}}
+    {{#each groups}}
+      <button type="button" class="reload-ammo-btn{{#if @first}} selected{{/if}}" data-ammo-type="{{ammoType}}">
+        <span class="ammo-name">{{label}}</span>
+        <span class="ammo-qty">{{totalQty}}</span>
+      </button>
+    {{/each}}
+    <button type="button" class="reload-apply-btn">{{localize "CYBERPUNK.ReloadApply"}}</button>
+  {{else}}
+    <div class="reload-empty">{{localize "CYBERPUNK.ReloadNoAmmo"}}</div>
+  {{/if}}
+</div>

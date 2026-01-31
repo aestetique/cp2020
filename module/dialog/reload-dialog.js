@@ -4,18 +4,42 @@ import { ammoTypes, ammoWeaponTypes, ammoCalibersByWeaponType, weaponToAmmoType 
  * Reload Dialog — select ammo type to load into a weapon.
  * Shows compatible ammo items grouped by ammo type with available quantities.
  */
-export class ReloadDialog extends Dialog {
+export class ReloadDialog extends Application {
 
   /**
    * @param {Actor} actor   The owning actor
    * @param {Item}  weapon  The weapon item to reload
    */
   constructor(actor, weapon) {
-    const ammoWT = weaponToAmmoType[weapon.system.weaponType];
-    const weaponCaliber = weapon.system.caliber || "";
+    super();
+    this.actor = actor;
+    this.weapon = weapon;
+    this._prepareData();
+  }
+
+  /** @override */
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      id: "reload-dialog",
+      classes: ["cp2020", "reload-dialog"],
+      template: "systems/cp2020/templates/dialog/reload.hbs",
+      width: 300,
+      height: "auto",
+      popOut: true,
+      minimizable: false,
+      resizable: false
+    });
+  }
+
+  /**
+   * Prepare the ammo groups data
+   */
+  _prepareData() {
+    const ammoWT = weaponToAmmoType[this.weapon.system.weaponType];
+    const weaponCaliber = this.weapon.system.caliber || "";
 
     // Find compatible ammo on the actor
-    const ammoItems = (actor.itemTypes.ammo || []).filter(a => {
+    const ammoItems = (this.actor.itemTypes.ammo || []).filter(a => {
       if (a.system.weaponType !== ammoWT) return false;
       // For weapon types with caliber, must match
       if (weaponCaliber && a.system.caliber !== weaponCaliber) return false;
@@ -33,73 +57,60 @@ export class ReloadDialog extends Dialog {
       grouped[at].items.push(a);
     }
 
-    const groups = Object.values(grouped);
-    const hasAmmo = groups.length > 0;
+    this.groups = Object.values(grouped);
+    this.hasAmmo = this.groups.length > 0;
+    this._selectedAmmoType = this.groups.length ? this.groups[0].ammoType : null;
+  }
 
-    // Build content HTML
-    let content = `<div class="reload-dialog">`;
-    if (!hasAmmo) {
-      content += `<p class="reload-empty">${game.i18n.localize("CYBERPUNK.ReloadNoAmmo")}</p>`;
-    } else {
-      content += `<p class="reload-hint">${game.i18n.localize("CYBERPUNK.ReloadSelectAmmo")}</p>`;
-      for (const g of groups) {
-        const label = ammoTypes[g.ammoType]
-          ? game.i18n.localize(`CYBERPUNK.${ammoTypes[g.ammoType]}`)
-          : g.ammoType;
-        const roundsLabel = game.i18n.format("CYBERPUNK.ReloadRoundsAvailable", { count: g.totalQty });
-        content += `
-          <div class="reload-row" data-ammo-type="${g.ammoType}">
-            <span class="reload-ammo-name">${label.toUpperCase()}</span>
-            <span class="reload-ammo-qty">${roundsLabel}</span>
-          </div>`;
-      }
-    }
-    content += `</div>`;
-
-    super({
-      title: game.i18n.localize("CYBERPUNK.ReloadTitle"),
-      content,
-      buttons: hasAmmo ? {
-        apply: {
-          label: game.i18n.localize("CYBERPUNK.ReloadApply"),
-          callback: (html) => this._onApply(html)
-        }
-      } : {
-        close: {
-          label: game.i18n.localize("CYBERPUNK.OK")
-        }
-      },
-      default: hasAmmo ? "apply" : "close"
+  /** @override */
+  getData() {
+    // Prepare groups with localized labels
+    const groups = this.groups.map(g => {
+      const label = ammoTypes[g.ammoType]
+        ? game.i18n.localize(`CYBERPUNK.${ammoTypes[g.ammoType]}`)
+        : g.ammoType;
+      return {
+        ammoType: g.ammoType,
+        label: label.toUpperCase(),
+        totalQty: g.totalQty
+      };
     });
 
-    this.actor = actor;
-    this.weapon = weapon;
-    this.groups = groups;
-    this._selectedAmmoType = groups.length ? groups[0].ammoType : null;
+    return {
+      groups,
+      hasAmmo: this.hasAmmo
+    };
   }
 
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
 
-    // Highlight first row by default
-    if (this._selectedAmmoType) {
-      html.find(`.reload-row[data-ammo-type="${this._selectedAmmoType}"]`).addClass("selected");
+    // Make header draggable
+    const header = html.find('.reload-header')[0];
+    if (header) {
+      new Draggable(this, html, header, false);
     }
 
-    // Row selection
-    html.find('.reload-row').click(ev => {
-      html.find('.reload-row').removeClass('selected');
-      const row = ev.currentTarget;
-      row.classList.add('selected');
-      this._selectedAmmoType = row.dataset.ammoType;
+    // Close button
+    html.find('.header-control.close').click(() => this.close());
+
+    // Ammo row selection
+    html.find('.reload-ammo-btn').click(ev => {
+      html.find('.reload-ammo-btn').removeClass('selected');
+      const btn = ev.currentTarget;
+      btn.classList.add('selected');
+      this._selectedAmmoType = btn.dataset.ammoType;
     });
+
+    // Apply button
+    html.find('.reload-apply-btn').click(() => this._onApply());
   }
 
   /**
    * Apply the reload: set weapon shots, loadedAmmoType, deduct ammo from actor items.
    */
-  async _onApply(html) {
+  async _onApply() {
     if (!this._selectedAmmoType) return;
 
     const group = this.groups.find(g => g.ammoType === this._selectedAmmoType);
@@ -179,6 +190,8 @@ export class ReloadDialog extends Dialog {
     if (deletes.length) {
       await this.actor.deleteEmbeddedDocuments("Item", deletes);
     }
+
+    this.close();
   }
 
   /**

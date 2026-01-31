@@ -633,7 +633,7 @@
 
     "CYBERPUNK.ReloadTitle": "Reload",
     "CYBERPUNK.ReloadSelectAmmo": "Select ammo type to load:",
-    "CYBERPUNK.ReloadNoAmmo": "No compatible ammo available.",
+    "CYBERPUNK.ReloadNoAmmo": "No compatible ammo",
     "CYBERPUNK.ReloadApply": "APPLY",
     "CYBERPUNK.ReloadRoundsAvailable": "{count} rounds",
 
