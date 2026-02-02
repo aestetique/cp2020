@@ -1,5 +1,3 @@
-# An fan-made implementation of the Cyberpunk 2020 game system for Foundry Virtual Tabletop
-
 Here goes nothing.
 
 ***
