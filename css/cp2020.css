@@ -4181,18 +4181,21 @@ input.skill-value.skill-level-input:focus {
 }
 
 .app.window-app.reload-dialog,
-.app.window-app.ranged-attack-dialog {
+.app.window-app.ranged-attack-dialog,
+.app.window-app.range-selection-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 .app.window-app.reload-dialog .window-header,
-.app.window-app.ranged-attack-dialog .window-header {
+.app.window-app.ranged-attack-dialog .window-header,
+.app.window-app.range-selection-dialog .window-header {
   display: none;
 }
 .app.window-app.reload-dialog .window-content,
-.app.window-app.ranged-attack-dialog .window-content {
+.app.window-app.ranged-attack-dialog .window-content,
+.app.window-app.range-selection-dialog .window-content {
   background: transparent;
   padding: 0;
   margin: 0;
@@ -4200,14 +4203,16 @@ input.skill-value.skill-level-input:focus {
 }
 
 .reload-dialog-wrapper,
-.ranged-attack-wrapper {
+.ranged-attack-wrapper,
+.range-selection-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 8px;
 }
 .reload-dialog-wrapper .reload-header,
-.ranged-attack-wrapper .reload-header {
+.ranged-attack-wrapper .reload-header,
+.range-selection-wrapper .reload-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4216,7 +4221,8 @@ input.skill-value.skill-level-input:focus {
   cursor: move;
 }
 .reload-dialog-wrapper .reload-header .reload-title,
-.ranged-attack-wrapper .reload-header .reload-title {
+.ranged-attack-wrapper .reload-header .reload-title,
+.range-selection-wrapper .reload-header .reload-title {
   font-family: var(--font-refinery);
   font-size: 16px;
   font-weight: 500;
@@ -4225,7 +4231,8 @@ input.skill-value.skill-level-input:focus {
   text-align: center;
 }
 .reload-dialog-wrapper .reload-header .header-control.close,
-.ranged-attack-wrapper .reload-header .header-control.close {
+.ranged-attack-wrapper .reload-header .header-control.close,
+.range-selection-wrapper .reload-header .header-control.close {
   position: absolute;
   right: 0;
   top: 50%;
@@ -4242,11 +4249,13 @@ input.skill-value.skill-level-input:focus {
   transition: opacity 0.15s;
 }
 .reload-dialog-wrapper .reload-header .header-control.close:hover,
-.ranged-attack-wrapper .reload-header .header-control.close:hover {
+.ranged-attack-wrapper .reload-header .header-control.close:hover,
+.range-selection-wrapper .reload-header .header-control.close:hover {
   opacity: 1;
 }
 .reload-dialog-wrapper .reload-ammo-btn,
-.ranged-attack-wrapper .reload-ammo-btn {
+.ranged-attack-wrapper .reload-ammo-btn,
+.range-selection-wrapper .reload-ammo-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4259,21 +4268,26 @@ input.skill-value.skill-level-input:focus {
   transition: background 0.15s;
 }
 .reload-dialog-wrapper .reload-ammo-btn:hover,
-.ranged-attack-wrapper .reload-ammo-btn:hover {
+.ranged-attack-wrapper .reload-ammo-btn:hover,
+.range-selection-wrapper .reload-ammo-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected,
-.ranged-attack-wrapper .reload-ammo-btn.selected {
+.ranged-attack-wrapper .reload-ammo-btn.selected,
+.range-selection-wrapper .reload-ammo-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected:hover,
-.ranged-attack-wrapper .reload-ammo-btn.selected:hover {
+.ranged-attack-wrapper .reload-ammo-btn.selected:hover,
+.range-selection-wrapper .reload-ammo-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .reload-ammo-btn .ammo-name,
 .reload-dialog-wrapper .reload-ammo-btn .ammo-qty,
 .ranged-attack-wrapper .reload-ammo-btn .ammo-name,
-.ranged-attack-wrapper .reload-ammo-btn .ammo-qty {
+.ranged-attack-wrapper .reload-ammo-btn .ammo-qty,
+.range-selection-wrapper .reload-ammo-btn .ammo-name,
+.range-selection-wrapper .reload-ammo-btn .ammo-qty {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4282,7 +4296,8 @@ input.skill-value.skill-level-input:focus {
   text-transform: uppercase;
 }
 .reload-dialog-wrapper .reload-apply-btn,
-.ranged-attack-wrapper .reload-apply-btn {
+.ranged-attack-wrapper .reload-apply-btn,
+.range-selection-wrapper .reload-apply-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4301,11 +4316,13 @@ input.skill-value.skill-level-input:focus {
   text-transform: uppercase;
 }
 .reload-dialog-wrapper .reload-apply-btn:hover,
-.ranged-attack-wrapper .reload-apply-btn:hover {
+.ranged-attack-wrapper .reload-apply-btn:hover,
+.range-selection-wrapper .reload-apply-btn:hover {
   background: rgb(154.3392857143, 39.1607142857, 70.2589285714);
 }
 .reload-dialog-wrapper .reload-empty,
-.ranged-attack-wrapper .reload-empty {
+.ranged-attack-wrapper .reload-empty,
+.range-selection-wrapper .reload-empty {
   display: flex;
   height: 36px;
   padding: 0 6px;
@@ -4322,7 +4339,8 @@ input.skill-value.skill-level-input:focus {
   text-transform: uppercase;
 }
 .reload-dialog-wrapper .fire-mode-btn,
-.ranged-attack-wrapper .fire-mode-btn {
+.ranged-attack-wrapper .fire-mode-btn,
+.range-selection-wrapper .fire-mode-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4341,16 +4359,320 @@ input.skill-value.skill-level-input:focus {
   text-transform: uppercase;
 }
 .reload-dialog-wrapper .fire-mode-btn:hover,
-.ranged-attack-wrapper .fire-mode-btn:hover {
+.ranged-attack-wrapper .fire-mode-btn:hover,
+.range-selection-wrapper .fire-mode-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn,
 .reload-dialog-wrapper .reload-apply-btn,
 .reload-dialog-wrapper .fire-mode-btn,
+.reload-dialog-wrapper .range-dropdown-btn,
 .ranged-attack-wrapper .reload-ammo-btn,
 .ranged-attack-wrapper .reload-apply-btn,
-.ranged-attack-wrapper .fire-mode-btn {
+.ranged-attack-wrapper .fire-mode-btn,
+.ranged-attack-wrapper .range-dropdown-btn,
+.range-selection-wrapper .reload-ammo-btn,
+.range-selection-wrapper .reload-apply-btn,
+.range-selection-wrapper .fire-mode-btn,
+.range-selection-wrapper .range-dropdown-btn {
   box-shadow: none;
+}
+.reload-dialog-wrapper .fire-mode-section,
+.ranged-attack-wrapper .fire-mode-section,
+.range-selection-wrapper .fire-mode-section {
+  display: flex;
+  height: 26px;
+  padding: 1px 0;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  background: #26282F;
+}
+.reload-dialog-wrapper .fire-mode-section img,
+.ranged-attack-wrapper .fire-mode-section img,
+.range-selection-wrapper .fire-mode-section img {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+  border: none;
+}
+.reload-dialog-wrapper .fire-mode-section .fire-mode-label,
+.ranged-attack-wrapper .fire-mode-section .fire-mode-label,
+.range-selection-wrapper .fire-mode-section .fire-mode-label {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--chat-text, #FFF);
+  text-transform: uppercase;
+}
+.reload-dialog-wrapper .range-dropdown,
+.ranged-attack-wrapper .range-dropdown,
+.range-selection-wrapper .range-dropdown {
+  position: relative;
+  width: 100%;
+}
+.reload-dialog-wrapper .range-dropdown-btn,
+.ranged-attack-wrapper .range-dropdown-btn,
+.range-selection-wrapper .range-dropdown-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--chat-gray, #444856);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.reload-dialog-wrapper .range-dropdown-btn:hover,
+.ranged-attack-wrapper .range-dropdown-btn:hover,
+.range-selection-wrapper .range-dropdown-btn:hover {
+  background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
+}
+.reload-dialog-wrapper .range-dropdown-btn.open,
+.ranged-attack-wrapper .range-dropdown-btn.open,
+.range-selection-wrapper .range-dropdown-btn.open {
+  border-radius: 2px 2px 0 0;
+}
+.reload-dialog-wrapper .range-dropdown-btn .range-label,
+.ranged-attack-wrapper .range-dropdown-btn .range-label,
+.range-selection-wrapper .range-dropdown-btn .range-label {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--chat-text, #FFF);
+  text-transform: uppercase;
+}
+.reload-dialog-wrapper .range-dropdown-btn i,
+.ranged-attack-wrapper .range-dropdown-btn i,
+.range-selection-wrapper .range-dropdown-btn i {
+  font-size: 12px;
+  color: var(--chat-text, #FFF);
+  transition: transform 0.2s;
+}
+.reload-dialog-wrapper .range-dropdown-btn.open i,
+.ranged-attack-wrapper .range-dropdown-btn.open i,
+.range-selection-wrapper .range-dropdown-btn.open i {
+  transform: rotate(180deg);
+}
+.reload-dialog-wrapper .range-dropdown-list,
+.ranged-attack-wrapper .range-dropdown-list,
+.range-selection-wrapper .range-dropdown-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--chat-back, #1A1A1A);
+  border: 1px solid var(--chat-stroke, #252730);
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.reload-dialog-wrapper .range-dropdown-list.open,
+.ranged-attack-wrapper .range-dropdown-list.open,
+.range-selection-wrapper .range-dropdown-list.open {
+  display: block;
+}
+.reload-dialog-wrapper .range-option,
+.ranged-attack-wrapper .range-option,
+.range-selection-wrapper .range-option {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--chat-text, #FFF);
+  text-transform: uppercase;
+}
+.reload-dialog-wrapper .range-option:hover,
+.ranged-attack-wrapper .range-option:hover,
+.range-selection-wrapper .range-option:hover {
+  background: var(--chat-gray, #444856);
+}
+.reload-dialog-wrapper .range-option.selected,
+.ranged-attack-wrapper .range-option.selected,
+.range-selection-wrapper .range-option.selected {
+  background: var(--chat-green, #24563D);
+}
+.reload-dialog-wrapper .range-option.selected:hover,
+.ranged-attack-wrapper .range-option.selected:hover,
+.range-selection-wrapper .range-option.selected:hover {
+  background: rgb(43.5245901639, 103.9754098361, 73.75);
+}
+.reload-dialog-wrapper .conditions-grid,
+.ranged-attack-wrapper .conditions-grid,
+.range-selection-wrapper .conditions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.reload-dialog-wrapper .condition-btn,
+.ranged-attack-wrapper .condition-btn,
+.range-selection-wrapper .condition-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--chat-gray, #444856);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+  box-shadow: none;
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--chat-text, #FFF);
+  text-transform: uppercase;
+}
+.reload-dialog-wrapper .condition-btn:hover,
+.ranged-attack-wrapper .condition-btn:hover,
+.range-selection-wrapper .condition-btn:hover {
+  background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
+}
+.reload-dialog-wrapper .condition-btn.selected,
+.ranged-attack-wrapper .condition-btn.selected,
+.range-selection-wrapper .condition-btn.selected {
+  background: var(--chat-green, #24563D);
+}
+.reload-dialog-wrapper .condition-btn.selected:hover,
+.ranged-attack-wrapper .condition-btn.selected:hover,
+.range-selection-wrapper .condition-btn.selected:hover {
+  background: rgb(43.5245901639, 103.9754098361, 73.75);
+}
+.reload-dialog-wrapper .luck-controls,
+.ranged-attack-wrapper .luck-controls,
+.range-selection-wrapper .luck-controls {
+  display: flex;
+  gap: 6px;
+}
+.reload-dialog-wrapper .luck-controls.disabled,
+.ranged-attack-wrapper .luck-controls.disabled,
+.range-selection-wrapper .luck-controls.disabled {
+  pointer-events: none;
+}
+.reload-dialog-wrapper .luck-controls.disabled .luck-btn,
+.ranged-attack-wrapper .luck-controls.disabled .luck-btn,
+.range-selection-wrapper .luck-controls.disabled .luck-btn {
+  background: #26282F;
+  cursor: default;
+}
+.reload-dialog-wrapper .luck-controls.disabled .luck-display .luck-value,
+.ranged-attack-wrapper .luck-controls.disabled .luck-display .luck-value,
+.range-selection-wrapper .luck-controls.disabled .luck-display .luck-value {
+  color: #444856;
+}
+.reload-dialog-wrapper .luck-btn,
+.ranged-attack-wrapper .luck-btn,
+.range-selection-wrapper .luck-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 36px;
+  background: var(--chat-gray, #444856);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+  box-shadow: none;
+}
+.reload-dialog-wrapper .luck-btn img,
+.ranged-attack-wrapper .luck-btn img,
+.range-selection-wrapper .luck-btn img {
+  width: 24px;
+  height: 24px;
+  border: none;
+}
+.reload-dialog-wrapper .luck-btn:hover:not(.disabled),
+.ranged-attack-wrapper .luck-btn:hover:not(.disabled),
+.range-selection-wrapper .luck-btn:hover:not(.disabled) {
+  background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
+}
+.reload-dialog-wrapper .luck-btn.disabled,
+.ranged-attack-wrapper .luck-btn.disabled,
+.range-selection-wrapper .luck-btn.disabled {
+  background: #26282F;
+  cursor: not-allowed;
+}
+.reload-dialog-wrapper .luck-display,
+.ranged-attack-wrapper .luck-display,
+.range-selection-wrapper .luck-display {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  background: #26282F;
+  border-radius: 2px;
+}
+.reload-dialog-wrapper .luck-display .luck-value,
+.ranged-attack-wrapper .luck-display .luck-value,
+.range-selection-wrapper .luck-display .luck-value {
+  font-family: var(--font-blender);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 36px;
+  color: var(--chat-text, #FFF);
+  text-align: center;
+}
+.reload-dialog-wrapper .location-grid,
+.ranged-attack-wrapper .location-grid,
+.range-selection-wrapper .location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.reload-dialog-wrapper .location-btn,
+.ranged-attack-wrapper .location-btn,
+.range-selection-wrapper .location-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  background: var(--chat-gray, #444856);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+  box-shadow: none;
+}
+.reload-dialog-wrapper .location-btn img,
+.ranged-attack-wrapper .location-btn img,
+.range-selection-wrapper .location-btn img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  border: none;
+}
+.reload-dialog-wrapper .location-btn:hover,
+.ranged-attack-wrapper .location-btn:hover,
+.range-selection-wrapper .location-btn:hover {
+  background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
+}
+.reload-dialog-wrapper .location-btn.selected,
+.ranged-attack-wrapper .location-btn.selected,
+.range-selection-wrapper .location-btn.selected {
+  background: var(--chat-green, #24563D);
+}
+.reload-dialog-wrapper .location-btn.selected:hover,
+.ranged-attack-wrapper .location-btn.selected:hover,
+.range-selection-wrapper .location-btn.selected:hover {
+  background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 
 .cyberpunk.weapon-sheet.app {

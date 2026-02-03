@@ -569,21 +569,22 @@ export class CyberpunkItem extends Item {
           await game.dice3d.showForRoll(attackRoll, game.user, true);
       }
 
-      let damageRoll = await new Roll(system.damage).evaluate();
-
-      // Trigger Dice So Nice for damage roll
-      if (game.dice3d && damageRoll.dice.length > 0) {
-          await game.dice3d.showForRoll(damageRoll, game.user, true);
-      }
-
-      let locationRoll = await rollLocation(attackMods.targetActor, attackMods.targetArea);
       let actualRangeBracket = rangeResolve[attackMods.range](system.range);
       let attackHits = attackRoll.total >= DC;
       const roundsFired = Math.min(system.shotsLeft, 1);
-      let location = locationRoll.areaHit;
       let areaDamages = {};
 
+      // Only roll damage if the attack hits
       if (attackHits) {
+          let damageRoll = await new Roll(system.damage).evaluate();
+
+          // Trigger Dice So Nice for damage roll
+          if (game.dice3d && damageRoll.dice.length > 0) {
+              await game.dice3d.showForRoll(damageRoll, game.user, true);
+          }
+
+          let locationRoll = await rollLocation(attackMods.targetActor, attackMods.targetArea);
+          let location = locationRoll.areaHit;
           if (!areaDamages[location]) {
               areaDamages[location] = [];
           }

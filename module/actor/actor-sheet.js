@@ -215,7 +215,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         { key: 'bt', label: getStatLabel('bt'), total: stats.bt?.total ?? stats.bt?.base ?? 0, base: stats.bt?.base ?? 0, path: 'system.stats.bt.base' },
         { key: 'emp', label: getStatLabel('emp'), total: stats.emp?.total ?? stats.emp?.base ?? 0, base: stats.emp?.base ?? 0, path: 'system.stats.emp.base' },
         { key: 'ma', label: getStatLabel('ma'), total: stats.ma?.total ?? stats.ma?.base ?? 0, base: stats.ma?.base ?? 0, path: 'system.stats.ma.base' },
-        { key: 'luck', label: getStatLabel('luck'), total: stats.luck?.total ?? stats.luck?.base ?? 0, base: stats.luck?.base ?? 0, path: 'system.stats.luck.base' }
+        { key: 'luck', label: getStatLabel('luck'), total: stats.luck?.effective ?? stats.luck?.total ?? stats.luck?.base ?? 0, base: stats.luck?.base ?? 0, path: 'system.stats.luck.base' }
       ];
 
       // Wound blocks data for template

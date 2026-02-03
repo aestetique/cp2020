@@ -28,7 +28,9 @@
 					},
 					"luck": {
 						"base": 5,
-						"tempMod": 0
+						"tempMod": 0,
+						"spent": 0,
+						"spentAt": null
 					},
 					"ma": {
 						"base": 5,

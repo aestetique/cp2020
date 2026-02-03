@@ -1,0 +1,103 @@
+<div class="range-selection-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{localize "CYBERPUNK.RangedAttack"}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+
+  {{!-- Fire mode section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/gun.svg" alt="">
+    <span class="fire-mode-label">{{fireModeLabel}}</span>
+  </div>
+
+  {{!-- Range dropdown --}}
+  <div class="range-dropdown">
+    <button type="button" class="range-dropdown-btn">
+      <span class="range-label">{{selectedRangeLabel}}</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <div class="range-dropdown-list">
+      {{#each rangeOptions}}
+        <div class="range-option{{#if selected}} selected{{/if}}" data-range="{{key}}">
+          {{label}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- Conditions section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/conditions.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.Conditions"}}</span>
+  </div>
+
+  {{!-- Condition buttons - 2x2 grid --}}
+  <div class="conditions-grid">
+    <button type="button" class="condition-btn" data-condition="prepared">
+      {{localize "CYBERPUNK.ConditionPrepared"}}
+    </button>
+    <button type="button" class="condition-btn" data-condition="ambush">
+      {{localize "CYBERPUNK.ConditionAmbush"}}
+    </button>
+    <button type="button" class="condition-btn" data-condition="distracted">
+      {{localize "CYBERPUNK.ConditionDistracted"}}
+    </button>
+    <button type="button" class="condition-btn" data-condition="ricochet">
+      {{localize "CYBERPUNK.ConditionRicochet"}}
+    </button>
+  </div>
+
+  {{!-- Location section (single shot only) --}}
+  {{#if isSingleShot}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/location.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.Location"}}</span>
+  </div>
+
+  {{!-- Location buttons - 2x3 grid --}}
+  <div class="location-grid">
+    <button type="button" class="location-btn" data-location="LeftArm">
+      <img src="systems/cp2020/img/chat/LeftArm.svg" alt="">
+    </button>
+    <button type="button" class="location-btn" data-location="Head">
+      <img src="systems/cp2020/img/chat/Head.svg" alt="">
+    </button>
+    <button type="button" class="location-btn" data-location="RightArm">
+      <img src="systems/cp2020/img/chat/RightArm.svg" alt="">
+    </button>
+    <button type="button" class="location-btn" data-location="LeftLeg">
+      <img src="systems/cp2020/img/chat/LeftLeg.svg" alt="">
+    </button>
+    <button type="button" class="location-btn" data-location="Torso">
+      <img src="systems/cp2020/img/chat/Torso.svg" alt="">
+    </button>
+    <button type="button" class="location-btn" data-location="RightLeg">
+      <img src="systems/cp2020/img/chat/RightLeg.svg" alt="">
+    </button>
+  </div>
+  {{/if}}
+
+  {{!-- Luck section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/luck.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.LuckFull"}}</span>
+  </div>
+
+  {{!-- Luck controls --}}
+  <div class="luck-controls{{#unless hasAnyLuck}} disabled{{/unless}}">
+    <button type="button" class="luck-btn luck-minus-btn{{#unless canDecreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canDecreaseLuck}}minus{{else}}minus-disabled{{/if}}.svg" alt="-">
+    </button>
+    <div class="luck-display">
+      <span class="luck-value">{{luckToSpend}}</span>
+    </div>
+    <button type="button" class="luck-btn luck-plus-btn{{#unless canIncreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canIncreaseLuck}}plus{{else}}plus-disabled{{/if}}.svg" alt="+">
+    </button>
+  </div>
+
+  {{!-- Roll button --}}
+  <button type="button" class="reload-apply-btn roll-btn">
+    {{localize "CYBERPUNK.Roll"}}
+  </button>
+</div>

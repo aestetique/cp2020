@@ -16,7 +16,8 @@
 
 // Override Foundry's default Application window chrome
 .app.window-app.reload-dialog,
-.app.window-app.ranged-attack-dialog {
+.app.window-app.ranged-attack-dialog,
+.app.window-app.range-selection-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -36,9 +37,10 @@
   }
 }
 
-// Dialog content wrapper (shared by Reload and Ranged Attack dialogs)
+// Dialog content wrapper (shared by Reload, Ranged Attack, and Range Selection dialogs)
 .reload-dialog-wrapper,
-.ranged-attack-wrapper {
+.ranged-attack-wrapper,
+.range-selection-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -192,7 +194,284 @@
   // Remove default red box-shadow from interactive elements
   .reload-ammo-btn,
   .reload-apply-btn,
-  .fire-mode-btn {
+  .fire-mode-btn,
+  .range-dropdown-btn {
     box-shadow: none;
+  }
+
+  // Fire mode section bar (Range Selection dialog)
+  .fire-mode-section {
+    display: flex;
+    height: 26px;
+    padding: 1px 0;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    align-self: stretch;
+    background: #26282F;
+
+    img {
+      width: 16px;
+      height: 16px;
+      filter: brightness(0) invert(1);
+      border: none;
+    }
+
+    .fire-mode-label {
+      font-family: var(--font-blender);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      color: var(--chat-text, #FFF);
+      text-transform: uppercase;
+    }
+  }
+
+  // Range dropdown container
+  .range-dropdown {
+    position: relative;
+    width: 100%;
+  }
+
+  // Range dropdown button
+  .range-dropdown-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    background: var(--chat-gray, #444856);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: lighten(#444856, 5%);
+    }
+
+    &.open {
+      border-radius: 2px 2px 0 0;
+    }
+
+    .range-label {
+      font-family: var(--font-blender);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      color: var(--chat-text, #FFF);
+      text-transform: uppercase;
+    }
+
+    i {
+      font-size: 12px;
+      color: var(--chat-text, #FFF);
+      transition: transform 0.2s;
+    }
+
+    &.open i {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Range dropdown list (hidden by default)
+  .range-dropdown-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--chat-back, #1A1A1A);
+    border: 1px solid var(--chat-stroke, #252730);
+    border-top: none;
+    border-radius: 0 0 2px 2px;
+    max-height: 200px;
+    overflow-y: auto;
+
+    &.open {
+      display: block;
+    }
+  }
+
+  // Range dropdown options
+  .range-option {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    font-family: var(--font-blender);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--chat-text, #FFF);
+    text-transform: uppercase;
+
+    &:hover {
+      background: var(--chat-gray, #444856);
+    }
+
+    &.selected {
+      background: var(--chat-green, #24563D);
+
+      &:hover {
+        background: lighten(#24563D, 5%);
+      }
+    }
+  }
+
+  // Conditions grid (2x2)
+  .conditions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  // Condition buttons
+  .condition-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    background: var(--chat-gray, #444856);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    box-shadow: none;
+
+    font-family: var(--font-blender);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: var(--chat-text, #FFF);
+    text-transform: uppercase;
+
+    &:hover {
+      background: lighten(#444856, 5%);
+    }
+
+    &.selected {
+      background: var(--chat-green, #24563D);
+
+      &:hover {
+        background: lighten(#24563D, 5%);
+      }
+    }
+  }
+
+  // Luck controls row
+  .luck-controls {
+    display: flex;
+    gap: 6px;
+
+    &.disabled {
+      pointer-events: none;
+
+      .luck-btn {
+        background: #26282F;
+        cursor: default;
+      }
+
+      .luck-display {
+        .luck-value {
+          color: #444856;
+        }
+      }
+    }
+  }
+
+  // Luck +/- buttons
+  .luck-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 36px;
+    background: var(--chat-gray, #444856);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    box-shadow: none;
+
+    img {
+      width: 24px;
+      height: 24px;
+      border: none;
+    }
+
+    &:hover:not(.disabled) {
+      background: lighten(#444856, 5%);
+    }
+
+    &.disabled {
+      background: #26282F;
+      cursor: not-allowed;
+    }
+  }
+
+  // Luck value display (center)
+  .luck-display {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    background: #26282F;
+    border-radius: 2px;
+
+    .luck-value {
+      font-family: var(--font-blender);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 36px;
+      color: var(--chat-text, #FFF);
+      text-align: center;
+    }
+  }
+
+  // Location grid (2x3)
+  .location-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  // Location buttons
+  .location-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    background: var(--chat-gray, #444856);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    box-shadow: none;
+
+    img {
+      width: 24px;
+      height: 24px;
+      filter: brightness(0) invert(1);
+      border: none;
+    }
+
+    &:hover {
+      background: lighten(#444856, 5%);
+    }
+
+    &.selected {
+      background: var(--chat-green, #24563D);
+
+      &:hover {
+        background: lighten(#24563D, 5%);
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
-import { fireModes, rangedModifiers, weaponToAmmoType } from "../lookups.js";
-import { ModifiersDialog } from "./modifiers.js";
+import { fireModes, weaponToAmmoType } from "../lookups.js";
+import { RangeSelectionDialog } from "./range-selection-dialog.js";
 import { ReloadDialog } from "./reload-dialog.js";
 
 /**
@@ -92,24 +92,16 @@ export class RangedAttackDialog extends Application {
   }
 
   /**
-   * Open the ModifiersDialog with a pre-selected fire mode
+   * Open the RangeSelectionDialog with a pre-selected fire mode
    * @param {string} fireMode - The fire mode key (fullAuto, threeRoundBurst, singleShot)
    */
   _openModifiersWithMode(fireMode) {
-    const modifierGroups = rangedModifiers(this.weapon, this.targetTokens);
-
-    // Override the default fire mode in the first modifier group
-    if (modifierGroups[0] && modifierGroups[0][0]) {
-      modifierGroups[0][0].defaultValue = fireModes[fireMode];
-    }
-
-    const dialog = new ModifiersDialog(this.actor, {
-      weapon: this.weapon,
-      targetTokens: this.targetTokens,
-      modifierGroups: modifierGroups,
-      onConfirm: (fireOptions) => this.weapon.__weaponRoll(fireOptions, this.targetTokens)
-    });
-    dialog.render(true);
+    new RangeSelectionDialog(
+      this.actor,
+      this.weapon,
+      fireModes[fireMode],
+      this.targetTokens
+    ).render(true);
     this.close();
   }
 }

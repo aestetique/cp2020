@@ -639,6 +639,13 @@
 
     "CYBERPUNK.RangedAttack": "Ranged Attack",
     "CYBERPUNK.OutOfAmmo": "Out of ammo",
+    "CYBERPUNK.Roll": "Roll",
+    "CYBERPUNK.Conditions": "Conditions",
+    "CYBERPUNK.ConditionPrepared": "Prepared +2",
+    "CYBERPUNK.ConditionAmbush": "Ambush +5",
+    "CYBERPUNK.ConditionDistracted": "Distracted –2",
+    "CYBERPUNK.ConditionRicochet": "Ricochet –5",
+    "CYBERPUNK.Location": "Location",
 
     "TYPES.Item.ordnance": "Ordnance",
     "CYBERPUNK.Ordnance": "ORDNANCE",

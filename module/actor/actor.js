@@ -105,6 +105,21 @@ export class CyberpunkActor extends Actor {
       stat.total = stat.base + (stat.tempMod || 0);
     }
 
+    // Check luck recovery (8 hours = 28,800,000 ms)
+    const LUCK_RECOVERY_MS = 8 * 60 * 60 * 1000;
+    if (stats.luck.spentAt && Date.now() - stats.luck.spentAt >= LUCK_RECOVERY_MS) {
+      // Reset spent luck (will be persisted on next update)
+      this.update({
+        "system.stats.luck.spent": 0,
+        "system.stats.luck.spentAt": null
+      });
+      stats.luck.spent = 0;
+      stats.luck.spentAt = null;
+    }
+
+    // Calculate effective luck (what's actually available to spend)
+    stats.luck.effective = Math.max(0, stats.luck.total - (stats.luck.spent || 0));
+
     // Reflex is affected by encumbrance values too
     stats.ref.armorMod = 0;
     equippedItems.filter(i => i.type === "armor").forEach(armor => {
