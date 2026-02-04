@@ -1,10 +1,11 @@
 import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes, fireModes } from "../lookups.js"
-import { localize, localizeParam, tabBeautifying } from "../utils.js"
+import { localize, localizeParam, tabBeautifying, properCase } from "../utils.js"
 import { processFormulaRoll } from "../dice.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
 import { RangedAttackDialog } from "../dialog/ranged-attack-dialog.js"
 import { RangeSelectionDialog } from "../dialog/range-selection-dialog.js"
+import { SkillRollDialog } from "../dialog/skill-roll-dialog.js"
 import { SortOrders } from "./skill-sort.js";
 
 /**
@@ -1564,10 +1565,21 @@ export class CyberpunkActorSheet extends ActorSheet {
 
     // ----- Existing Listeners (preserved from original) -----
 
-    // Stat roll
+    // Stat roll - open dialog
     html.find('.stat-roll').click(ev => {
-      let statName = ev.currentTarget.dataset.statName;
-      this.actor.rollStat(statName);
+      const statName = ev.currentTarget.dataset.statName;
+      const fullStatName = localize(properCase(statName) + "Full");
+
+      // Close any existing skill roll dialog first
+      const existingDialog = Object.values(ui.windows).find(w => w.id === "skill-roll-dialog");
+      if (existingDialog) existingDialog.close();
+
+      new SkillRollDialog(this.actor, {
+        rollType: "stat",
+        statName: statName,
+        title: fullStatName,
+        statIcon: statName
+      }).render(true);
     });
 
     // Wound dot clicks - set damage to clicked dot value
@@ -1719,12 +1731,13 @@ export class CyberpunkActorSheet extends ActorSheet {
         }
       });
 
-    // Skill roll
+    // Skill roll - open dialog
     html.find(".skill-roll").click(ev => {
       const id = ev.currentTarget.dataset.skillId;
       const skill = this.actor.items.get(id);
       if (!skill) return;
 
+      // If askMods is set, use legacy ModifiersDialog for backward compatibility
       if (skill.system?.askMods) {
         const dlg = new ModifiersDialog(this.actor, {
           title: localize("ModifiersSkillTitle"),
@@ -1742,7 +1755,18 @@ export class CyberpunkActorSheet extends ActorSheet {
         });
         return dlg.render(true);
       }
-      this.actor.rollSkill(id);
+
+      // Close any existing skill roll dialog first
+      const existingDialog = Object.values(ui.windows).find(w => w.id === "skill-roll-dialog");
+      if (existingDialog) existingDialog.close();
+
+      // Open new skill roll dialog
+      new SkillRollDialog(this.actor, {
+        rollType: "skill",
+        skillId: id,
+        title: skill.name,
+        statIcon: skill.system.stat
+      }).render(true);
     });
 
     // Chip toggle (cycle 0 → 1 → 2 → 3 → 0) for new skills tab

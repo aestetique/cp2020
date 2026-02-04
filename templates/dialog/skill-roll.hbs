@@ -1,0 +1,67 @@
+<div class="skill-roll-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{title}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+
+  {{!-- Difficulty section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/difficulty.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.Difficulty"}}</span>
+  </div>
+
+  {{!-- Difficulty dropdown (uses same classes as range dropdown) --}}
+  <div class="range-dropdown">
+    <button type="button" class="range-dropdown-btn">
+      <span class="range-label">{{selectedDifficultyLabel}}</span>
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <div class="range-dropdown-list">
+      {{#each difficultyOptions}}
+        <div class="range-option{{#if selected}} selected{{/if}}" data-difficulty="{{key}}" data-value="{{value}}">
+          {{label}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  {{!-- Conditions section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/conditions.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.ConditionsHeader"}}</span>
+  </div>
+
+  {{!-- Condition buttons - 1 row, 2 buttons --}}
+  <div class="conditions-grid">
+    <button type="button" class="condition-btn" data-condition="prepared">
+      {{localize "CYBERPUNK.ConditionPrepared"}}
+    </button>
+    <button type="button" class="condition-btn" data-condition="distracted">
+      {{localize "CYBERPUNK.ConditionDistracted"}}
+    </button>
+  </div>
+
+  {{!-- Luck section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/luck.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.LuckFull"}}</span>
+  </div>
+
+  {{!-- Luck controls --}}
+  <div class="luck-controls{{#unless hasAnyLuck}} disabled{{/unless}}">
+    <button type="button" class="luck-btn luck-minus-btn{{#unless canDecreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canDecreaseLuck}}minus{{else}}minus-disabled{{/if}}.svg" alt="-">
+    </button>
+    <div class="luck-display">
+      <span class="luck-value">{{luckToSpend}}</span>
+    </div>
+    <button type="button" class="luck-btn luck-plus-btn{{#unless canIncreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canIncreaseLuck}}plus{{else}}plus-disabled{{/if}}.svg" alt="+">
+    </button>
+  </div>
+
+  {{!-- Roll button --}}
+  <button type="button" class="reload-apply-btn roll-btn">
+    {{localize "CYBERPUNK.Roll"}}
+  </button>
+</div>
