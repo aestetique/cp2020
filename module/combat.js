@@ -1,5 +1,6 @@
 import { Multiroll } from "./dice.js";
 import { localize } from "./utils.js";
+import { InitiativeRollDialog } from "./dialog/initiative-roll-dialog.js";
 
 /**
  * Extend the base Combat to customize initiative roll rendering
@@ -9,6 +10,7 @@ export class CyberpunkCombat extends Combat {
 
     /**
      * Override rollInitiative to use our custom chat template
+     * Shows Initiative Roll Dialog for player-owned actors
      * @override
      */
     async rollInitiative(ids, {formula=null, updateTurn=true, messageOptions={}}={}) {
@@ -22,8 +24,30 @@ export class CyberpunkCombat extends Combat {
         for (const combatant of combatants) {
             if (!combatant?.actor) continue;
 
+            let luckMod = 0;
+
+            // Show dialog for player-owned actors
+            if (combatant.actor.isOwner && combatant.actor.hasPlayerOwner) {
+                const result = await InitiativeRollDialog.show(
+                    combatant.actor,
+                    combatant,
+                    this
+                );
+
+                // If dialog was cancelled, skip this combatant
+                if (result === null) continue;
+
+                luckMod = result;
+            }
+
             // Use the provided formula or the system's initiative formula from system.json
-            const rollFormula = formula ?? game.system.initiative;
+            let rollFormula = formula ?? game.system.initiative;
+
+            // Add luck modifier if any
+            if (luckMod > 0) {
+                rollFormula = `${rollFormula} + ${luckMod}`;
+            }
+
             const roll = await new Roll(rollFormula, combatant.actor.getRollData()).evaluate();
 
             // Store the initiative value

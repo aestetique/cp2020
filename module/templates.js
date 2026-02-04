@@ -75,6 +75,7 @@ export const preloadHandlebarsTemplates = async function() {
         // Weapon settings dialog
         "systems/cp2020/templates/dialog/modifiers.hbs",
         "systems/cp2020/templates/dialog/skill-roll.hbs",
+        "systems/cp2020/templates/dialog/initiative-roll.hbs",
 
         // Program
         "systems/cp2020/templates/item/parts/program/summary.hbs",

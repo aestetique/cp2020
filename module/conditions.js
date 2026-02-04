@@ -324,7 +324,7 @@ export const CONDITION_EFFECTS = {
         changes: []
     },
     "fast-draw": {
-        // +3 initiative, -3 attack - applied manually in rolls
+        // +3 initiative, -3 to all rolls - applied manually in rolls
         changes: []
     },
     "action-surge": {

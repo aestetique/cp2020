@@ -1,0 +1,43 @@
+<div class="skill-roll-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{title}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+
+  {{!-- Initiative section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/initiative.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.Initiative"}}</span>
+  </div>
+
+  {{!-- Fast Draw button - single, full width --}}
+  <div class="conditions-grid conditions-grid--single">
+    <button type="button" class="condition-btn{{#if fastDraw}} selected{{/if}}" data-condition="fast-draw">
+      {{localize "CYBERPUNK.FastDraw"}} +3
+    </button>
+  </div>
+
+  {{!-- Luck section bar --}}
+  <div class="fire-mode-section">
+    <img src="systems/cp2020/img/chat/luck.svg" alt="">
+    <span class="fire-mode-label">{{localize "CYBERPUNK.LuckFull"}}</span>
+  </div>
+
+  {{!-- Luck controls --}}
+  <div class="luck-controls{{#unless hasAnyLuck}} disabled{{/unless}}">
+    <button type="button" class="luck-btn luck-minus-btn{{#unless canDecreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canDecreaseLuck}}minus{{else}}minus-disabled{{/if}}.svg" alt="-">
+    </button>
+    <div class="luck-display">
+      <span class="luck-value">{{luckToSpend}}</span>
+    </div>
+    <button type="button" class="luck-btn luck-plus-btn{{#unless canIncreaseLuck}} disabled{{/unless}}">
+      <img src="systems/cp2020/img/chat/{{#if canIncreaseLuck}}plus{{else}}plus-disabled{{/if}}.svg" alt="+">
+    </button>
+  </div>
+
+  {{!-- Roll button --}}
+  <button type="button" class="reload-apply-btn roll-btn">
+    {{localize "CYBERPUNK.Roll"}}
+  </button>
+</div>
