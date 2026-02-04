@@ -1,0 +1,60 @@
+<div class="cyberpunk-card cyberpunk-card--skill-check">
+    {{!-- Section Bar: Skill/Stat Name with Attribute Icon --}}
+    {{> (CPTemplate "chat/partials/section-bar.hbs") label=title icon=statIcon}}
+
+    {{!-- Roll Results --}}
+    {{#each rolls as |rollData|}}
+    <div class="roll-container roll-container--collapsed">
+        {{!-- Expandable Details (hidden by default) --}}
+        <div class="roll-expandable">
+            <div class="roll-expandable__inner">
+                {{!-- Formula Bar --}}
+                <div class="formula-bar">
+                    <span class="formula-bar__text">{{cleanFormula rollData.roll._formula}}</span>
+                </div>
+
+                {{!-- Roll Details --}}
+                <div class="roll-details">
+                    <div class="roll-details__row">
+                        <span class="roll-details__label">{{#if rollData.name}}{{rollData.name}}{{else}}1d10{{/if}}</span>
+                        <span class="roll-details__value">
+                            <span class="roll-details__value-text">{{rollData.roll.total}}</span>
+                        </span>
+                    </div>
+                    {{#if rollData.diceInfo}}
+                    <div class="roll-details__row roll-details__row--dice">
+                        {{#each rollData.diceInfo as |die|}}
+                        {{#each die.subrolls as |subroll|}}
+                        <div class="dice-badge dice-badge--d{{die.faces}} {{subroll.classes}}">
+                            <span class="dice-badge__value">{{{subroll.result}}}</span>
+                        </div>
+                        {{/each}}
+                        {{/each}}
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        {{!-- Result Row with success/failure and difficulty target --}}
+        <div class="result-row result-row--{{#if ../success}}success{{else}}failure{{/if}} roll-toggle">
+            {{#if ../success}}
+            <span class="result-row__icon"><img src="systems/cp2020/img/chat/success.png" alt="Success"></span>
+            {{else}}
+            <span class="result-row__icon"><img src="systems/cp2020/img/chat/failure.png" alt="Failure"></span>
+            {{/if}}
+            <span class="result-row__value">{{rollData.roll.total}}</span>
+            <span class="result-row__target">
+                <div class="dice-badge dice-badge--d10 {{#if ../success}}save-success{{else}}save-failure{{/if}}">
+                    <span class="dice-badge__value">{{../difficulty}}</span>
+                </div>
+            </span>
+        </div>
+    </div>
+    {{/each}}
+
+    {{!-- Natural 1 warning --}}
+    {{#if isNatural1}}
+    <div class="card-hint card-hint--warning">{{localize "CYBERPUNK.Natural1Failure"}}</div>
+    {{/if}}
+</div>

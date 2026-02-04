@@ -743,6 +743,190 @@ export class CyberpunkActor extends Actor {
     roll.defaultExecute({ statIcon: statName }, this);
   }
 
+  /**
+   * Roll a skill check against a difficulty target
+   * @param {string} skillId - The skill item ID
+   * @param {number} difficulty - Target number (10, 15, 20, 25, 30)
+   * @param {number} extraMod - Additional modifier (conditions + luck)
+   */
+  async rollSkillCheck(skillId, difficulty, extraMod = 0) {
+    // Handle virtual skills from chipware
+    if (skillId.startsWith('virtual-')) {
+      return this._rollVirtualSkillCheck(skillId, difficulty, extraMod);
+    }
+
+    const skill = this.items.get(skillId);
+    if (!skill) return;
+
+    // Action Surge: -3 penalty on all skill rolls
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    // Awareness/Notice condition penalties (Unconscious -8, Blinded -4, Deafened -2)
+    let awarenessConditionPenalty = 0;
+    const awarenessSkillName = localize("SkillAwarenessNotice");
+    if (skill.name === awarenessSkillName) {
+      if (this.statuses.has("unconscious")) awarenessConditionPenalty -= 8;
+      if (this.statuses.has("blinded")) awarenessConditionPenalty -= 4;
+      if (this.statuses.has("deafened")) awarenessConditionPenalty -= 2;
+    }
+
+    // Check if this skill is chipped by equipped chipware
+    const equippedChipware = this.items.contents.filter(i =>
+      i.type === "cyberware" &&
+      i.system.cyberwareType === "chipware" &&
+      i.system.equipped
+    );
+
+    let chipValue = null;
+    for (const chip of equippedChipware) {
+      const bonuses = chip.system.bonuses || [];
+      for (const bonus of bonuses) {
+        if (bonus.type === "skill" &&
+            bonus.skillName?.toLowerCase() === skill.name.toLowerCase() &&
+            bonus.value) {
+          if (chipValue === null || bonus.value > chipValue) {
+            chipValue = bonus.value;
+          }
+        }
+      }
+    }
+
+    const isChipped = chipValue !== null;
+    const skillValue = isChipped ? chipValue : CyberpunkActor.realSkillValue(skill);
+
+    // Calculate skill bonuses from equipped items (NOT for chipped)
+    let skillBonus = 0;
+    if (!isChipped) {
+      const equippedItems = this.items.contents.filter(i =>
+        (i.type === "tool" || i.type === "drug" || i.type === "cyberware") && i.system.equipped
+      );
+      for (const item of equippedItems) {
+        const bonuses = item.system.bonuses || [];
+        for (const bonus of bonuses) {
+          if (bonus.type === "skill" && bonus.value) {
+            const matchByUuid = bonus.skillUuid && bonus.skillUuid === skill.uuid;
+            const matchByName = bonus.skillName &&
+              bonus.skillName.toLowerCase() === skill.name.toLowerCase();
+            if (matchByUuid || matchByName) {
+              skillBonus += bonus.value;
+            }
+          }
+        }
+      }
+    }
+
+    // Build roll formula parts
+    const parts = [
+      skillValue,
+      skill.system.stat ? `@stats.${skill.system.stat}.total` : null,
+      skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
+      extraMod || null,
+      actionSurgePenalty || null,
+      awarenessConditionPenalty || null,
+      skillBonus || null
+    ].filter(Boolean);
+
+    const roll = makeD10Roll(parts, this.system);
+    await roll.evaluate();
+
+    // Check for natural 1 on the d10
+    const d10Result = roll.dice[0]?.results[0]?.result;
+    const isNatural1 = d10Result === 1;
+
+    // Determine success: natural 1 always fails, otherwise compare to difficulty
+    const success = !isNatural1 && roll.total >= difficulty;
+
+    // Create chat message
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+    new Multiroll(skill.name)
+      .addRoll(roll)
+      .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
+        statIcon: skill.system.stat,
+        difficulty: difficulty,
+        success: success,
+        isNatural1: isNatural1
+      });
+  }
+
+  /**
+   * Roll a virtual skill check (from chipware) against a difficulty
+   * @param {string} virtualId - Format: "virtual-{chipwareId}-{skillName}"
+   * @param {number} difficulty - Target number
+   * @param {number} extraMod - Additional modifier
+   */
+  async _rollVirtualSkillCheck(virtualId, difficulty, extraMod = 0) {
+    const parts = virtualId.split('-');
+    const chipwareId = parts[1];
+    const skillName = parts.slice(2).join('-');
+
+    const chipware = this.items.get(chipwareId);
+    if (!chipware) return;
+
+    const bonus = chipware.system.bonuses?.find(b =>
+      b.type === "skill" && b.skillName === skillName
+    );
+    if (!bonus) return;
+
+    const stat = bonus.skillStat || 'ref';
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    const rollParts = [
+      bonus.value,
+      `@stats.${stat}.total`,
+      extraMod || null,
+      actionSurgePenalty || null
+    ].filter(Boolean);
+
+    const roll = makeD10Roll(rollParts, this.system);
+    await roll.evaluate();
+
+    const d10Result = roll.dice[0]?.results[0]?.result;
+    const isNatural1 = d10Result === 1;
+    const success = !isNatural1 && roll.total >= difficulty;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+    new Multiroll(skillName)
+      .addRoll(roll)
+      .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
+        statIcon: stat,
+        difficulty: difficulty,
+        success: success,
+        isNatural1: isNatural1
+      });
+  }
+
+  /**
+   * Roll a stat check against a difficulty target
+   * @param {string} statName - The stat key (int, ref, tech, etc.)
+   * @param {number} difficulty - Target number (10, 15, 20, 25, 30)
+   * @param {number} extraMod - Additional modifier (conditions + luck)
+   */
+  async rollStatCheck(statName, difficulty, extraMod = 0) {
+    const fullStatName = localize(properCase(statName) + "Full");
+    const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    const parts = [`@stats.${statName}.total`];
+    if (actionSurgePenalty) parts.push(actionSurgePenalty);
+    if (extraMod) parts.push(extraMod);
+
+    const roll = makeD10Roll(parts, this.system);
+    await roll.evaluate();
+
+    const d10Result = roll.dice[0]?.results[0]?.result;
+    const isNatural1 = d10Result === 1;
+    const success = !isNatural1 && roll.total >= difficulty;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+    new Multiroll(fullStatName)
+      .addRoll(roll)
+      .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
+        statIcon: statName,
+        difficulty: difficulty,
+        success: success,
+        isNatural1: isNatural1
+      });
+  }
+
   /*
    * Adds this actor to the current encounter - if there isn't one, this just shows an error - and rolls their initiative
    */
