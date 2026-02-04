@@ -757,6 +757,14 @@ export class CyberpunkChatMessage extends ChatMessage {
                     modifiedDamage = Math.floor(modifiedDamage / 2);
                 }
 
+                // HEAD DOUBLING: Double damage to head (CP2020 rule)
+                // Applied after armor reduction but before BTM
+                const isHeadHit = location === 'Head';
+                const damageBeforeHeadDouble = modifiedDamage;
+                if (isHeadHit && modifiedDamage > 0) {
+                    modifiedDamage *= 2;
+                }
+
                 // Apply BTM only if NOT a cyberlimb location
                 let finalDamage = 0;
                 const btm = actor.system?.stats?.bt?.modifier || 0;
@@ -782,12 +790,18 @@ export class CyberpunkChatMessage extends ChatMessage {
 
                 // Cyberlimb damage hint (no BTM, shows SDP)
                 if (hasCyberlimb && finalDamage > 0) {
+                    // Add head doubling notation when applicable (cyber-head)
+                    const cyberHeadDoubleStr = isHeadHit && damageBeforeHeadDouble > 0 ? ` ×2` : '';
+
                     if (damageType === "spike" && afterArmor > 0) {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋ = ${finalDamage} SDP`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${cyberHeadDoubleStr} = ${finalDamage} SDP`);
                     } else if (ammoType === "armorPiercing") {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋ = ${finalDamage} SDP`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${cyberHeadDoubleStr} = ${finalDamage} SDP`);
                     } else if (ammoType === "hollowPoint") {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋ = ${finalDamage} SDP`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${cyberHeadDoubleStr} = ${finalDamage} SDP`);
+                    } else if (isHeadHit && damageBeforeHeadDouble > 0) {
+                        // Cyber-head hit without special ammo type - show the doubling
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${damageBeforeHeadDouble} ×2 = ${finalDamage} SDP`);
                     } else if (armorSP > 0 || dmgTypeLabel) {
                         hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${finalDamage} SDP`);
                     } else {
@@ -796,12 +810,19 @@ export class CyberpunkChatMessage extends ChatMessage {
                     locationCyberlimbDamage += finalDamage;
                 } else if (finalDamage > 0) {
                     // Normal wound damage hint (with BTM)
+                    // Add head doubling notation when applicable
+                    const headDoubleStr = isHeadHit && damageBeforeHeadDouble > 0 ? ` ×2` : '';
+                    const btmStr = btm ? ` - ${btm} BTM` : '';
+
                     if (damageType === "spike" && afterArmor > 0) {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${headDoubleStr}${btmStr} = ${finalDamage}`);
                     } else if (ammoType === "armorPiercing") {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}/2⌋${headDoubleStr}${btmStr} = ${finalDamage}`);
                     } else if (ammoType === "hollowPoint") {
-                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${btm ? ` - ${btm} BTM` : ''} = ${finalDamage}`);
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} → ⌊${afterArmor}×1.5⌋${headDoubleStr}${btmStr} = ${finalDamage}`);
+                    } else if (isHeadHit && damageBeforeHeadDouble > 0) {
+                        // Head hit without special ammo type - show the doubling
+                        hintParts.push(`${location}: ${rawDamage} - ${spLabel} = ${damageBeforeHeadDouble} ×2${btmStr} = ${finalDamage}`);
                     } else if (modifiedDamage > 0 && btm !== 0) {
                         hintParts.push(`${location}: ${rawDamage} - ${spLabel} - ${btm} BTM = ${finalDamage}`);
                     } else if (armorSP > 0 || dmgTypeLabel) {
