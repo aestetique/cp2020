@@ -553,6 +553,9 @@ export class CyberpunkActor extends Actor {
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
+    // Fast Draw: -3 penalty on all rolls
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
+
     // Awareness/Notice condition penalties (Unconscious -8, Blinded -4, Deafened -2)
     let awarenessConditionPenalty = 0;
     const awarenessSkillName = localize("SkillAwarenessNotice");
@@ -620,6 +623,7 @@ export class CyberpunkActor extends Actor {
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
       extraMod || null,
       actionSurgePenalty || null,
+      fastDrawPenalty || null,
       awarenessConditionPenalty || null,
       skillBonus || null
     ].filter(Boolean);
@@ -690,12 +694,16 @@ export class CyberpunkActor extends Actor {
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
+    // Fast Draw: -3 penalty on all rolls
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
+
     // Build roll parts
     const rollParts = [
       bonus.value,
       `@stats.${stat}.total`,
       extraMod || null,
-      actionSurgePenalty || null
+      actionSurgePenalty || null,
+      fastDrawPenalty || null
     ].filter(Boolean);
 
     const makeRoll = () => makeD10Roll(rollParts, this.system);
@@ -735,8 +743,12 @@ export class CyberpunkActor extends Actor {
     // Action Surge: -3 penalty on all stat rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
+    // Fast Draw: -3 penalty on all rolls
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
+
     const parts = [`@stats.${statName}.total`];
     if (actionSurgePenalty) parts.push(actionSurgePenalty);
+    if (fastDrawPenalty) parts.push(fastDrawPenalty);
 
     let roll = new Multiroll(fullStatName);
     roll.addRoll(makeD10Roll(parts, this.system));
@@ -760,6 +772,9 @@ export class CyberpunkActor extends Actor {
 
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+
+    // Fast Draw: -3 penalty on all rolls
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
 
     // Awareness/Notice condition penalties (Unconscious -8, Blinded -4, Deafened -2)
     let awarenessConditionPenalty = 0;
@@ -822,6 +837,7 @@ export class CyberpunkActor extends Actor {
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
       extraMod || null,
       actionSurgePenalty || null,
+      fastDrawPenalty || null,
       awarenessConditionPenalty || null,
       skillBonus || null
     ].filter(Boolean);
@@ -869,12 +885,14 @@ export class CyberpunkActor extends Actor {
 
     const stat = bonus.skillStat || 'ref';
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
 
     const rollParts = [
       bonus.value,
       `@stats.${stat}.total`,
       extraMod || null,
-      actionSurgePenalty || null
+      actionSurgePenalty || null,
+      fastDrawPenalty || null
     ].filter(Boolean);
 
     const roll = makeD10Roll(rollParts, this.system);
@@ -904,9 +922,11 @@ export class CyberpunkActor extends Actor {
   async rollStatCheck(statName, difficulty, extraMod = 0) {
     const fullStatName = localize(properCase(statName) + "Full");
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
+    const fastDrawPenalty = this.statuses.has("fast-draw") ? -3 : 0;
 
     const parts = [`@stats.${statName}.total`];
     if (actionSurgePenalty) parts.push(actionSurgePenalty);
+    if (fastDrawPenalty) parts.push(fastDrawPenalty);
     if (extraMod) parts.push(extraMod);
 
     const roll = makeD10Roll(parts, this.system);

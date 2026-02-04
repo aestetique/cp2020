@@ -4015,7 +4015,7 @@ input.skill-value.skill-level-input:focus {
 }
 .role-card .skill-drop.filled .remove-special-skill {
   width: 16px;
-  height: 16px;
+  height: 26px;
   padding: 0;
   border: none;
   background: transparent;
@@ -4036,6 +4036,7 @@ input.skill-value.skill-level-input:focus {
 
 .role-card .skill-drop.empty {
   display: flex;
+  height: 26px;
   padding: 0 8px;
   align-items: center;
   gap: 10px;
@@ -4129,7 +4130,7 @@ input.skill-value.skill-level-input:focus {
 }
 .role-card .career-skill-item .remove-career-skill {
   width: 16px;
-  height: 16px;
+  height: 26px;
   padding: 0;
   border: none;
   background: transparent;
@@ -4270,7 +4271,8 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.reload-dialog,
 .app.window-app.ranged-attack-dialog,
 .app.window-app.range-selection-dialog,
-.app.window-app.skill-roll-dialog {
+.app.window-app.skill-roll-dialog,
+.app.window-app.initiative-roll-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -4279,13 +4281,15 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.reload-dialog .window-header,
 .app.window-app.ranged-attack-dialog .window-header,
 .app.window-app.range-selection-dialog .window-header,
-.app.window-app.skill-roll-dialog .window-header {
+.app.window-app.skill-roll-dialog .window-header,
+.app.window-app.initiative-roll-dialog .window-header {
   display: none;
 }
 .app.window-app.reload-dialog .window-content,
 .app.window-app.ranged-attack-dialog .window-content,
 .app.window-app.range-selection-dialog .window-content,
-.app.window-app.skill-roll-dialog .window-content {
+.app.window-app.skill-roll-dialog .window-content,
+.app.window-app.initiative-roll-dialog .window-content {
   background: transparent;
   padding: 0;
   margin: 0;
@@ -4633,6 +4637,13 @@ input.skill-value.skill-level-input:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
+}
+/* Single-button variant for Initiative dialog */
+.skill-roll-wrapper .conditions-grid--single {
+  display: block;
+}
+.skill-roll-wrapper .conditions-grid--single .condition-btn {
+  width: 100%;
 }
 .reload-dialog-wrapper .condition-btn,
 .ranged-attack-wrapper .condition-btn,
@@ -4994,6 +5005,7 @@ input.skill-value.skill-level-input:focus {
 .tool-card .skill-drop.empty,
 .drug-card .skill-drop.empty {
   display: block;
+  height: 26px;
   padding: 0 8px;
   align-items: center;
   gap: 10px;
@@ -5423,6 +5435,7 @@ input.skill-value.skill-level-input:focus {
 }
 .cyberware-card .skill-drop.empty {
   display: block;
+  height: 26px;
   padding: 0 8px;
   align-items: center;
   gap: 10px;
