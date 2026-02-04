@@ -42,6 +42,228 @@
   background-color: black;
 }
 
+/* ========================================
+   ITEM SHEET BASE STYLES (consolidated)
+   ======================================== */
+.cyberpunk.role-sheet.app,
+.cyberpunk.skill-sheet.app,
+.cyberpunk.commodity-sheet.app,
+.cyberpunk.outfit-sheet.app,
+.cyberpunk.ammo-sheet.app,
+.cyberpunk.weapon-sheet.app,
+.cyberpunk.ordnance-sheet.app,
+.cyberpunk.tool-sheet.app,
+.cyberpunk.drug-sheet.app,
+.cyberpunk.program-sheet.app,
+.cyberpunk.cyberware-sheet.app {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.cyberpunk.role-sheet > .window-header,
+.cyberpunk.skill-sheet > .window-header,
+.cyberpunk.commodity-sheet > .window-header,
+.cyberpunk.outfit-sheet > .window-header,
+.cyberpunk.ammo-sheet > .window-header,
+.cyberpunk.weapon-sheet > .window-header,
+.cyberpunk.ordnance-sheet > .window-header,
+.cyberpunk.tool-sheet > .window-header,
+.cyberpunk.drug-sheet > .window-header,
+.cyberpunk.program-sheet > .window-header,
+.cyberpunk.cyberware-sheet > .window-header {
+  display: none;
+}
+
+.cyberpunk.role-sheet > .window-content,
+.cyberpunk.skill-sheet > .window-content,
+.cyberpunk.commodity-sheet > .window-content,
+.cyberpunk.outfit-sheet > .window-content,
+.cyberpunk.ammo-sheet > .window-content,
+.cyberpunk.weapon-sheet > .window-content,
+.cyberpunk.ordnance-sheet > .window-content,
+.cyberpunk.tool-sheet > .window-content,
+.cyberpunk.drug-sheet > .window-content,
+.cyberpunk.program-sheet > .window-content,
+.cyberpunk.cyberware-sheet > .window-content {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+}
+
+.cyberpunk.role-sheet > .window-resizable-handle,
+.cyberpunk.skill-sheet > .window-resizable-handle,
+.cyberpunk.commodity-sheet > .window-resizable-handle,
+.cyberpunk.outfit-sheet > .window-resizable-handle,
+.cyberpunk.ammo-sheet > .window-resizable-handle,
+.cyberpunk.weapon-sheet > .window-resizable-handle,
+.cyberpunk.ordnance-sheet > .window-resizable-handle,
+.cyberpunk.tool-sheet > .window-resizable-handle,
+.cyberpunk.drug-sheet > .window-resizable-handle,
+.cyberpunk.program-sheet > .window-resizable-handle,
+.cyberpunk.cyberware-sheet > .window-resizable-handle {
+  display: none;
+}
+
+.cyberpunk.role-sheet button,
+.cyberpunk.role-sheet a,
+.cyberpunk.skill-sheet button,
+.cyberpunk.skill-sheet a,
+.cyberpunk.commodity-sheet button,
+.cyberpunk.commodity-sheet a,
+.cyberpunk.outfit-sheet button,
+.cyberpunk.outfit-sheet a,
+.cyberpunk.ammo-sheet button,
+.cyberpunk.ammo-sheet a,
+.cyberpunk.weapon-sheet button,
+.cyberpunk.weapon-sheet a,
+.cyberpunk.ordnance-sheet button,
+.cyberpunk.ordnance-sheet a,
+.cyberpunk.tool-sheet button,
+.cyberpunk.tool-sheet a,
+.cyberpunk.drug-sheet button,
+.cyberpunk.drug-sheet a,
+.cyberpunk.program-sheet button,
+.cyberpunk.program-sheet a,
+.cyberpunk.cyberware-sheet button,
+.cyberpunk.cyberware-sheet a {
+  --button-focus-outline-color: transparent;
+}
+
+.cyberpunk.role-sheet button:focus,
+.cyberpunk.role-sheet a:focus,
+.cyberpunk.skill-sheet button:focus,
+.cyberpunk.skill-sheet a:focus,
+.cyberpunk.commodity-sheet button:focus,
+.cyberpunk.commodity-sheet a:focus,
+.cyberpunk.outfit-sheet button:focus,
+.cyberpunk.outfit-sheet a:focus,
+.cyberpunk.ammo-sheet button:focus,
+.cyberpunk.ammo-sheet a:focus,
+.cyberpunk.weapon-sheet button:focus,
+.cyberpunk.weapon-sheet a:focus,
+.cyberpunk.ordnance-sheet button:focus,
+.cyberpunk.ordnance-sheet a:focus,
+.cyberpunk.tool-sheet button:focus,
+.cyberpunk.tool-sheet a:focus,
+.cyberpunk.drug-sheet button:focus,
+.cyberpunk.drug-sheet a:focus,
+.cyberpunk.program-sheet button:focus,
+.cyberpunk.program-sheet a:focus,
+.cyberpunk.cyberware-sheet button:focus,
+.cyberpunk.cyberware-sheet a:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.cyberpunk.role-sheet img,
+.cyberpunk.skill-sheet img,
+.cyberpunk.commodity-sheet img,
+.cyberpunk.outfit-sheet img,
+.cyberpunk.ammo-sheet img,
+.cyberpunk.weapon-sheet img,
+.cyberpunk.ordnance-sheet img,
+.cyberpunk.tool-sheet img,
+.cyberpunk.drug-sheet img,
+.cyberpunk.program-sheet img,
+.cyberpunk.cyberware-sheet img {
+  border: none;
+}
+
+.cyberpunk.role-sheet h1,
+.cyberpunk.role-sheet h2,
+.cyberpunk.skill-sheet h1,
+.cyberpunk.skill-sheet h2,
+.cyberpunk.commodity-sheet h1,
+.cyberpunk.commodity-sheet h2,
+.cyberpunk.outfit-sheet h1,
+.cyberpunk.outfit-sheet h2,
+.cyberpunk.ammo-sheet h1,
+.cyberpunk.ammo-sheet h2,
+.cyberpunk.weapon-sheet h1,
+.cyberpunk.weapon-sheet h2,
+.cyberpunk.ordnance-sheet h1,
+.cyberpunk.ordnance-sheet h2,
+.cyberpunk.tool-sheet h1,
+.cyberpunk.tool-sheet h2,
+.cyberpunk.drug-sheet h1,
+.cyberpunk.drug-sheet h2,
+.cyberpunk.program-sheet h1,
+.cyberpunk.program-sheet h2,
+.cyberpunk.cyberware-sheet h1,
+.cyberpunk.cyberware-sheet h2 {
+  border: none;
+  border-bottom: none;
+}
+
+/* Card height standardization */
+.role-card,
+.skill-card,
+.commodity-card,
+.outfit-card,
+.ammo-card,
+.weapon-card,
+.ordnance-card,
+.tool-card,
+.drug-card,
+.program-card {
+  height: 400px;
+}
+
+/* Shared dual-field layout */
+.weapon-card .dual-field,
+.ordnance-card .dual-field,
+.program-card .dual-field,
+.cyberware-card .dual-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+
+/* Shared dual-value display */
+.weapon-card .dual-value,
+.ordnance-card .dual-value,
+.program-card .dual-value,
+.cyberware-card .dual-value {
+  display: flex;
+  width: 47px;
+  height: 26px;
+  padding: 5px 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: var(--Chat-Front, #26282F);
+  color: #808090;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: left;
+}
+
+/* Shared card divider */
+.weapon-card .weapon-divider,
+.ordnance-card .weapon-divider,
+.cyberware-card .weapon-divider {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
+}
+
+/* Shared bonus-row layout */
+.tool-card .bonus-row,
+.drug-card .bonus-row,
+.cyberware-card .bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+}
+
 .cyberpunk section.window-content {
   font-family: "Noto Sans", sans-serif;
   font-weight: bold;
@@ -3758,43 +3980,6 @@ input.skill-value.skill-level-input:focus {
   -moz-appearance: textfield;
 }
 
-.cyberpunk.role-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.role-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.role-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.role-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.role-sheet button, .cyberpunk.role-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.role-sheet button:focus, .cyberpunk.role-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.role-sheet img {
-  border: none;
-}
-.cyberpunk.role-sheet h1, .cyberpunk.role-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.role-card {
-  min-height: 400px;
-}
-
 .role-card .special-skill-field {
   display: flex;
   flex-direction: row;
@@ -3963,117 +4148,6 @@ input.skill-value.skill-level-input:focus {
   color: #808090;
 }
 
-.cyberpunk.skill-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.skill-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.skill-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.skill-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.skill-sheet button, .cyberpunk.skill-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.skill-sheet button:focus, .cyberpunk.skill-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.skill-sheet img {
-  border: none;
-}
-.cyberpunk.skill-sheet h1, .cyberpunk.skill-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.skill-card {
-  height: 400px;
-}
-
-.cyberpunk.commodity-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.commodity-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.commodity-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.commodity-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.commodity-sheet button, .cyberpunk.commodity-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.commodity-sheet button:focus, .cyberpunk.commodity-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.commodity-sheet img {
-  border: none;
-}
-.cyberpunk.commodity-sheet h1, .cyberpunk.commodity-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.commodity-card {
-  height: 400px;
-}
-
-.cyberpunk.outfit-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.outfit-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.outfit-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.outfit-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.outfit-sheet button, .cyberpunk.outfit-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.outfit-sheet button:focus, .cyberpunk.outfit-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.outfit-sheet img {
-  border: none;
-}
-.cyberpunk.outfit-sheet h1, .cyberpunk.outfit-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.outfit-card {
-  min-height: 400px;
-}
-
 .outfit-card .sp-frame {
   position: relative;
   display: flex;
@@ -4191,43 +4265,6 @@ input.skill-value.skill-level-input:focus {
 }
 .outfit-card .sp-input {
   -moz-appearance: textfield;
-}
-
-.cyberpunk.ammo-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.ammo-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.ammo-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.ammo-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.ammo-sheet button, .cyberpunk.ammo-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.ammo-sheet button:focus, .cyberpunk.ammo-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.ammo-sheet img {
-  border: none;
-}
-.cyberpunk.ammo-sheet h1, .cyberpunk.ammo-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.ammo-card {
-  height: 400px;
 }
 
 .app.window-app.reload-dialog,
@@ -4768,70 +4805,6 @@ input.skill-value.skill-level-input:focus {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 
-.cyberpunk.weapon-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.weapon-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.weapon-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.weapon-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.weapon-sheet button, .cyberpunk.weapon-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.weapon-sheet button:focus, .cyberpunk.weapon-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.weapon-sheet img {
-  border: none;
-}
-.cyberpunk.weapon-sheet h1, .cyberpunk.weapon-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.weapon-card {
-  min-height: 400px;
-}
-.weapon-card .weapon-divider {
-  width: 100%;
-  height: 1px;
-  flex-shrink: 0;
-  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
-}
-.weapon-card .dual-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-.weapon-card .dual-value {
-  display: flex;
-  width: 47px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  color: #808090;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
-}
 .weapon-card .dual-value-narrow {
   width: 40px;
 }
@@ -4877,70 +4850,6 @@ input.skill-value.skill-level-input:focus {
   flex-shrink: 0;
 }
 
-.cyberpunk.ordnance-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.ordnance-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.ordnance-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.ordnance-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.ordnance-sheet button, .cyberpunk.ordnance-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.ordnance-sheet button:focus, .cyberpunk.ordnance-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.ordnance-sheet img {
-  border: none;
-}
-.cyberpunk.ordnance-sheet h1, .cyberpunk.ordnance-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.ordnance-card {
-  min-height: 400px;
-}
-.ordnance-card .weapon-divider {
-  width: 100%;
-  height: 1px;
-  flex-shrink: 0;
-  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
-}
-.ordnance-card .dual-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-.ordnance-card .dual-value {
-  display: flex;
-  width: 47px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  color: #808090;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
-}
 .ordnance-card .dual-value-narrow {
   width: 40px;
 }
@@ -4984,51 +4893,6 @@ input.skill-value.skill-level-input:focus {
   font-weight: 500;
   line-height: 16px;
   flex-shrink: 0;
-}
-
-.cyberpunk.tool-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.tool-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.tool-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.tool-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.tool-sheet button, .cyberpunk.tool-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.tool-sheet button:focus, .cyberpunk.tool-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.tool-sheet img {
-  border: none;
-}
-.cyberpunk.tool-sheet h1, .cyberpunk.tool-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.tool-card {
-  min-height: 400px;
-}
-
-.tool-card .bonus-row,
-.drug-card .bonus-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  align-self: stretch;
 }
 
 .tool-card .bonus-row .dropdown-wrapper,
@@ -5204,100 +5068,6 @@ input.skill-value.skill-level-input:focus {
   box-shadow: none;
 }
 
-.cyberpunk.drug-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.drug-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.drug-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.drug-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.drug-sheet button, .cyberpunk.drug-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.drug-sheet button:focus, .cyberpunk.drug-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.drug-sheet img {
-  border: none;
-}
-.cyberpunk.drug-sheet h1, .cyberpunk.drug-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.drug-card {
-  min-height: 400px;
-}
-
-.cyberpunk.program-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.program-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.program-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.program-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.program-sheet button, .cyberpunk.program-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.program-sheet button:focus, .cyberpunk.program-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.program-sheet img {
-  border: none;
-}
-.cyberpunk.program-sheet h1, .cyberpunk.program-sheet h2 {
-  border: none;
-  border-bottom: none;
-}
-
-.program-card {
-  min-height: 400px;
-}
-.program-card .dual-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-.program-card .dual-value {
-  display: flex;
-  width: 47px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  color: #808090;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-}
 .program-card .dual-value-narrow {
   width: 40px;
 }
@@ -5340,39 +5110,6 @@ input.skill-value.skill-level-input:focus {
   font-weight: 500;
   line-height: 16px;
   flex-shrink: 0;
-}
-
-.cyberpunk.cyberware-sheet.app {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-.cyberpunk.cyberware-sheet > .window-header {
-  display: none;
-}
-.cyberpunk.cyberware-sheet > .window-content {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-  margin: 0;
-}
-.cyberpunk.cyberware-sheet > .window-resizable-handle {
-  display: none;
-}
-.cyberpunk.cyberware-sheet button, .cyberpunk.cyberware-sheet a {
-  --button-focus-outline-color: transparent;
-}
-.cyberpunk.cyberware-sheet button:focus, .cyberpunk.cyberware-sheet a:focus {
-  box-shadow: none;
-  outline: none;
-}
-.cyberpunk.cyberware-sheet img {
-  border: none;
-}
-.cyberpunk.cyberware-sheet h1, .cyberpunk.cyberware-sheet h2 {
-  border: none;
-  border-bottom: none;
 }
 
 .cyberware-card .humanity-field {
@@ -5504,28 +5241,6 @@ input.skill-value.skill-level-input:focus {
   font-weight: 400;
   line-height: 16px;
 }
-.cyberware-card .dual-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex: 1 0 0;
-}
-.cyberware-card .dual-value {
-  display: flex;
-  width: 47px;
-  height: 26px;
-  padding: 5px 8px;
-  align-items: center;
-  border-radius: 4px;
-  background: var(--Chat-Front, #26282F);
-  color: #808090;
-  font-family: var(--font-blender);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
-}
 .cyberware-card .dual-value-narrow {
   width: 40px;
 }
@@ -5582,12 +5297,6 @@ input.skill-value.skill-level-input:focus {
 .cyberware-card .dual-value.with-bonus,
 .cyberware-card .variable-value.with-bonus {
   color: #6B8E23;
-}
-.cyberware-card .bonus-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  align-self: stretch;
 }
 .cyberware-card .bonus-row .dropdown-wrapper {
   flex: 1 0 0;
@@ -5727,12 +5436,6 @@ input.skill-value.skill-level-input:focus {
   font-size: 14px;
   font-weight: 400;
   line-height: 16px;
-}
-.cyberware-card .weapon-divider {
-  width: 100%;
-  height: 1px;
-  flex-shrink: 0;
-  background: linear-gradient(90deg, rgba(185, 178, 157, 0) 0%, rgba(185, 178, 157, 0.5) 50%, rgba(185, 178, 157, 0) 100%);
 }
 .cyberware-card .sp-frame {
   position: relative;
