@@ -80,6 +80,9 @@ export class RangeSelectionDialog extends Application {
     // Get fire mode label
     const fireModeLabel = this._getFireModeLabel();
 
+    // Check if weapon is exotic
+    const isExotic = this.weapon.system.weaponType === "Exotic";
+
     return {
       fireModeLabel,
       rangeOptions,
@@ -91,7 +94,10 @@ export class RangeSelectionDialog extends Application {
       canDecreaseLuck: this._luckToSpend > 0,
       hasAnyLuck: this._availableLuck > 0,
       // Location targeting (single shot only)
-      isSingleShot: this.fireMode === fireModes.singleShot
+      isSingleShot: this.fireMode === fireModes.singleShot,
+      // Exotic weapon display
+      isExotic,
+      weaponName: this.weapon.name
     };
   }
 
@@ -276,7 +282,7 @@ export class RangeSelectionDialog extends Application {
   /**
    * Execute roll directly with selected options
    */
-  _executeRoll() {
+  async _executeRoll() {
     const fireOptions = {
       fireMode: this.fireMode,
       range: this._selectedRange,
@@ -309,8 +315,8 @@ export class RangeSelectionDialog extends Application {
       });
     }
 
-    this.weapon.__weaponRoll(fireOptions, this.targetTokens);
     this.close();
+    this.weapon.__weaponRoll(fireOptions, this.targetTokens);
   }
 
   /** @override */

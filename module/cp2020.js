@@ -16,7 +16,7 @@ import { CyberpunkCyberwareSheet } from "./item/cyberware-sheet.js";
 import { CyberpunkChatMessage } from "./chat-message.js";
 import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
-import { CP2020_CONDITIONS } from "./conditions.js";
+import { CP2020_CONDITIONS, CONDITION_EFFECTS } from "./conditions.js";
 
 import { preloadHandlebarsTemplates } from "./templates.js";
 import { registerHandlebarsHelpers } from "./handlebars-helpers.js"
@@ -115,6 +115,91 @@ Hooks.once('init', async function () {
 });
 
 /**
+ * Localize condition names in CONFIG.statusEffects after language files are loaded.
+ * Foundry v13 uses 'name' for display text in status effects.
+ */
+Hooks.once("setup", function() {
+    CONFIG.statusEffects = CONFIG.statusEffects.map(effect => {
+        if (effect.name?.startsWith("CYBERPUNK.")) {
+            return {
+                ...effect,
+                name: game.i18n.localize(effect.name)
+            };
+        }
+        return effect;
+    });
+});
+
+/**
+ * Ensure condition ActiveEffects are created with localized names.
+ * Foundry v13 uses 'name' for display text in status effects.
+ */
+Hooks.on("preCreateActiveEffect", (effect, data, options, userId) => {
+    // Get the status ID from the effect
+    const statusId = effect.statuses?.first();
+
+    // Localize name if it contains a translation key
+    if (effect.name?.includes("CYBERPUNK.")) {
+        effect.updateSource({ name: game.i18n.localize(effect.name) });
+    }
+
+    // Apply condition effect changes if defined
+    if (statusId && CONDITION_EFFECTS[statusId]) {
+        const conditionEffect = CONDITION_EFFECTS[statusId];
+        if (conditionEffect.changes?.length > 0) {
+            effect.updateSource({ changes: conditionEffect.changes });
+        }
+    }
+});
+
+/**
+ * Migrate existing ActiveEffects to use localized condition names.
+ * This fixes effects created before proper localization was added.
+ */
+async function _migrateConditionNames() {
+    // Build a map of status ID to localized name from CONFIG.statusEffects
+    const statusNameMap = new Map();
+    for (const effect of CONFIG.statusEffects) {
+        if (effect.statuses?.length) {
+            statusNameMap.set(effect.statuses[0], effect.name);
+        }
+    }
+
+    // Helper to migrate effects on an actor
+    async function migrateActorEffects(actor) {
+        const updates = [];
+        for (const effect of actor.effects) {
+            const statusId = effect.statuses?.first();
+            if (statusId && statusNameMap.has(statusId)) {
+                const localizedName = statusNameMap.get(statusId);
+                // Check if name contains unlocalized translation key
+                if (effect.name?.includes("CYBERPUNK.")) {
+                    updates.push({ _id: effect.id, name: localizedName });
+                }
+            }
+        }
+        if (updates.length > 0) {
+            await actor.updateEmbeddedDocuments("ActiveEffect", updates);
+            console.log(`CYBERPUNK: Migrated ${updates.length} condition names on ${actor.name}`);
+        }
+    }
+
+    // Migrate world actors
+    for (const actor of game.actors) {
+        await migrateActorEffects(actor);
+    }
+
+    // Migrate unlinked tokens in all scenes
+    for (const scene of game.scenes) {
+        for (const token of scene.tokens) {
+            if (!token.actorLink && token.actor) {
+                await migrateActorEffects(token.actor);
+            }
+        }
+    }
+}
+
+/**
  * Once the entire VTT framework is initialized, check to see if we should perform a data migration (nabbed from Foundry's 5e module and adapted)
  */
 Hooks.once("ready", function() {
@@ -123,6 +208,9 @@ Hooks.once("ready", function() {
 
     // Reconcile skill mappings with current defaults (add new, remove obsolete)
     migrateSkillMappings();
+
+    // Fix any existing ActiveEffects with unlocalized condition names
+    _migrateConditionNames();
 
     const lastMigrateVersion = game.settings.get("cp2020", "systemMigrationVersion");
     // We do need to try migrating if we haven't run before - as it stands, previous worlds didn't use this setting, or by default had it set to current version
@@ -189,6 +277,9 @@ Hooks.on("preCreateChatMessage", async (message, data, options, userId) => {
  * When a combatant's turn starts:
  * - If Shocked: roll Shock Save to determine if they recover
  * - If Mortally Wounded (woundState >= 4) and NOT Stabilized and NOT Dead: roll Death Save
+ * - If Burning: deal damage (2d10 first turn, 1d10 second, 1d6 third)
+ * - If Acid: reduce armor SP or deal wounds
+ * - Handle timed conditions (blinded, deafened, shocked from microwave)
  * When a combatant's turn ends:
  * - Remove Fast Draw and Action Surge conditions (they only last one turn)
  */
@@ -234,5 +325,140 @@ Hooks.on("combatTurnChange", async (combat, prior, current) => {
         !actor.statuses.has("dead")) {
         const modifier = actor.system.deathSaveMod || 0;
         await actor.rollDeathSave(modifier);
+    }
+
+    // Handle Burning damage (2d10 first turn, 1d10 second, 1d6 third)
+    if (actor.statuses.has("burning")) {
+        const duration = actor.getFlag("cp2020", "burningDuration") || 0;
+        if (duration > 0) {
+            // Roll burning damage based on remaining duration
+            let damageFormula;
+            if (duration === 3) damageFormula = "2d10";      // First turn
+            else if (duration === 2) damageFormula = "1d10"; // Second turn
+            else damageFormula = "1d6";                       // Third turn
+
+            const damageRoll = await new Roll(damageFormula).evaluate();
+            const damage = damageRoll.total;
+
+            // Apply damage (ignores armor)
+            const currentDamage = actor.system.damage || 0;
+            await actor.update({ "system.damage": Math.min(currentDamage + damage, 40) });
+
+            // Post to chat with expandable roll details
+            const speaker = ChatMessage.getSpeaker({ actor });
+            const rollData = processFormulaRoll(damageRoll);
+            const content = await renderTemplate("systems/cp2020/templates/chat/condition-damage.hbs", {
+                label: game.i18n.localize("CYBERPUNK.BurningDamage"),
+                icon: "fire",
+                formula: rollData.formula,
+                diceGroups: rollData.diceGroups,
+                total: rollData.total,
+                displayValue: damage
+            });
+            ChatMessage.create({
+                speaker,
+                rolls: [damageRoll],
+                sound: "sounds/dice.wav",
+                content
+            });
+
+            // Decrement duration
+            const newDuration = duration - 1;
+            if (newDuration <= 0) {
+                await actor.toggleStatusEffect("burning", { active: false });
+                await actor.unsetFlag("cp2020", "burningDuration");
+            } else {
+                await actor.setFlag("cp2020", "burningDuration", newDuration);
+            }
+        }
+    }
+
+    // Handle Acid SP reduction (1d6 per turn for 3 turns)
+    if (actor.statuses.has("acid")) {
+        const duration = actor.getFlag("cp2020", "acidDuration") || 0;
+        const hitLocation = actor.getFlag("cp2020", "acidLocation");
+
+        if (duration > 0 && hitLocation) {
+            const spReductionRoll = await new Roll("1d6").evaluate();
+            const spReduction = spReductionRoll.total;
+
+            // Find armor at hit location
+            const armor = actor.items.filter(i =>
+                i.type === "armor" &&
+                i.system.equipped &&
+                i.system.coverage?.[hitLocation]?.stoppingPower > 0
+            );
+
+            const speaker = ChatMessage.getSpeaker({ actor });
+
+            // Process roll for template display
+            const rollData = processFormulaRoll(spReductionRoll);
+
+            if (armor.length > 0) {
+                // Reduce SP on all armor at location
+                for (const item of armor) {
+                    const currentSP = item.system.coverage[hitLocation].stoppingPower || 0;
+                    const newSP = Math.max(0, currentSP - spReduction);
+                    await item.update({ [`system.coverage.${hitLocation}.stoppingPower`]: newSP });
+                }
+                const content = await renderTemplate("systems/cp2020/templates/chat/condition-damage.hbs", {
+                    label: game.i18n.localize("CYBERPUNK.AcidDamage"),
+                    icon: "acid",
+                    formula: rollData.formula,
+                    diceGroups: rollData.diceGroups,
+                    total: rollData.total,
+                    displayValue: `-${spReduction} SP`
+                });
+                ChatMessage.create({
+                    speaker,
+                    rolls: [spReductionRoll],
+                    sound: "sounds/dice.wav",
+                    content
+                });
+            } else {
+                // No armor - deal wound damage instead
+                const currentDamage = actor.system.damage || 0;
+                await actor.update({ "system.damage": Math.min(currentDamage + spReduction, 40) });
+                const content = await renderTemplate("systems/cp2020/templates/chat/condition-damage.hbs", {
+                    label: game.i18n.localize("CYBERPUNK.AcidWounds"),
+                    icon: "acid",
+                    formula: rollData.formula,
+                    diceGroups: rollData.diceGroups,
+                    total: rollData.total,
+                    displayValue: spReduction
+                });
+                ChatMessage.create({
+                    speaker,
+                    rolls: [spReductionRoll],
+                    sound: "sounds/dice.wav",
+                    content
+                });
+            }
+
+            // Decrement duration
+            const newDuration = duration - 1;
+            if (newDuration <= 0) {
+                await actor.toggleStatusEffect("acid", { active: false });
+                await actor.unsetFlag("cp2020", "acidDuration");
+                await actor.unsetFlag("cp2020", "acidLocation");
+            } else {
+                await actor.setFlag("cp2020", "acidDuration", newDuration);
+            }
+        }
+    }
+
+    // Handle timed conditions from microwave (blinded, deafened, shocked)
+    for (const conditionId of ["blinded", "deafened", "shocked"]) {
+        const flagKey = `${conditionId}Duration`;
+        const duration = actor.getFlag("cp2020", flagKey);
+        if (duration && duration > 0) {
+            const newDuration = duration - 1;
+            if (newDuration <= 0) {
+                await actor.toggleStatusEffect(conditionId, { active: false });
+                await actor.unsetFlag("cp2020", flagKey);
+            } else {
+                await actor.setFlag("cp2020", flagKey, newDuration);
+            }
+        }
     }
 });

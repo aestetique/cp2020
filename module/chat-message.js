@@ -1,3 +1,6 @@
+import { Multiroll } from "./dice.js";
+import { localize } from "./utils.js";
+
 /**
  * Extend the base ChatMessage to customize rendering for Cyberpunk 2020
  * Based on the D&D5e approach of replacing the message header
@@ -574,6 +577,11 @@ export class CyberpunkChatMessage extends ChatMessage {
         const ammoType = targetSelector.dataset.ammoType || "standard";
         const damageType = targetSelector.dataset.damageType || "";
 
+        // Get exotic weapon effect data
+        const weaponEffect = targetSelector.dataset.weaponEffect || null;
+        const hasDamage = Object.keys(damageData).length > 0;
+        const hasEffect = !!weaponEffect;
+
         // Get targets based on mode
         let targets = [];
         if (mode === "targeted") {
@@ -582,9 +590,17 @@ export class CyberpunkChatMessage extends ChatMessage {
             targets = canvas.tokens?.controlled || [];
         }
 
-        // If no targets, show empty state
+        // If no targets, show empty state with appropriate hint
         if (targets.length === 0) {
-            content.innerHTML = `<div class="target-info target-info--empty">${game.i18n.localize("CYBERPUNK.SelectTarget")}</div>`;
+            let emptyHint;
+            if (hasEffect && hasDamage) {
+                emptyHint = game.i18n.localize("CYBERPUNK.SelectTargetDamageEffect");
+            } else if (hasEffect) {
+                emptyHint = game.i18n.localize("CYBERPUNK.SelectTargetEffect");
+            } else {
+                emptyHint = game.i18n.localize("CYBERPUNK.SelectTarget");
+            }
+            content.innerHTML = `<div class="target-info target-info--empty">${emptyHint}</div>`;
             if (applyBtn) applyBtn.disabled = true;
             if (hintEl) hintEl.textContent = "";
             return;
@@ -845,6 +861,15 @@ export class CyberpunkChatMessage extends ChatMessage {
         const ammoType = targetSelector.dataset.ammoType || "standard";
         const damageType = targetSelector.dataset.damageType || "";
 
+        // Get exotic weapon effect data
+        const weaponEffect = targetSelector.dataset.weaponEffect || null;
+        const hitLocation = targetSelector.dataset.hitLocation || null;
+
+        // DEBUG: Log weaponEffect value to identify the issue
+        console.log("DEBUG _onApplyDamage - weaponEffect:", JSON.stringify(weaponEffect));
+        console.log("DEBUG _onApplyDamage - raw dataset.weaponEffect:", JSON.stringify(targetSelector.dataset.weaponEffect));
+        console.log("DEBUG _onApplyDamage - hitLocation:", JSON.stringify(hitLocation));
+
         // Get active tab mode
         const activeTab = html.querySelector(".target-selector__tab--active");
         const mode = activeTab?.dataset.mode || "targeted";
@@ -923,7 +948,12 @@ export class CyberpunkChatMessage extends ChatMessage {
                 }
             }
 
-            // Only apply wound damage to actor (not cyberlimb damage)
+            // Apply exotic weapon effect FIRST (always applies on hit, regardless of damage)
+            if (weaponEffect) {
+                await this._applyExoticEffect(actor, weaponEffect, hitLocation);
+            }
+
+            // Skip damage processing if no damage to apply
             if (woundDamage <= 0 && cyberlimbDamage <= 0) continue;
 
             // Check wound state before update
@@ -1045,5 +1075,223 @@ export class CyberpunkChatMessage extends ChatMessage {
 
         // Persist the applied state in message flags
         await this.setFlag("cp2020", "damageApplied", true);
+    }
+
+    /**
+     * Apply an exotic weapon effect to a target
+     * @param {Actor} actor - The target actor
+     * @param {string} effect - The effect key (confusion, poisoned, etc.)
+     * @param {string} hitLocation - The hit location (for acid)
+     * @private
+     */
+    async _applyExoticEffect(actor, effect, hitLocation) {
+        switch (effect) {
+            case "confusion":
+                await this._rollEffectSave(actor, "poison", "confused");
+                break;
+
+            case "poisoned":
+                await this._rollEffectSave(actor, "poison", "poisoned");
+                break;
+
+            case "tearing":
+                await this._rollEffectSave(actor, "poison", "tearing");
+                break;
+
+            case "unconscious":
+                await this._rollEffectSave(actor, "poison", "unconscious");
+                break;
+
+            case "stunAt2":
+                // Roll shock save at -2 difficulty
+                await actor.rollStunSave(-2);
+                break;
+
+            case "stunAt4":
+                // Roll shock save at -4 difficulty
+                await actor.rollStunSave(-4);
+                break;
+
+            case "burning":
+                // Apply Burning condition directly (no save)
+                await actor.toggleStatusEffect("burning", { active: true });
+                await this._setConditionDuration(actor, "burning", 3);
+                break;
+
+            case "acid":
+                // Apply Acid condition with hit location
+                await actor.toggleStatusEffect("acid", { active: true });
+                await this._setConditionDuration(actor, "acid", 3);
+                // Store hit location for SP reduction
+                await actor.setFlag("cp2020", "acidLocation", hitLocation);
+                break;
+
+            case "microwave":
+                await this._rollMicrowaveEffect(actor);
+                break;
+        }
+    }
+
+    /**
+     * Roll a save and apply condition on failure
+     * @param {Actor} actor - The target actor
+     * @param {string} saveType - "poison" or "shock"
+     * @param {string} conditionId - Condition to apply on fail
+     * @private
+     */
+    async _rollEffectSave(actor, saveType, conditionId) {
+        const threshold = actor.stunThreshold();
+        const roll = await new Roll("1d10").evaluate();
+        const success = roll.total < threshold;
+
+        // Create chat message for save using Multiroll (same pattern as actor.js)
+        const saveLabel = saveType === "poison"
+            ? localize("PoisonSave")
+            : localize("ShockSave");
+
+        const speaker = ChatMessage.getSpeaker({ actor: actor });
+
+        new Multiroll(saveLabel)
+            .addRoll(roll, { name: localize("Save") })
+            .execute(speaker, "systems/cp2020/templates/chat/save-roll.hbs", {
+                saveType: saveType,
+                saveLabel: saveLabel,
+                threshold: threshold,
+                success: success,
+                hint: localize("UnderThresholdMessage")
+            });
+
+        // Apply condition on failure
+        if (!success) {
+            await actor.toggleStatusEffect(conditionId, { active: true });
+        }
+    }
+
+    /**
+     * Set duration for a timed condition (burning, acid, blinded, deafened)
+     * @param {Actor} actor - The target actor
+     * @param {string} conditionId - The condition ID
+     * @param {number} turns - Number of turns
+     * @private
+     */
+    async _setConditionDuration(actor, conditionId, turns) {
+        await actor.setFlag("cp2020", `${conditionId}Duration`, turns);
+    }
+
+    /**
+     * Roll microwave effect based on cyberware
+     * 1: Optics → Blinded 3 turns
+     * 2: Neuralware → Shorted + random Neuralware broken
+     * 3: Audio → Deafened 3 turns
+     * 4: Cyberlimbs → random Cyberlimb broken
+     * 5: Stunned 3 turns
+     * 6: No effect
+     * @param {Actor} actor - The target actor
+     * @private
+     */
+    async _rollMicrowaveEffect(actor) {
+        const roll = await new Roll("1d6").evaluate();
+        const result = roll.total;
+
+        // Get equipped cyberware
+        const cyberware = actor.items.filter(i =>
+            i.type === "cyberware" && i.system.equipped
+        );
+
+        const optics = cyberware.filter(c =>
+            c.system.cyberwareType === "sensor" && c.system.cyberwareSubtype === "optics"
+        );
+        const neuralware = cyberware.filter(c =>
+            c.system.cyberwareType === "implant" && c.system.cyberwareSubtype === "neuralware"
+        );
+        const audio = cyberware.filter(c =>
+            c.system.cyberwareType === "sensor" && c.system.cyberwareSubtype === "audio"
+        );
+        const cyberlimbs = cyberware.filter(c =>
+            c.system.cyberwareType === "cyberlimb"
+        );
+
+        let effectMessage = "";
+
+        switch (result) {
+            case 1:
+                if (optics.length > 0) {
+                    await actor.toggleStatusEffect("blinded", { active: true });
+                    await this._setConditionDuration(actor, "blinded", 3);
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveOptics");
+                } else {
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNoOptics");
+                }
+                break;
+
+            case 2:
+                if (neuralware.length > 0) {
+                    await actor.toggleStatusEffect("shorted", { active: true });
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNeuralware");
+                } else {
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNoNeuralware");
+                }
+                break;
+
+            case 3:
+                if (audio.length > 0) {
+                    await actor.toggleStatusEffect("deafened", { active: true });
+                    await this._setConditionDuration(actor, "deafened", 3);
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveAudio");
+                } else {
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNoAudio");
+                }
+                break;
+
+            case 4:
+                // Filter to cyberlimbs that can still be disabled (current SDP > disablesAt)
+                const disableableLimbs = cyberlimbs.filter(c =>
+                    c.system.structure.current > c.system.disablesAt
+                );
+
+                if (disableableLimbs.length > 0) {
+                    // Pick random limb and set SDP to disablesAt threshold
+                    const target = disableableLimbs[Math.floor(Math.random() * disableableLimbs.length)];
+                    await target.update({ "system.structure.current": target.system.disablesAt });
+
+                    // Map subtype to display name
+                    const limbNames = {
+                        leftArm: game.i18n.localize("CYBERPUNK.LeftArm"),
+                        rightArm: game.i18n.localize("CYBERPUNK.RightArm"),
+                        leftLeg: game.i18n.localize("CYBERPUNK.LeftLeg"),
+                        rightLeg: game.i18n.localize("CYBERPUNK.RightLeg")
+                    };
+                    const limbName = limbNames[target.system.cyberwareSubtype] || target.name;
+                    effectMessage = game.i18n.format("CYBERPUNK.MicrowaveCyberlimb", { limb: limbName });
+                } else {
+                    effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNoCyberlimb");
+                }
+                break;
+
+            case 5:
+                await actor.toggleStatusEffect("shocked", { active: true });
+                await this._setConditionDuration(actor, "shocked", 3);
+                effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveStunned");
+                break;
+
+            case 6:
+                effectMessage = game.i18n.localize("CYBERPUNK.MicrowaveNoEffect");
+                break;
+        }
+
+        // Post result to chat
+        const speaker = ChatMessage.getSpeaker({ actor: actor });
+        const html = `<div class="cyberpunk-card">
+            <div class="section-bar">
+                <span class="section-bar__icon"><img src="systems/cp2020/img/chat/microwave.svg" alt=""></span>
+                <span class="section-bar__label">${game.i18n.localize("CYBERPUNK.MicrowaveEffect")}</span>
+            </div>
+            <div class="microwave-result">
+                <span class="roll-value">${result}</span>
+                <span class="effect-text">${effectMessage}</span>
+            </div>
+        </div>`;
+
+        await ChatMessage.create({ speaker, content: html });
     }
 }

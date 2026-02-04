@@ -41,6 +41,7 @@ export class RangedAttackDialog extends Application {
     const hasAmmo = this._hasCompatibleAmmo();
 
     return {
+      weaponName: this.weapon.name,
       showFullAuto: rof > 3 && shotsLeft > 3,
       showBurst: rof >= 3 && shotsLeft >= 3,
       showSingleShot: shotsLeft >= 1,

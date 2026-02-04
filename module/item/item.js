@@ -1,4 +1,4 @@
-import { weaponTypes, rangedAttackTypes, meleeAttackTypes, fireModes, ranges, rangeDCs, rangeResolve, attackSkills, martialActions, strengthDamageBonus } from "../lookups.js"
+import { weaponTypes, rangedAttackTypes, meleeAttackTypes, fireModes, ranges, rangeDCs, rangeResolve, attackSkills, martialActions, strengthDamageBonus, exoticEffects } from "../lookups.js"
 import { Multiroll, makeD10Roll }  from "../dice.js"
 import { clamp, deepLookup, localize, localizeParam, rollLocation } from "../utils.js"
 import { CyberpunkActor } from "../actor/actor.js";
@@ -247,8 +247,12 @@ export class CyberpunkItem extends Item {
     let owner = this.actor;
     let system = this.system;
 
-    if (system.shotsLeft <= 0) {
-      ui.notifications.warn(localize("NoAmmo"));
+    // Check ammo/charges - exotic weapons use charges, regular weapons use shotsLeft
+    const isExotic = system.weaponType === "Exotic";
+    const ammoLeft = isExotic ? (system.charges || 0) : system.shotsLeft;
+    if (ammoLeft <= 0) {
+      const msgKey = isExotic ? "NoCharges" : "NoAmmo";
+      ui.notifications.warn(localize(msgKey));
       return false;
     }
 
@@ -330,7 +334,11 @@ export class CyberpunkItem extends Item {
     let system = this.system;
     let isRanged = this.isRanged();
 
-    let attackTerms = ["@stats.ref.total"];
+    // Blinded attackers use LUCK instead of REF for all attacks
+    const isBlinded = this.actor?.statuses?.has("blinded");
+    const attackStat = isBlinded ? "luck" : "ref";
+
+    let attackTerms = [`@stats.${attackStat}.total`];
     if(system.attackSkill) {
       attackTerms.push(`@attackSkill`);
     }
@@ -560,6 +568,11 @@ export class CyberpunkItem extends Item {
   async __singleShot(attackMods) {
       let system = this.system;
 
+      // Determine if this is an exotic weapon with an effect
+      const isExotic = system.weaponType === "Exotic";
+      const weaponEffect = isExotic && system.effect ? system.effect : null;
+      const hasDamage = system.damage && system.damage !== "0" && system.damage !== "";
+
       // The range we're shooting at
       let DC = rangeDCs[attackMods.range];
       let attackRoll = await this.attackRoll(attackMods);
@@ -571,32 +584,43 @@ export class CyberpunkItem extends Item {
 
       let actualRangeBracket = rangeResolve[attackMods.range](system.range);
       let attackHits = attackRoll.total >= DC;
-      const roundsFired = Math.min(system.shotsLeft, 1);
+      // Exotic weapons use charges, regular weapons use shotsLeft
+      const ammoLeft = isExotic ? (system.charges || 0) : system.shotsLeft;
+      const roundsFired = Math.min(ammoLeft, 1);
       let areaDamages = {};
+      let hitLocation = null;
 
-      // Only roll damage if the attack hits
+      // On hit: roll location (always needed for effects like acid) and damage (if weapon has damage)
       if (attackHits) {
-          let damageRoll = await new Roll(system.damage).evaluate();
-
-          // Trigger Dice So Nice for damage roll
-          if (game.dice3d && damageRoll.dice.length > 0) {
-              await game.dice3d.showForRoll(damageRoll, game.user, true);
-          }
-
           let locationRoll = await rollLocation(attackMods.targetActor, attackMods.targetArea);
-          let location = locationRoll.areaHit;
-          if (!areaDamages[location]) {
-              areaDamages[location] = [];
+          hitLocation = locationRoll.areaHit;
+
+          // Only roll damage if weapon has a damage formula
+          if (hasDamage) {
+              let damageRoll = await new Roll(system.damage).evaluate();
+
+              // Trigger Dice So Nice for damage roll
+              if (game.dice3d && damageRoll.dice.length > 0) {
+                  await game.dice3d.showForRoll(damageRoll, game.user, true);
+              }
+
+              if (!areaDamages[hitLocation]) {
+                  areaDamages[hitLocation] = [];
+              }
+              areaDamages[hitLocation].push({
+                  damage: damageRoll.total,
+                  formula: damageRoll.formula,
+                  dice: damageRoll.terms.filter(t => t.results).map(term => ({
+                      faces: term.faces,
+                      results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
+                  }))
+              });
           }
-          areaDamages[location].push({
-              damage: damageRoll.total,
-              formula: damageRoll.formula,
-              dice: damageRoll.terms.filter(t => t.results).map(term => ({
-                  faces: term.faces,
-                  results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
-              }))
-          });
       }
+
+      // Get effect label and icon for template
+      const effectLabel = weaponEffect ? this._getEffectLabel(weaponEffect) : null;
+      const effectIcon = weaponEffect ? this._getEffectIcon(weaponEffect) : null;
 
       let templateData = {
           range: attackMods.range,
@@ -612,15 +636,67 @@ export class CyberpunkItem extends Item {
           weaponImage: this.img,
           weaponType: this.system.attackType,
           loadedAmmoType: this.system.loadedAmmoType || "standard",
-          damageType: this.system.damageType || ""
+          damageType: this.system.damageType || "",
+          // Exotic effect data
+          weaponEffect: weaponEffect,
+          hasEffect: !!weaponEffect,
+          hasDamage: hasDamage,
+          effectLabel: effectLabel,
+          effectIcon: effectIcon,
+          hitLocation: hitLocation
       };
 
       let roll = new Multiroll(CyberpunkItem.getFireModeLabel(fireModes.singleShot));
       roll.execute(undefined, "systems/cp2020/templates/chat/multi-hit.hbs", templateData);
 
-      this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
-      
+      // Exotic weapons deduct from charges, regular weapons from shotsLeft
+      if (isExotic) {
+          this.update({"system.charges": (system.charges || 0) - roundsFired});
+      } else {
+          this.update({"system.shotsLeft": system.shotsLeft - roundsFired});
+      }
+
       return roll;
+  }
+
+  /**
+   * Get localized label for an exotic effect
+   * @param {string} effect - The effect key
+   * @returns {string} The localized label
+   */
+  _getEffectLabel(effect) {
+      const labels = {
+          confusion: "Confusion",
+          poisoned: "Poisoned",
+          tearing: "Tearing",
+          unconscious: "Unconscious",
+          stunAt2: "Stun at –2",
+          stunAt4: "Stun at –4",
+          burning: "Burning",
+          acid: "Acid",
+          microwave: "Microwave"
+      };
+      return labels[effect] || effect;
+  }
+
+  /**
+   * Get icon name for an exotic effect (maps to condition icon filename)
+   * @param {string} effect - The effect key
+   * @returns {string} The icon filename (without extension)
+   */
+  _getEffectIcon(effect) {
+      const icons = {
+          confusion: "confused",
+          poisoned: "poisoned",
+          tearing: "tearing",
+          unconscious: "unconscious",
+          stunAt2: "shocked",
+          stunAt4: "shocked",
+          burning: "burning",
+          acid: "acid",
+          microwave: "microwave"
+      };
+      return icons[effect] || effect;
   }
 
   async __meleeBonk(attackMods) {

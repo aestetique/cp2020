@@ -1596,6 +1596,56 @@ div.statderive .value.rightborder {
   color: var(--chat-gray);
 }
 
+/* Effect row for exotic weapons */
+.effect-row {
+  display: flex;
+  width: 272px;
+  height: 36px;
+  padding: 0 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 2px;
+  background: var(--Chat-Green-Back, #1A2A25);
+}
+
+.effect-row img {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: none;
+}
+
+.effect-row__label {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: var(--chat-text, #FFF);
+}
+
+/* Microwave result styling */
+.microwave-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+}
+
+.microwave-result .roll-value {
+  font-family: var(--font-blender);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--chat-text);
+}
+
+.microwave-result .effect-text {
+  font-family: var(--font-blender);
+  font-size: 14px;
+  color: var(--chat-text);
+}
+
 .combat-tab {
   display: grid;
   grid-template-columns: 1fr 1fr;
