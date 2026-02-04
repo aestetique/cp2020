@@ -159,6 +159,66 @@ export const CP2020_CONDITIONS = [
         name: "CYBERPUNK.Conditions.Poisoned",
         icon: "systems/cp2020/img/conditions/poisoned.svg",
         statuses: ["poisoned"]
+    },
+    {
+        id: "confused",
+        name: "CYBERPUNK.Conditions.Confused",
+        icon: "systems/cp2020/img/conditions/confused.svg",
+        statuses: ["confused"]
+    },
+    {
+        id: "tearing",
+        name: "CYBERPUNK.Conditions.Tearing",
+        icon: "systems/cp2020/img/conditions/tearing.svg",
+        statuses: ["tearing"]
+    },
+    {
+        id: "unconscious",
+        name: "CYBERPUNK.Conditions.Unconscious",
+        icon: "systems/cp2020/img/conditions/unconscious.svg",
+        statuses: ["unconscious"]
+    },
+    {
+        id: "burning",
+        name: "CYBERPUNK.Conditions.Burning",
+        icon: "systems/cp2020/img/conditions/burning.svg",
+        statuses: ["burning"]
+    },
+    {
+        id: "acid",
+        name: "CYBERPUNK.Conditions.Acid",
+        icon: "systems/cp2020/img/conditions/acid.svg",
+        statuses: ["acid"]
+    },
+    {
+        id: "blinded",
+        name: "CYBERPUNK.Conditions.Blinded",
+        icon: "systems/cp2020/img/conditions/blinded.svg",
+        statuses: ["blinded"]
+    },
+    {
+        id: "shorted",
+        name: "CYBERPUNK.Conditions.Shorted",
+        icon: "systems/cp2020/img/conditions/microwave.svg",
+        statuses: ["shorted"]
+    },
+    {
+        id: "deafened",
+        name: "CYBERPUNK.Conditions.Deafened",
+        icon: "systems/cp2020/img/conditions/deafened.svg",
+        statuses: ["deafened"]
+    },
+    {
+        id: "grappled",
+        name: "CYBERPUNK.Conditions.Grappled",
+        icon: "systems/cp2020/img/conditions/grappled.svg",
+        statuses: ["grappled"]
+    },
+    {
+        id: "prone",
+        name: "CYBERPUNK.Conditions.Prone",
+        icon: "systems/cp2020/img/conditions/prone.svg",
+        statuses: ["prone"]
     }
 ];
 
@@ -274,8 +334,54 @@ export const CONDITION_EFFECTS = {
     "poisoned": {
         // REF -4
         changes: [
-            { key: "system.stats.ref.value", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-4" }
+            { key: "system.stats.ref.tempMod", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-4" }
         ]
+    },
+    "confused": {
+        // INT -4
+        changes: [
+            { key: "system.stats.int.tempMod", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-4" }
+        ]
+    },
+    "tearing": {
+        // REF -2
+        changes: [
+            { key: "system.stats.ref.tempMod", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-2" }
+        ]
+    },
+    "unconscious": {
+        // No vision, -8 to Awareness/Notice rolls, can't act - handled in combat/skill logic
+        changes: []
+    },
+    "burning": {
+        // Damage over time: 2d10 (turn 1), 1d10 (turn 2), 1d6 (turn 3) - handled in combat logic
+        changes: []
+    },
+    "acid": {
+        // Armor damage 1d6 SP per round for 3 rounds - handled in combat logic
+        changes: []
+    },
+    "blinded": {
+        // No vision, -4 to Awareness/Notice rolls - handled in skill logic
+        changes: []
+    },
+    "shorted": {
+        // REF -3
+        changes: [
+            { key: "system.stats.ref.tempMod", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "-3" }
+        ]
+    },
+    "deafened": {
+        // -2 to Awareness/Notice rolls - handled in skill logic
+        changes: []
+    },
+    "grappled": {
+        // Movement reduced to 0 - handled in movement logic
+        changes: []
+    },
+    "prone": {
+        // Movement reduced to 0 - handled in movement logic
+        changes: []
     }
 };
 

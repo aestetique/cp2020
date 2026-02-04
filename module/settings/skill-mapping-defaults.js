@@ -66,6 +66,11 @@ export const DEFAULT_SKILL_MAPPINGS = {
   stabilisationSkills: {
     labelKey: "SETTINGS.SkillMapStabilisation",
     skills: []
+  },
+  awarenessSkills: {
+    labelKey: "SETTINGS.SkillMapAwareness",
+    singleSkill: true,
+    skills: []
   }
 };
 

@@ -70,16 +70,34 @@
     </div>
     {{/if}}
 
-    {{!-- Damage Section (only if hit) --}}
+    {{!-- Damage/Effect Section (only if hit) --}}
     {{#if hit}}
-    {{!-- Section Bar: Damage --}}
-    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "Damage")}}
+    {{!-- Section Bar: Conditional label based on damage and effect --}}
+    {{#if hasEffect}}
+        {{#if hasDamage}}
+            {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "DamageAndEffect")}}
+        {{else}}
+            {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "Effect")}}
+        {{/if}}
+    {{else}}
+        {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "Damage")}}
+    {{/if}}
 
-    {{!-- Damage Grid --}}
+    {{!-- Damage Grid (only if has damage) --}}
+    {{#if hasDamage}}
     {{> "systems/cp2020/templates/chat/partials/damage-grid.hbs" aggregatedDamage=(aggregateDamage areaDamages) areaDamages=areaDamages}}
+    {{/if}}
+
+    {{!-- Effect Row (only if exotic weapon with effect) --}}
+    {{#if hasEffect}}
+    <div class="effect-row">
+        <img src="systems/cp2020/img/conditions/{{effectIcon}}.svg" alt="">
+        <span class="effect-row__label">{{effectLabel}}</span>
+    </div>
+    {{/if}}
 
     {{!-- Target Selector --}}
-    <div class="target-selector" data-damage="{{json areaDamages}}" data-ammo-type="{{loadedAmmoType}}" data-damage-type="{{damageType}}">
+    <div class="target-selector" data-damage="{{json areaDamages}}" data-ammo-type="{{loadedAmmoType}}" data-damage-type="{{damageType}}" data-weapon-effect="{{weaponEffect}}" data-hit-location="{{hitLocation}}">
         <div class="target-selector__tabs">
             <button class="target-selector__tab target-selector__tab--active" data-mode="targeted">{{CPLocal "Targeted"}}</button>
             <span class="target-selector__divider"></span>
@@ -87,7 +105,15 @@
         </div>
         <div class="target-selector__content">
             <div class="target-info target-info--empty">
-                {{CPLocal "SelectTarget"}}
+                {{#if hasEffect}}
+                    {{#if hasDamage}}
+                        {{CPLocal "SelectTargetDamageEffect"}}
+                    {{else}}
+                        {{CPLocal "SelectTargetEffect"}}
+                    {{/if}}
+                {{else}}
+                    {{CPLocal "SelectTarget"}}
+                {{/if}}
             </div>
         </div>
         <button class="apply-damage-btn" disabled>{{CPLocal "Apply"}}</button>

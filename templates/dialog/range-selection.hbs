@@ -1,13 +1,13 @@
 <div class="range-selection-wrapper">
   <header class="reload-header">
-    <span class="reload-title">{{localize "CYBERPUNK.RangedAttack"}}</span>
+    <span class="reload-title">{{weaponName}}</span>
     <a class="header-control close"><i class="fas fa-times"></i></a>
   </header>
 
-  {{!-- Fire mode section bar --}}
+  {{!-- Fire mode / Attack section bar --}}
   <div class="fire-mode-section">
-    <img src="systems/cp2020/img/chat/gun.svg" alt="">
-    <span class="fire-mode-label">{{fireModeLabel}}</span>
+    <img src="systems/cp2020/img/chat/{{#if isExotic}}exotic{{else}}gun{{/if}}.svg" alt="">
+    <span class="fire-mode-label">{{#if isExotic}}{{localize "CYBERPUNK.Attack"}}{{else}}{{fireModeLabel}}{{/if}}</span>
   </div>
 
   {{!-- Range dropdown --}}
@@ -28,7 +28,7 @@
   {{!-- Conditions section bar --}}
   <div class="fire-mode-section">
     <img src="systems/cp2020/img/chat/conditions.svg" alt="">
-    <span class="fire-mode-label">{{localize "CYBERPUNK.Conditions"}}</span>
+    <span class="fire-mode-label">{{localize "CYBERPUNK.ConditionsHeader"}}</span>
   </div>
 
   {{!-- Condition buttons - 2x2 grid --}}

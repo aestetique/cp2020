@@ -553,6 +553,15 @@ export class CyberpunkActor extends Actor {
     // Action Surge: -3 penalty on all skill rolls
     const actionSurgePenalty = this.statuses.has("action-surge") ? -3 : 0;
 
+    // Awareness/Notice condition penalties (Unconscious -8, Blinded -4, Deafened -2)
+    let awarenessConditionPenalty = 0;
+    const awarenessSkillName = localize("SkillAwarenessNotice");
+    if (skill.name === awarenessSkillName) {
+      if (this.statuses.has("unconscious")) awarenessConditionPenalty -= 8;
+      if (this.statuses.has("blinded")) awarenessConditionPenalty -= 4;
+      if (this.statuses.has("deafened")) awarenessConditionPenalty -= 2;
+    }
+
     // Check if this skill is chipped by equipped chipware
     const equippedChipware = this.items.contents.filter(i =>
       i.type === "cyberware" &&
@@ -611,6 +620,7 @@ export class CyberpunkActor extends Actor {
       skill.name === localize("SkillAwarenessNotice") ? "@CombatSenseMod" : null,
       extraMod || null,
       actionSurgePenalty || null,
+      awarenessConditionPenalty || null,
       skillBonus || null
     ].filter(Boolean);
 
@@ -771,7 +781,7 @@ export class CyberpunkActor extends Actor {
    */
   async rollStunSave(modifier = 0) {
     const threshold = this.stunThreshold();
-    const roll = await new Roll(modifier ? `1d10 + ${modifier}` : "1d10").evaluate();
+    const roll = await new Roll(modifier ? `1d10 + ${-modifier}` : "1d10").evaluate();
     const success = roll.total < threshold;
 
     const speaker = ChatMessage.getSpeaker({ actor: this });

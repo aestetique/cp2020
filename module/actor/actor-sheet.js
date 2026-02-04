@@ -1,9 +1,10 @@
-import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes } from "../lookups.js"
+import { martialOptions, meleeAttackTypes, meleeBonkOptions, meleeDamageTypes, rangedModifiers, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes, fireModes } from "../lookups.js"
 import { localize, localizeParam, tabBeautifying } from "../utils.js"
 import { processFormulaRoll } from "../dice.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
 import { RangedAttackDialog } from "../dialog/ranged-attack-dialog.js"
+import { RangeSelectionDialog } from "../dialog/range-selection-dialog.js"
 import { SortOrders } from "./skill-sort.js";
 
 /**
@@ -769,6 +770,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         chargesDisplay: (sys.charges || sys.chargesMax) ? `${sys.charges ?? 0} / ${sys.chargesMax ?? 0}` : '–',
         rof: sys.rof ?? 0,
         canReload: (sys.shotsLeft ?? 0) < (sys.shots ?? 0),
+        canCharge: (sys.charges ?? 0) < (sys.chargesMax ?? 0),
         isCyberware: false,
         isRanged: isRanged,
         isMelee: isMelee,
@@ -836,6 +838,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         chargesDisplay: (weapon.charges || weapon.chargesMax) ? `${weapon.charges ?? 0} / ${weapon.chargesMax ?? 0}` : '–',
         rof: weapon.rof ?? 1,
         canReload: (weapon.shotsLeft ?? 0) < (weapon.shots ?? 0),
+        canCharge: (weapon.charges ?? 0) < (weapon.chargesMax ?? 0),
         isCyberware: true,
         isRanged: isRanged,
         isMelee: isMelee,
@@ -1968,6 +1971,20 @@ export class CyberpunkActorSheet extends ActorSheet {
       }]);
     });
 
+    // Charge exotic weapon (gear tab)
+    html.find('.charge-weapon').click(async ev => {
+      const itemId = ev.currentTarget.dataset.itemId;
+      const canCharge = ev.currentTarget.dataset.canCharge === 'true';
+      if (!canCharge) return;
+
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      // Fill charges to max
+      const chargesMax = item.system.chargesMax ?? 0;
+      await item.update({ "system.charges": chargesMax });
+    });
+
     // Ammo quantity input (gear tab)
     html.find('.ammo-quantity-input').change(async ev => {
       const itemId = ev.currentTarget.dataset.itemId;
@@ -2037,7 +2054,42 @@ export class CyberpunkActorSheet extends ActorSheet {
 
       // For ranged weapons, show fire mode selection first
       if (isRanged) {
-        new RangedAttackDialog(this.actor, item, targetTokens).render(true);
+        // Exotic weapons skip fire mode selection (always single shot)
+        if (item.system.weaponType === "Exotic") {
+          // Check for charges before opening dialog
+          const charges = Number(item.system.charges) || 0;
+          if (charges <= 0) {
+            // Show "Out of charges" dialog with proper styling
+            const dialog = new Dialog({
+              title: item.name,
+              content: `
+                <div class="ranged-attack-wrapper">
+                  <header class="reload-header">
+                    <span class="reload-title">${item.name}</span>
+                    <a class="header-control close"><i class="fas fa-times"></i></a>
+                  </header>
+                  <div class="reload-empty">${game.i18n.localize("CYBERPUNK.OutOfCharges")}</div>
+                </div>
+              `,
+              buttons: {},
+              render: html => {
+                // Add close button handler using stored dialog reference
+                html.find('.header-control.close').click(() => dialog.close());
+                // Make header draggable
+                const header = html.find('.reload-header')[0];
+                if (header) new Draggable(dialog, html, header, false);
+              }
+            }, {
+              width: 300,
+              classes: ["cp2020", "ranged-attack-dialog"]
+            });
+            dialog.render(true);
+            return;
+          }
+          new RangeSelectionDialog(this.actor, item, fireModes.singleShot, targetTokens).render(true);
+        } else {
+          new RangedAttackDialog(this.actor, item, targetTokens).render(true);
+        }
         return;
       }
 
