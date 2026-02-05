@@ -392,12 +392,20 @@ export class CyberpunkItem extends Item {
 
       // This is a somewhat flawed multi-target thing - given target tokens, we could calculate distance (& therefore penalty) for each, and apply damage to them
       let rolls = [];
+      let fumbleTriggered = false;
       for (let i = 0; i < targetCount; i++) {
           let attackRoll = await this.attackRoll(attackMods);
 
           // Trigger Dice So Nice for attack roll
           if (game.dice3d) {
               await game.dice3d.showForRoll(attackRoll, game.user, true);
+          }
+
+          // Check for fumble (natural 1 on attack roll) - only trigger once per burst
+          const isNatural1 = attackRoll.dice[0]?.results?.some(r => r.result === 1 && !r.exploded);
+          if (isNatural1 && this.actor && !fumbleTriggered) {
+              await this.actor.rollFumble(system.reliability);
+              fumbleTriggered = true;
           }
 
           let roundsFired = Math.min(system.shotsLeft, effectiveRof / targetCount);
@@ -465,6 +473,12 @@ export class CyberpunkItem extends Item {
       // Trigger Dice So Nice for attack roll
       if (game.dice3d) {
           await game.dice3d.showForRoll(attackRoll, game.user, true);
+      }
+
+      // Check for fumble (natural 1 on attack roll)
+      const isNatural1 = attackRoll.dice[0]?.results?.some(r => r.result === 1 && !r.exploded);
+      if (isNatural1 && this.actor) {
+          await this.actor.rollFumble(system.reliability);
       }
 
       // Minimum Body penalty halves effective ROF
@@ -580,6 +594,12 @@ export class CyberpunkItem extends Item {
       // Trigger Dice So Nice for attack roll
       if (game.dice3d) {
           await game.dice3d.showForRoll(attackRoll, game.user, true);
+      }
+
+      // Check for fumble (natural 1 on attack roll)
+      const isNatural1 = attackRoll.dice[0]?.results?.some(r => r.result === 1 && !r.exploded);
+      if (isNatural1 && this.actor) {
+          await this.actor.rollFumble(system.reliability);
       }
 
       let actualRangeBracket = rangeResolve[attackMods.range](system.range);
@@ -702,6 +722,12 @@ export class CyberpunkItem extends Item {
   async __meleeBonk(attackMods) {
       // Just doesn't have a DC - is contested instead
       let attackRoll = await this.attackRoll(attackMods);
+
+      // Check for fumble (natural 1 on attack roll)
+      const isNatural1 = attackRoll.dice[0]?.results?.some(r => r.result === 1 && !r.exploded);
+      if (isNatural1 && this.actor) {
+          await this.actor.rollFumble(this.system.reliability);
+      }
 
       // Take into account the CyberTerminus modifier for damage
       let damageFormula = `${this.system.damage}+@strengthBonus`;

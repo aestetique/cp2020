@@ -859,9 +859,13 @@ export class CyberpunkActor extends Actor {
       .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
         statIcon: skill.system.stat,
         difficulty: difficulty,
-        success: success,
-        isNatural1: isNatural1
+        success: success
       });
+
+    // Roll fumble on natural 1
+    if (isNatural1) {
+      await this.rollFumble();
+    }
   }
 
   /**
@@ -908,9 +912,13 @@ export class CyberpunkActor extends Actor {
       .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
         statIcon: stat,
         difficulty: difficulty,
-        success: success,
-        isNatural1: isNatural1
+        success: success
       });
+
+    // Roll fumble on natural 1
+    if (isNatural1) {
+      await this.rollFumble();
+    }
   }
 
   /**
@@ -942,9 +950,13 @@ export class CyberpunkActor extends Actor {
       .execute(speaker, "systems/cp2020/templates/chat/skill-check.hbs", {
         statIcon: statName,
         difficulty: difficulty,
-        success: success,
-        isNatural1: isNatural1
+        success: success
       });
+
+    // Roll fumble on natural 1
+    if (isNatural1) {
+      await this.rollFumble();
+    }
   }
 
   /*
@@ -1074,6 +1086,77 @@ export class CyberpunkActor extends Actor {
     if (!success) {
       await this.toggleStatusEffect("dead", { active: true });
     }
+  }
+
+  /**
+   * Roll a fumble (1d10) and display the result with narrative hint.
+   * Called when a natural 1 is rolled on a skill or stat check.
+   * @param {string} reliability - Optional weapon reliability: "very", "standard", or "unreliable"
+   */
+  async rollFumble(reliability = null) {
+    const roll = await new Roll("1d10").evaluate();
+    const result = roll.total;
+
+    // Severity levels: 0=stumble, 1=loss, 2=mark, 3=turningPoint
+    // Determine severity based on result and weapon reliability
+    // Standard: 1-4 Stumble, 5-7 Loss, 8-9 Mark, 10 Turning Point
+    // Very Reliable: 1-7 Stumble, 8-9 Loss, 10 Mark (reduced severity)
+    // Unreliable: 1-4 Loss, 5-7 Mark, 8-10 Turning Point (increased severity)
+    let severity;
+
+    if (reliability === "very") {
+      // Very Reliable: reduced severity (no Turning Point possible)
+      if (result <= 7) {
+        severity = 0; // Stumble
+      } else if (result <= 9) {
+        severity = 1; // Loss
+      } else {
+        severity = 2; // Mark
+      }
+    } else if (reliability === "unreliable") {
+      // Unreliable: increased severity (no Stumble possible)
+      if (result <= 4) {
+        severity = 1; // Loss
+      } else if (result <= 7) {
+        severity = 2; // Mark
+      } else {
+        severity = 3; // Turning Point
+      }
+    } else {
+      // Standard/default fumble table
+      if (result <= 4) {
+        severity = 0; // Stumble
+      } else if (result <= 7) {
+        severity = 1; // Loss
+      } else if (result <= 9) {
+        severity = 2; // Mark
+      } else {
+        severity = 3; // Turning Point
+      }
+    }
+
+    // Map severity to hint localization key
+    const severityHints = [
+      localize("FumbleHint1to4"),  // 0: Stumble
+      localize("FumbleHint5to7"),  // 1: Loss
+      localize("FumbleHint8to9"),  // 2: Mark
+      localize("FumbleHint10")     // 3: Turning Point
+    ];
+    const fumbleHint = severityHints[severity];
+
+    // Get effective luck for the Roll Luck button
+    const effectiveLuck = this.system.stats.luck?.effective ?? this.system.stats.luck?.total ?? 0;
+
+    const speaker = ChatMessage.getSpeaker({ actor: this });
+    new Multiroll(localize("Fumble"))
+      .addRoll(roll, { name: "1d10" })
+      .execute(speaker, "systems/cp2020/templates/chat/fumble.hbs", {
+        fumbleHint: fumbleHint,
+        actorId: this.id,
+        severity: severity,
+        effectiveLuck: effectiveLuck,
+        canRollLuck: effectiveLuck > 0 && severity > 0  // Can't reduce below stumble
+      });
   }
 
   /**

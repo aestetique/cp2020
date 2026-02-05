@@ -1,6 +1,6 @@
-<div class="cyberpunk-card cyberpunk-card--skill-check">
-    {{!-- Section Bar: Skill/Stat Name with Attribute Icon --}}
-    {{> (CPTemplate "chat/partials/section-bar.hbs") label=title icon=statIcon}}
+<div class="cyberpunk-card cyberpunk-card--fumble" data-actor-id="{{actorId}}" data-severity="{{severity}}" data-effective-luck="{{effectiveLuck}}">
+    {{!-- Section Bar: Fumble with Fumble Icon --}}
+    {{> (CPTemplate "chat/partials/section-bar.hbs") label=(CPLocal "Fumble") icon="fumble"}}
 
     {{!-- Roll Results --}}
     {{#each rolls as |rollData|}}
@@ -16,7 +16,7 @@
                 {{!-- Roll Details --}}
                 <div class="roll-details">
                     <div class="roll-details__row">
-                        <span class="roll-details__label">{{#if rollData.name}}{{rollData.name}}{{else}}1d10{{/if}}</span>
+                        <span class="roll-details__label">1d10</span>
                         <span class="roll-details__value">
                             <span class="roll-details__value-text">{{rollData.roll.total}}</span>
                         </span>
@@ -25,7 +25,7 @@
                     <div class="roll-details__row roll-details__row--dice">
                         {{#each rollData.diceInfo as |die|}}
                         {{#each die.subrolls as |subroll|}}
-                        <div class="dice-badge dice-badge--d{{die.faces}} {{subroll.classes}}">
+                        <div class="dice-badge dice-badge--d10 {{subroll.classes}}">
                             <span class="dice-badge__value">{{{subroll.result}}}</span>
                         </div>
                         {{/each}}
@@ -36,20 +36,24 @@
             </div>
         </div>
 
-        {{!-- Result Row with success/failure and difficulty target --}}
-        <div class="result-row result-row--{{#if ../success}}success{{else}}failure{{/if}} roll-toggle">
-            {{#if ../success}}
-            <span class="result-row__icon"><img src="systems/cp2020/img/chat/success.png" alt="Success"></span>
-            {{else}}
-            <span class="result-row__icon"><img src="systems/cp2020/img/chat/failure.png" alt="Failure"></span>
-            {{/if}}
+        {{!-- Result Row (always visible, clickable to expand) --}}
+        <div class="result-row result-row--failure roll-toggle">
             <span class="result-row__value">{{rollData.roll.total}}</span>
-            <span class="result-row__target">
-                <div class="dice-badge dice-badge--d10 {{#if ../success}}save-success{{else}}save-failure{{/if}}">
-                    <span class="dice-badge__value">{{../difficulty}}</span>
-                </div>
-            </span>
         </div>
     </div>
     {{/each}}
+
+    {{!-- Fumble Hint (centered) --}}
+    <div class="fumble-hint-container">
+        <span class="card-hint card-hint--centered fumble-hint-text">{{fumbleHint}}</span>
+    </div>
+
+    {{!-- Roll Luck Button / Result Container --}}
+    <div class="fumble-luck-container">
+        {{#if canRollLuck}}
+        <button class="fumble-roll-luck-btn" type="button">{{CPLocal "RollLuck"}}</button>
+        {{else}}
+        <button class="fumble-roll-luck-btn fumble-roll-luck-btn--disabled" type="button" disabled>{{CPLocal "RollLuck"}}</button>
+        {{/if}}
+    </div>
 </div>

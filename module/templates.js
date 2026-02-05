@@ -33,6 +33,7 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/chat/humanity-roll.hbs",
         "systems/cp2020/templates/chat/condition-damage.hbs",
         "systems/cp2020/templates/chat/skill-check.hbs",
+        "systems/cp2020/templates/chat/fumble.hbs",
 
         // Chat card partials
         "systems/cp2020/templates/chat/partials/card-header.hbs",

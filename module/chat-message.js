@@ -319,6 +319,20 @@ export class CyberpunkChatMessage extends ChatMessage {
                 cell.addEventListener("click", (event) => this._onDamageGridCellClick(event, damageGrid));
             });
         }
+
+        // Fumble Roll Luck button
+        const fumbleCard = html.querySelector(".cyberpunk-card--fumble");
+        if (fumbleCard) {
+            const rollLuckBtn = fumbleCard.querySelector(".fumble-roll-luck-btn:not(.fumble-roll-luck-btn--disabled)");
+            if (rollLuckBtn) {
+                // Check if luck was already rolled (persisted in flags)
+                if (this.getFlag("cp2020", "fumbleLuckRolled")) {
+                    this._restoreFumbleLuckResult(html, fumbleCard);
+                } else {
+                    rollLuckBtn.addEventListener("click", (event) => this._onFumbleRollLuck(event, html, fumbleCard));
+                }
+            }
+        }
     }
 
     /* -------------------------------------------- */
@@ -1314,5 +1328,177 @@ export class CyberpunkChatMessage extends ChatMessage {
         </div>`;
 
         await ChatMessage.create({ speaker, content: html });
+    }
+
+    /* -------------------------------------------- */
+    /*  Fumble Luck Roll Methods                     */
+    /* -------------------------------------------- */
+
+    /**
+     * Handle clicking the Roll Luck button on a fumble card
+     * @param {Event} event - The click event
+     * @param {HTMLElement} html - The message HTML
+     * @param {HTMLElement} fumbleCard - The fumble card element
+     * @private
+     */
+    async _onFumbleRollLuck(event, html, fumbleCard) {
+        event.preventDefault();
+
+        // Get data from fumble card
+        const actorId = fumbleCard.dataset.actorId;
+        const severity = parseInt(fumbleCard.dataset.severity, 10);
+        const effectiveLuck = parseInt(fumbleCard.dataset.effectiveLuck, 10);
+
+        if (!actorId) return;
+
+        const actor = game.actors.get(actorId);
+        if (!actor) return;
+
+        // Roll 1d10
+        const roll = await new Roll("1d10").evaluate();
+        const rollResult = roll.total;
+
+        // Check success: roll <= effective luck
+        const success = rollResult <= effectiveLuck;
+
+        // Severity hints mapping
+        const severityHints = [
+            game.i18n.localize("CYBERPUNK.FumbleHint1to4"),  // 0: Stumble
+            game.i18n.localize("CYBERPUNK.FumbleHint5to7"),  // 1: Loss
+            game.i18n.localize("CYBERPUNK.FumbleHint8to9"),  // 2: Mark
+            game.i18n.localize("CYBERPUNK.FumbleHint10")     // 3: Turning Point
+        ];
+
+        // Calculate new severity if success
+        const newSeverity = success ? Math.max(0, severity - 1) : severity;
+        const newHint = severityHints[newSeverity];
+
+        // Build the result row HTML (similar to skill-check result row)
+        const resultHtml = this._buildFumbleLuckResultHtml(rollResult, effectiveLuck, success);
+
+        // Update the fumble card UI
+        this._updateFumbleCardUI(fumbleCard, resultHtml, success, newHint);
+
+        // Spend 1 luck point
+        const currentSpent = actor.system.stats.luck.spent || 0;
+        const currentSpentAt = actor.system.stats.luck.spentAt;
+        await actor.update({
+            "system.stats.luck.spent": currentSpent + 1,
+            "system.stats.luck.spentAt": currentSpentAt || Date.now()
+        });
+
+        // Persist the result in message flags for reload
+        await this.setFlag("cp2020", "fumbleLuckRolled", true);
+        await this.setFlag("cp2020", "fumbleLuckResult", {
+            rollResult,
+            effectiveLuck,
+            success,
+            newSeverity,
+            newHint
+        });
+    }
+
+    /**
+     * Build the HTML for the fumble luck result row
+     * @param {number} rollResult - The roll result
+     * @param {number} effectiveLuck - The target luck value
+     * @param {boolean} success - Whether the roll was successful
+     * @returns {string} HTML string for the result
+     * @private
+     */
+    _buildFumbleLuckResultHtml(rollResult, effectiveLuck, success) {
+        const successClass = success ? "success" : "failure";
+        const badgeClass = success ? "save-success" : "save-failure";
+        const iconSrc = success
+            ? "systems/cp2020/img/chat/success.png"
+            : "systems/cp2020/img/chat/failure.png";
+        const iconAlt = success ? "Success" : "Failure";
+
+        return `
+            <div class="roll-container roll-container--collapsed fumble-luck-roll">
+                <div class="roll-expandable">
+                    <div class="roll-expandable__inner">
+                        <div class="formula-bar">
+                            <span class="formula-bar__text">1d10</span>
+                        </div>
+                        <div class="roll-details">
+                            <div class="roll-details__row">
+                                <span class="roll-details__label">1d10</span>
+                                <span class="roll-details__value">
+                                    <span class="roll-details__value-text">${rollResult}</span>
+                                </span>
+                            </div>
+                            <div class="roll-details__row roll-details__row--dice">
+                                <div class="dice-badge dice-badge--d10${rollResult === 1 ? ' min' : ''}${rollResult === 10 ? ' max' : ''}">
+                                    <span class="dice-badge__value">${rollResult}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-row result-row--${successClass} roll-toggle">
+                    <span class="result-row__icon"><img src="${iconSrc}" alt="${iconAlt}"></span>
+                    <span class="result-row__value">${rollResult}</span>
+                    <span class="result-row__target">
+                        <div class="dice-badge dice-badge--d10 ${badgeClass}">
+                            <span class="dice-badge__value">${effectiveLuck}</span>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Update the fumble card UI after rolling luck
+     * @param {HTMLElement} fumbleCard - The fumble card element
+     * @param {string} resultHtml - The result HTML to insert
+     * @param {boolean} success - Whether the roll was successful
+     * @param {string} newHint - The new fumble hint (if severity reduced)
+     * @private
+     */
+    _updateFumbleCardUI(fumbleCard, resultHtml, success, newHint) {
+        // Hide the Roll Luck button
+        const btn = fumbleCard.querySelector(".fumble-roll-luck-btn");
+        if (btn) {
+            btn.style.display = "none";
+        }
+
+        // Insert the result HTML in the luck container
+        const luckContainer = fumbleCard.querySelector(".fumble-luck-container");
+        if (luckContainer) {
+            luckContainer.insertAdjacentHTML("beforeend", resultHtml);
+
+            // Add click listener for the new roll toggle
+            const newToggle = luckContainer.querySelector(".roll-toggle");
+            if (newToggle) {
+                newToggle.addEventListener("click", this._onToggleRollDetails.bind(this));
+            }
+        }
+
+        // Update the fumble hint if success
+        if (success) {
+            const hintText = fumbleCard.querySelector(".fumble-hint-text");
+            if (hintText) {
+                hintText.textContent = newHint;
+            }
+        }
+    }
+
+    /**
+     * Restore the fumble luck result from flags when message is re-rendered
+     * @param {HTMLElement} html - The message HTML
+     * @param {HTMLElement} fumbleCard - The fumble card element
+     * @private
+     */
+    _restoreFumbleLuckResult(html, fumbleCard) {
+        const resultData = this.getFlag("cp2020", "fumbleLuckResult");
+        if (!resultData) return;
+
+        const { rollResult, effectiveLuck, success, newHint } = resultData;
+
+        // Build and insert the result HTML
+        const resultHtml = this._buildFumbleLuckResultHtml(rollResult, effectiveLuck, success);
+        this._updateFumbleCardUI(fumbleCard, resultHtml, success, newHint);
     }
 }

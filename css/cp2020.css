@@ -1151,6 +1151,66 @@ div.statderive .value.rightborder {
   width: 100%;
 }
 
+.card-hint--centered {
+  text-align: center;
+}
+
+/* Fumble Luck Roll Styles */
+.fumble-hint-container {
+  padding: 0;
+}
+
+.fumble-luck-container {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.fumble-roll-luck-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: 2px;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  border: none;
+  background: var(--chat-red);
+  color: var(--chat-text);
+}
+.fumble-roll-luck-btn:hover {
+  background: var(--chat-red-text);
+}
+.fumble-roll-luck-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+.fumble-roll-luck-btn--disabled {
+  border: 1px solid var(--chat-stroke);
+  background: transparent;
+  color: var(--chat-gray);
+  cursor: not-allowed;
+}
+.fumble-roll-luck-btn--disabled:hover {
+  background: transparent;
+}
+.fumble-roll-luck-btn--used {
+  display: none;
+}
+
+/* Fumble Luck Result (replaces button after roll) */
+.fumble-luck-result {
+  display: none;
+}
+.fumble-luck-result--visible {
+  display: block;
+}
+.fumble-luck-result .roll-container {
+  margin-top: 0;
+}
+
 .section-bar {
   display: flex;
   align-items: center;
@@ -3117,10 +3177,12 @@ input.skill-value.skill-level-input:focus {
 }
 
 .gear-weight {
+  width: 60px;
   height: 24px;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
   gap: 4px;
   flex-shrink: 0;
   padding-right: 8px;

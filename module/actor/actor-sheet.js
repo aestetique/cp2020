@@ -763,7 +763,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         context: context,
         price: sys.cost || 0,
         weight: sys.weight || 0,
-        damage: sys.damage || '–',
+        damage: sys.damage && sys.damage !== '0' && sys.damage !== 0 ? sys.damage : '–',
         shotsLeft: sys.shotsLeft ?? 0,
         shots: sys.shots ?? 0,
         charges: sys.charges ?? 0,
@@ -831,7 +831,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         context: context,
         price: sys.cost || 0,
         weight: sys.weight || 0,
-        damage: weapon.damage || '–',
+        damage: weapon.damage && weapon.damage !== '0' && weapon.damage !== 0 ? weapon.damage : '–',
         shotsLeft: weapon.shotsLeft ?? 0,
         shots: weapon.shots ?? 0,
         charges: weapon.charges ?? 0,
@@ -875,7 +875,7 @@ export class CyberpunkActorSheet extends ActorSheet {
         context: contextParts.join(' · '),
         price: sys.cost || 0,
         weight: sys.weight || 0,
-        damage: sys.damage && sys.damage !== '0' ? sys.damage : '–',
+        damage: sys.damage && sys.damage !== '0' && sys.damage !== 0 ? sys.damage : '–',
         charges: sys.charges || 0
       };
     });
