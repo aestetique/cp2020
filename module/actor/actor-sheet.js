@@ -5,6 +5,7 @@ import { ModifiersDialog } from "../dialog/modifiers.js"
 import { ReloadDialog } from "../dialog/reload-dialog.js"
 import { RangedAttackDialog } from "../dialog/ranged-attack-dialog.js"
 import { RangeSelectionDialog } from "../dialog/range-selection-dialog.js"
+import { MeleeAttackDialog } from "../dialog/melee-attack-dialog.js"
 import { SkillRollDialog } from "../dialog/skill-roll-dialog.js"
 import { SortOrders } from "./skill-sort.js";
 
@@ -2117,21 +2118,19 @@ export class CyberpunkActorSheet extends ActorSheet {
         return;
       }
 
-      // Melee/Exotic unchanged
-      let modifierGroups;
+      // Melee weapons
       if (item.system.attackType === meleeAttackTypes.martial) {
-        modifierGroups = martialOptions(this.actor);
+        const modifierGroups = martialOptions(this.actor);
+        const dialog = new ModifiersDialog(this.actor, {
+          weapon: item,
+          targetTokens: targetTokens,
+          modifierGroups: modifierGroups,
+          onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
+        });
+        dialog.render(true);
       } else {
-        modifierGroups = meleeBonkOptions();
+        new MeleeAttackDialog(this.actor, item, targetTokens).render(true);
       }
-
-      const dialog = new ModifiersDialog(this.actor, {
-        weapon: item,
-        targetTokens: targetTokens,
-        modifierGroups: modifierGroups,
-        onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
-      });
-      dialog.render(true);
     });
 
     // "Fire" button for weapons
@@ -2140,29 +2139,34 @@ export class CyberpunkActorSheet extends ActorSheet {
       let item = getEventItem(this, ev);
       let isRanged = item.isRanged();
 
-      let modifierGroups = undefined;
       let targetTokens = Array.from(game.users.current.targets.values()).map(target => {
         return {
           name: target.document.name,
           id: target.id};
       });
       if(isRanged) {
-        modifierGroups = rangedModifiers(item, targetTokens);
+        let modifierGroups = rangedModifiers(item, targetTokens);
+        let dialog = new ModifiersDialog(this.actor, {
+          weapon: item,
+          targetTokens: targetTokens,
+          modifierGroups: modifierGroups,
+          onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
+        });
+        dialog.render(true);
       }
       else if (item.system.attackType === meleeAttackTypes.martial){
-        modifierGroups = martialOptions(this.actor);
+        let modifierGroups = martialOptions(this.actor);
+        let dialog = new ModifiersDialog(this.actor, {
+          weapon: item,
+          targetTokens: targetTokens,
+          modifierGroups: modifierGroups,
+          onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
+        });
+        dialog.render(true);
       }
       else {
-        modifierGroups = meleeBonkOptions();
+        new MeleeAttackDialog(this.actor, item, targetTokens).render(true);
       }
-
-      let dialog = new ModifiersDialog(this.actor, {
-        weapon: item,
-        targetTokens: targetTokens,
-        modifierGroups: modifierGroups,
-        onConfirm: (fireOptions) => item.__weaponRoll(fireOptions, targetTokens)
-      });
-      dialog.render(true);
     });
 
     // ----- Cyberware Tab Event Listeners -----

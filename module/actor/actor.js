@@ -530,8 +530,56 @@ export class CyberpunkActor extends Actor {
     const targetName = nameLoc.includes("Skill") ? skillName : nameLoc;
 
     const skillItem = this.itemTypes.skill.find(s => s.name === targetName);
-    if (!skillItem) return 0; // ← no skill — return 0 instead of undefined
-    return CyberpunkActor.realSkillValue(skillItem);
+    if (!skillItem) return 0;
+
+    // Check if this skill is chipped by equipped chipware
+    const equippedChipware = this.items.contents.filter(i =>
+      i.type === "cyberware" &&
+      i.system.cyberwareType === "chipware" &&
+      i.system.equipped
+    );
+
+    let chipValue = null;
+    for (const chip of equippedChipware) {
+      const bonuses = chip.system.bonuses || [];
+      for (const bonus of bonuses) {
+        if (bonus.type === "skill" &&
+            bonus.skillName?.toLowerCase() === skillItem.name.toLowerCase() &&
+            bonus.value) {
+          if (chipValue === null || bonus.value > chipValue) {
+            chipValue = bonus.value;
+          }
+        }
+      }
+    }
+
+    if (chipValue !== null) return chipValue;
+
+    // Base level + IP-earned level
+    const baseLevel = Number(skillItem.system.level) || 0;
+    const ipLevel = Number(skillItem.system.ipLevel) || 0;
+    const totalLevel = baseLevel + ipLevel;
+
+    // Add skill bonuses from equipped tools, drugs, and cyberware
+    let skillBonus = 0;
+    const equippedItems = this.items.contents.filter(i =>
+      (i.type === "tool" || i.type === "drug" || i.type === "cyberware") && i.system.equipped
+    );
+    for (const item of equippedItems) {
+      const bonuses = item.system.bonuses || [];
+      for (const bonus of bonuses) {
+        if (bonus.type === "skill" && bonus.value) {
+          const matchByUuid = bonus.skillUuid && bonus.skillUuid === skillItem.uuid;
+          const matchByName = bonus.skillName &&
+            bonus.skillName.toLowerCase() === skillItem.name.toLowerCase();
+          if (matchByUuid || matchByName) {
+            skillBonus += bonus.value;
+          }
+        }
+      }
+    }
+
+    return totalLevel + skillBonus;
   }
 
   /**

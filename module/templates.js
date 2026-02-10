@@ -34,6 +34,8 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/chat/condition-damage.hbs",
         "systems/cp2020/templates/chat/skill-check.hbs",
         "systems/cp2020/templates/chat/fumble.hbs",
+        "systems/cp2020/templates/chat/melee-execute.hbs",
+        "systems/cp2020/templates/chat/melee-hit.hbs",
 
         // Chat card partials
         "systems/cp2020/templates/chat/partials/card-header.hbs",
@@ -77,6 +79,7 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cp2020/templates/dialog/modifiers.hbs",
         "systems/cp2020/templates/dialog/skill-roll.hbs",
         "systems/cp2020/templates/dialog/initiative-roll.hbs",
+        "systems/cp2020/templates/dialog/melee-attack.hbs",
 
         // Program
         "systems/cp2020/templates/item/parts/program/summary.hbs",

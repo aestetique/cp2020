@@ -64,15 +64,23 @@ function update() {
  * @param {*} targetArea If you're aiming at a specific area, this is the NAME of that area - eg "Head"
  * @returns {*} {roll: The rolled diceroll when aiming, areaHit: where actually hit}
  */
+const locationKeyMap = {
+    'LeftArm': 'lArm', 'RightArm': 'rArm',
+    'LeftLeg': 'lLeg', 'RightLeg': 'rLeg',
+    'Head': 'Head', 'Torso': 'Torso'
+};
+
 export async function rollLocation(targetActor, targetArea) {
     if(targetArea) {
+        // Normalize display names (LeftArm, RightArm, etc.) to data keys (lArm, rArm, etc.)
+        const normalizedArea = locationKeyMap[targetArea] || targetArea;
         // Area name to number lookup
         const hitLocs = (!!targetActor) ? targetActor.hitLocations : defaultHitLocations();
-        const targetNum = hitLocs[targetArea].location[0];
+        const targetNum = hitLocs[normalizedArea].location[0];
         let roll = await new Roll(`${targetNum}`).evaluate();
         return {
             roll: roll,
-            areaHit: targetArea
+            areaHit: normalizedArea
         };
     }
     // Number to area name lookup

@@ -17,7 +17,8 @@
 // Override Foundry's default Application window chrome
 .app.window-app.reload-dialog,
 .app.window-app.ranged-attack-dialog,
-.app.window-app.range-selection-dialog {
+.app.window-app.range-selection-dialog,
+.app.window-app.melee-attack-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -40,7 +41,8 @@
 // Dialog content wrapper (shared by Reload, Ranged Attack, and Range Selection dialogs)
 .reload-dialog-wrapper,
 .ranged-attack-wrapper,
-.range-selection-wrapper {
+.range-selection-wrapper,
+.melee-attack-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -328,6 +330,16 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
+
+    &.disabled {
+      pointer-events: none;
+
+      .condition-btn {
+        background: #26282F;
+        color: #444856;
+        cursor: default;
+      }
+    }
   }
 
   // Condition buttons
@@ -440,6 +452,15 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
+
+    &.disabled {
+      pointer-events: none;
+
+      .location-btn {
+        background: #26282F;
+        cursor: default;
+      }
+    }
   }
 
   // Location buttons
@@ -471,6 +492,49 @@
 
       &:hover {
         background: lighten(#24563D, 5%);
+      }
+    }
+  }
+
+  // Single-button variant (Melee execute toggle)
+  .conditions-grid--single {
+    display: block;
+
+    .execute-btn {
+      width: 100%;
+    }
+  }
+
+  // Execute button (Coup De Grace / Knockout) with custom colors
+  .execute-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    background: #444856;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    box-shadow: none;
+
+    font-family: var(--font-blender);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: var(--chat-text, #FFF);
+    text-transform: uppercase;
+
+    &:hover {
+      background: lighten(#444856, 5%);
+    }
+
+    &.selected {
+      background: #1A804D;
+
+      &:hover {
+        background: lighten(#1A804D, 5%);
       }
     }
   }

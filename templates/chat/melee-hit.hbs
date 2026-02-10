@@ -1,0 +1,70 @@
+<div class="cyberpunk-card cyberpunk-card--attack">
+    {{!-- Section Bar: Strike --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="strike" label=fireModeLabel}}
+
+    {{!-- Weapon Line --}}
+    {{#if weaponName}}
+    {{> "systems/cp2020/templates/chat/partials/weapon-line.hbs"}}
+    {{/if}}
+
+    {{!-- Collapsible Attack Roll Container --}}
+    <div class="roll-container roll-container--collapsed">
+        <div class="roll-expandable">
+            <div class="roll-expandable__inner">
+                {{!-- Formula Bar: Attack formula --}}
+                {{#if attackRoll}}
+                <div class="formula-bar">
+                    <span class="formula-bar__text">{{cleanFormula attackRoll.formula}}</span>
+                </div>
+
+                {{!-- Roll Details: Attack roll breakdown --}}
+                <div class="roll-details">
+                    <div class="roll-details__row">
+                        <span class="roll-details__label">1d10</span>
+                        <span class="roll-details__value">
+                            <span class="roll-details__value-text">{{attackRoll._total}}</span>
+                        </span>
+                    </div>
+                    <div class="roll-details__row roll-details__row--dice">
+                        {{#each attackRoll.terms as |term|}}
+                            {{#if term.results}}
+                                {{#each term.results as |die|}}
+                                <div class="dice-badge dice-badge--d10 {{#if (equals die.result 10)}}max{{/if}} {{#if (equals die.result 1)}}min{{/if}} {{#if die.exploded}}exploded{{/if}}">
+                                    <span class="dice-badge__value">{{die.result}}</span>
+                                </div>
+                                {{/each}}
+                            {{/if}}
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- Result Row: Always neutral (melee is contested, no DC) --}}
+        <div class="result-row result-row--neutral roll-toggle">
+            <span class="result-row__value">{{attackRoll._total}}</span>
+        </div>
+    </div>
+
+    {{!-- Damage Section --}}
+    {{> "systems/cp2020/templates/chat/partials/section-bar.hbs" icon="damage" label=(CPLocal "Damage")}}
+
+    {{!-- Damage Grid --}}
+    {{> "systems/cp2020/templates/chat/partials/damage-grid.hbs" aggregatedDamage=(aggregateDamage areaDamages) areaDamages=areaDamages}}
+
+    {{!-- Target Selector --}}
+    <div class="target-selector" data-damage="{{json areaDamages}}" data-ammo-type="{{loadedAmmoType}}" data-damage-type="{{damageType}}" data-weapon-effect="" data-hit-location="{{hitLocation}}">
+        <div class="target-selector__tabs">
+            <button class="target-selector__tab target-selector__tab--active" data-mode="targeted">{{CPLocal "Targeted"}}</button>
+            <span class="target-selector__divider"></span>
+            <button class="target-selector__tab" data-mode="selected">{{CPLocal "Selected"}}</button>
+        </div>
+        <div class="target-selector__content">
+            <div class="target-info target-info--empty">
+                {{CPLocal "SelectTarget"}}
+            </div>
+        </div>
+        <button class="apply-damage-btn" disabled>{{CPLocal "Apply"}}</button>
+    </div>
+</div>

@@ -1164,6 +1164,16 @@ export class CyberpunkChatMessage extends ChatMessage {
             case "microwave":
                 await this._rollMicrowaveEffect(actor);
                 break;
+
+            case "coupDeGrace":
+                // Coup De Grace: instant death, no save
+                await actor.toggleStatusEffect("dead", { active: true });
+                break;
+
+            case "knockout":
+                // Knockout: instant unconscious, no save
+                await actor.toggleStatusEffect("unconscious", { active: true });
+                break;
         }
     }
 

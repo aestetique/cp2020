@@ -339,7 +339,9 @@ export class CyberpunkItem extends Item {
     const attackStat = isBlinded ? "luck" : "ref";
 
     let attackTerms = [`@stats.${attackStat}.total`];
-    if(system.attackSkill) {
+    // Resolve attack skill: use explicit field, or fall back to first mapped skill for the weapon type
+    const resolvedSkill = system.attackSkill || (attackSkills[system.weaponType] || [])[0] || "";
+    if(resolvedSkill) {
       attackTerms.push(`@attackSkill`);
     }
     if(isRanged) {
@@ -370,7 +372,7 @@ export class CyberpunkItem extends Item {
 
     return await makeD10Roll(attackTerms, {
       stats: this.actor.system.stats,
-      attackSkill: this.actor.getSkillVal(this.system.attackSkill)
+      attackSkill: this.actor.getSkillVal(resolvedSkill)
     }).evaluate();
   }
 
@@ -723,6 +725,11 @@ export class CyberpunkItem extends Item {
       // Just doesn't have a DC - is contested instead
       let attackRoll = await this.attackRoll(attackMods);
 
+      // Trigger Dice So Nice for attack roll
+      if (game.dice3d) {
+          await game.dice3d.showForRoll(attackRoll, game.user, true);
+      }
+
       // Check for fumble (natural 1 on attack roll)
       const isNatural1 = attackRoll.dice[0]?.results?.some(r => r.result === 1 && !r.exploded);
       if (isNatural1 && this.actor) {
@@ -744,18 +751,47 @@ export class CyberpunkItem extends Item {
                   break;
           }
       }
-      let damageRoll = new Roll(damageFormula, {
+      let damageRoll = await new Roll(damageFormula, {
           strengthBonus: strengthDamageBonus(this.actor.system.stats.bt.total)
-      });
+      }).evaluate();
+
+      // Trigger Dice So Nice for damage roll
+      if (game.dice3d && damageRoll.dice.length > 0) {
+          await game.dice3d.showForRoll(damageRoll, game.user, true);
+      }
 
       let locationRoll = await rollLocation(attackMods.targetActor, attackMods.targetArea);
+      let hitLocation = locationRoll.areaHit;
 
-      let bigRoll = new Multiroll(this.name, this.system.flavor)
-          .addRoll(attackRoll, {name: localize("Attack")})
-          .addRoll(damageRoll, {name: localize("Damage")})
-          .addRoll(locationRoll.roll, {name: localize("Location"), flavor: locationRoll.areaHit });
-      bigRoll.defaultExecute({img: this.img}, this.actor);
-      return bigRoll;
+      let areaDamages = {};
+      areaDamages[hitLocation] = [{
+          damage: damageRoll.total,
+          formula: damageRoll.formula,
+          dice: damageRoll.terms.filter(t => t.results).map(term => ({
+              faces: term.faces,
+              results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
+          }))
+      }];
+
+      let templateData = {
+          fireModeLabel: localize("Strike"),
+          attackRoll: attackRoll,
+          areaDamages: areaDamages,
+          weaponName: this.name,
+          weaponImage: this.img,
+          weaponType: this.system.attackType,
+          loadedAmmoType: "standard",
+          damageType: this.system.damageType || "",
+          hitLocation: hitLocation
+      };
+
+      let roll = new Multiroll(localize("Strike"));
+      roll.execute(
+          ChatMessage.getSpeaker({ actor: this.actor }),
+          "systems/cp2020/templates/chat/melee-hit.hbs",
+          templateData
+      );
+      return roll;
   }
   async __martialBonk(attackMods) {
     let actor = this.actor;
