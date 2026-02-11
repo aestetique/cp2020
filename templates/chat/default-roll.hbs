@@ -1,0 +1,35 @@
+<div class="cyberpunk cyberpunk-card">
+    <header>
+        <div class="flexrow">
+            {{#if img}}
+            <div class="roll-image" style="background-image: url({{img}})"></div>
+            {{/if}}
+            <h2>{{title}}</h2>
+        </div>
+        <p class="flavor">{{flavor}}</p>
+    </header>
+    <div class="dice-tooltip flexcol">
+    {{#each rolls}}
+        <header class="part-header flexrow">
+            {{#if name}}
+                <span class="part-formula">{{name}}:</span>
+            {{/if}}
+            <span class="part-flavor">{{roll._formula}}</span>
+            <span class="part-total {{#if isCrit}}crit {{/if}}{{#if isFumble}}fumble {{/if}}">{{roll.total}}</span>
+        </header>
+        <div class="dice-tooltip">
+        {{#each diceInfo}}
+            <section class="tooltip-part">
+                <div class="dice">
+                    <ol class="dice-rolls">
+                    {{#each this.subrolls}}
+                        <li class="roll {{this.classes}}">{{{this.result}}}</li>
+                    {{/each}}
+                    </ol>
+                </div>
+            </section>
+        {{/each}}
+        </div>
+    {{/each}}
+    </div>
+</div>

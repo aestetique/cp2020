@@ -1,0 +1,41 @@
+{{!-- extraClasses: extra classes to apply to the field
+      choices: [{value: "aaa", localData: {foo: "bar"}, localKey: "A Different Key"}] --}}
+{{#*inline "singleChoice"}}
+    {{#selectOption choice}}
+        <option value="{{value}}" {{!-- Select current value --}}
+        {{~#if (equals (deepLookup .. ../edit) value)}}
+        selected
+        {{~/if}}>
+
+        {{~#if ../noTranslateOptions}}
+            {{~value}} 
+        {{~else if localData}} {{!-- If we have extra parameters for localization, use those --}}
+            {{~CPLocalParam localKey localData}}
+        {{~else}} {{!-- Regular localization - just a key --}}
+            {{~CPLocal localKey}}
+        {{~/if}}</option>
+    {{/selectOption}}
+{{/inline}}
+
+<div class="field{{#if extraClasses}} {{extraClasses}}{{/if}}">
+    <label for="{{edit}}">{{CPLocal label}}</label>
+    <span class="flex-pad"></span>
+    <select name="{{edit}}">
+        {{#if allowBlank}}
+            <option value="" {{#if (equals (deepLookup . edit) "")}}selected{{/if}}></option>
+        {{/if}}
+
+        {{#each choices as |choice|}}
+            {{!-- actually a group. Group names always attempt translation as these should be supplied from the module itself, and therefore have translation. If needed, I can change groups to follow the convention of choices, etc. I SHOULD, that's for sure --}}
+            {{#if choice.groupName}}
+                 <optgroup label="{{CPLocal choice.groupName}}">
+                {{#each choice.choices as |subchoice|}}
+                    {{> singleChoice ../.. choice=subchoice}}
+                {{/each}}
+                </optgroup>
+            {{else}}
+                {{> singleChoice .. choice=choice}}
+            {{/if}}
+        {{/each}}
+    </select>
+</div>

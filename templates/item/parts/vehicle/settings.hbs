@@ -1,0 +1,127 @@
+{{!-- Structural Damage Points (SDP is a terrible name) --}}
+<div class="field-list">
+    {{#with system.sdp}}
+    <div class="flexcol fillwidth span-two-cells"  title="{{CPLocal "SDPFull"}}">
+        <div class="meter-gauge fillwidth">
+            <span style="width: calc(100% * ({{value}}/{{max}}));" class="
+            {{#if (compare value "<=" (math max "/" 2))}}
+            danger
+            {{/if}}"></span>
+        </div>
+
+        <div class="field">
+            <label class="larger" for="system.sdp.value" title="{{CPLocal "SDPFull"}}">{{CPLocal "SDP"}}</label>
+            <span class="flexrow flex-pad">
+                <input type="number" name="system.sdp.value" value="{{value}}"> 
+                <span class="nogrow">/</span>
+                <input type="number" name="system.sdp.max" value="{{max}}">
+            </span>
+        </div>
+    {{/with}}
+
+    <div class="field">
+        <label for="system.sp" title="{{CPLocal "SPFull"}}">{{CPLocal "SP"}}</label>
+        <span class="flex-pad"></span>
+        <input type="number" class="number nogrow" name="system.sp" value="{{system.sp}}">
+        </span>
+    </div>
+</div>
+<div class="field-list">
+    {{!-- There's a reason I don't use meter here - it's evil to style, and IE doesn't support it. If anyone playing this is using IE, they're already in the dystopia --}}
+    {{#with system.speed}}
+    <div class="flexcol fillwidth span-two-cells">
+        <div class="meter-gauge fillwidth">
+            <span style="width: calc(100% * ({{value}}/{{max}}));" class="
+            {{#if (compare value ">" maneuver)}}
+            danger
+            {{/if}}"></span>
+        </div>
+    </div>
+    <div class="field">
+        {{!-- Make larger to indicate a kind of heading almost --}}
+        <label class="larger" for="system.speed.value">{{CPLocal "Speed"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.speed.value" value="{{value}}"> 
+            <span class="nogrow">/</span>
+            <input type="number" name="system.speed.max" value="{{max}}">
+            <span class="nogrow">mph</span>
+        </span>
+    </div>
+     <div class="field">
+        <label for="system.speed.value">{{CPLocal "Accel"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.speed.acceleration" value="{{acceleration}}"> 
+            <span class="nogrow">{{CPLocal "MPH"}}</span>
+        </span>
+    </div>
+
+    {{!-- Accel/decel buttons --}}
+    <div class="flexrow">
+        <div class="field decel"><label class="fillwidth" style="text-align: center; font-size: larger">-</label></div>
+        <div class="field accel"><label class="fillwidth" style="text-align: center; font-size: larger">+</label></div>
+    </div>
+   <div class="field">
+       {{!-- This should I guess be maneuver? But safe works a lot better meaningwise --}}
+        <label for="system.speed.value">{{CPLocal "Safe"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.speed.maneuver" value="{{maneuver}}"> 
+            <span class="nogrow">{{CPLocal "MPH"}}</span>
+        </span>
+    </div>
+    {{/with}}
+</div>
+
+{{!-- Fuel --}}
+<div class="field-list">
+    {{#with system.fuel}}
+    <div class="flexcol fillwidth span-two-cells">
+        <div class="meter-gauge fillwidth">
+            <span style="width: calc(100% * ({{value}}/{{max}}));" class="
+            {{#if (compare value "<" (math max "/" 3))}}
+            danger
+            {{/if}}"></span>
+        </div>
+    </div>
+    <div class="field">
+        <label class="larger" for="system.speed.value">{{CPLocal "Fuel"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.fuel.value" value="{{value}}"> 
+            <span class="nogrow">/</span>
+            <input type="number" name="system.fuel.max" value="{{max}}">
+            <span class="nogrow">{{CPLocal "Gallon"}}</span>
+        </span>
+    </div>
+    {{!-- TODO: This should probably use selectable --}}
+     <div class="field">
+        <label for="system.speed.value">{{CPLocal "Type"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="text" name="system.fuel.type" value="{{type}}"> 
+        </span>
+    </div>
+    {{!-- There's a reason I don't use meter here - it's evil to style, and IE doesn't support it. If anyone playing this is using IE, they're already in the dystopia --}}
+
+   <div class="field">
+        <label for="system.fuel.efficiency">{{CPLocal "Efficiency"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.fuel.efficiency" value="{{efficiency}}"> 
+            <span class="nogrow">{{CPLocal "MPG"}}</span>
+        </span>
+    </div>
+    {{/with}}
+</div>
+
+{{!-- Miscellaneous vehicle-only other --}}
+<div class="field-list">
+    <div class="field">
+        <label for="system.passengers">{{CPLocal "Passengers"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.passengers" value="{{system.passengers}}"> 
+        </span>
+    </div>
+    <div class="field">
+        <label for="system.maneuverability.value">{{CPLocal "ManeuverabilityFull"}}</label>
+        <span class="flexrow flex-pad">
+            <input type="number" name="system.maneuverability.value" value="{{system.maneuverability.value}}"> 
+        </span>
+    </div>
+</div>

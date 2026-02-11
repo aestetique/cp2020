@@ -1,0 +1,6 @@
+<div class="field">
+    <label for="{{edit}}">{{CPLocal label}}</label>
+    <span class="flex-pad"></span>
+    <input {{#if readOnly}}readonly{{/if}} class="nogrow" name="{{edit}}" 
+        type="checkbox" {{#if (deepLookup . edit)}}checked{{/if}}/>
+</div>

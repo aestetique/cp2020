@@ -1,0 +1,61 @@
+{{!-- Dialog content for when a ranged weapon is fired --}}
+{{!-- By this point, fire mode and range should be selected, and possibly target --}}
+<form class="cyberpunk weapon-modifiers">
+    {{#each modifierGroups as |group|}}
+        <div class="field-list">
+            {{#each group}}
+                {{!-- Have to set the context to be values for now cos fields just look things up in their context, and values is where the actual values are --}}
+                {{!-- This COULD be neater if we make fields look in a specific place (eg values) --}}
+                {{#with ../../defaultValues}}
+                    {{>(template ../fieldPath) label=../localKey edit=../dataPath choices=../choices noTranslateChoices=../noTranslateChoices allowBlank=../allowBlank readOnly=../readOnly}}
+                {{/with}}
+            {{/each}}
+        </div>
+    {{/each}}
+
+    {{#if isRanged}}
+    <div class="field-list">
+      <div class="field">
+        <label>{{CPLocal "ShotsLeft"}}</label>
+        <span class="flex-pad"></span>
+        <input type="number"
+               class="number nogrow nowidth"
+               value="{{shotsLeft}}"
+               readonly />
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if (hasElements targetTokens)}}
+        <h2>{{CPLocal "Targets"}}</h2>
+        <div class="fieldrow" style="margin-bottom: 5px; width: auto">
+        {{#each targetTokens}}
+            <div class="field">
+                <span style="width: 100%">{{this.name}}</span>
+            </div>
+        {{/each}}
+        </div>
+    {{/if}}
+
+    {{#if showAdvDis}}
+    <div class="field-list">
+        <div class="field full-width">
+            <label>{{CPLocal "Advantage"}}</label>
+            <input type="checkbox" name="advantage" class="adv-dis adv">
+        </div>
+        <div class="field full-width">
+            <label>{{CPLocal "Disadvantage"}}</label>
+            <input type="checkbox" name="disadvantage" class="adv-dis dis">
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="flexrow" style="justify-content: flex-end; gap: 8px;">
+    {{#if isRanged}}
+        <button type="button" class="reload">{{CPLocal "Reload"}}</button>
+    {{/if}}
+    <button type="submit" name="submit" class="fire" value="1" autofocus>
+        {{CPLocal "OK"}}
+    </button>
+    </div>
+</form>

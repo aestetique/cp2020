@@ -1,0 +1,17 @@
+<div class="armor-display">
+    {{#each hitLocations as |hitLoc name|}}
+    <div class="field armor-segment" style="grid-area: {{name}}">
+        {{#if hitLoc.location}}
+        <label class="segment-loc" title="{{CPLocal "HitLoc"}}">
+            <p class="inactive">{{displayRange hitLoc.location}}</p>
+        </label>
+        {{/if}}
+
+        {{!-- Ablate and repair buttons aren't functional yet, but ARE styled --}}
+        {{!-- <span class="segment-ablate action inactive" title={{CPLocal "Ablate"}} data-hit-loc="{{name}}">-</span> --}}
+        <input type="number" class="segment-sp {{#unless ../edit}}not-editable{{/unless}}" title="{{CPLocal "SPFull"}}" name="system.{{../hitLocsName}}.{{name}}.stoppingPower" value="{{hitLoc.stoppingPower}}" {{#unless ../edit}}readonly{{/unless}}>
+        {{!-- <span class="segment-repair action inactive" title="{{CPLocal "Repair"}}" data-hit-loc="{{name}}">+</span> --}}
+        <label class="segment-name">{{shortCPLocal name}}</label>
+    </div>
+    {{/each}}
+</div>

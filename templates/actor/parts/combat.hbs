@@ -1,0 +1,65 @@
+{{!-- Actor sheet's combat tab --}}
+<div class="combat-tab">
+    <section class="combat-rolls">
+        <div class="flexrow flexwrap fillwidth">
+            <div class="field roll-initiative">
+                <label class="fillwidth action">{{CPLocal "Initiative"}}</label>
+            </div>
+            <div class="field">
+                <input class="roll-initiative-modificator" value="{{initiativeMod}}" placeholder="Modifier">
+            </div>
+            <div class="field stun-death-save">
+                {{!-- Action on label to override pointer --}}
+                <label class="fillwidth action">{{CPLocal "StunDeathSave"}}</label>
+            </div>
+            <div class="field">
+                <input class="roll-stun-death-modificator" value="{{StunDeathMod}}" placeholder="Modifier"></input>
+            </div>
+        </div>
+    </section>
+    
+    <section class="armor-section">
+        {{!-- TODO: It'd be quite possible to loop through hit locations here, I think. Would work well for other creatures. --}}
+        <header>
+            <h2>{{CPLocal "Armor"}}</h2>
+        </header>
+
+        {{> (template "actor/parts/armor-display") hitLocations=system.hitLocations hitLocsName="hitLocations"}}
+        <div class="field margin-bottom">
+            <label for="system.stats.ref.armorMod">{{CPLocal "Encumbrance"}}</label>
+            <span class="flex-pad"></span>
+            <input type="number" name="system.stats.ref.armorMod" value="{{system.stats.ref.armorMod}}" class="number nogrow not-editable" readonly>
+        </div>
+        
+        <div class="field-list one-col">
+            {{#each gear.armor}}
+            <div class="field item-edit" data-item-id="{{id}}">
+                <div class="field-image" style="background-image: url({{img}})" data-item-id="{{id}}"></div>
+                <label class="name">{{name}}</label>
+                <span class="flex-pad"></span>
+                <span>
+                    <label class="inactive">{{armorSummary system.coverage}}</label>
+                </span>
+            </div>
+            {{/each}}
+        </div>
+        
+    </section>
+    <section class="weapons-list">
+        <header>
+            <h2>{{CPLocal "Weapons"}}</h2>
+        </header>
+        {{#each gear.weapons as |weapon|}}
+            <div class="fire-weapon field action" data-item-id="{{weapon.id}}">
+                <div class="no-action field-image item-edit" style="background-image: url({{weapon.img}})" data-item-id="{{weapon.id}}"></div>
+                <label class="name">{{weapon.name}}</label>
+                <span class="flex-pad"></span>
+                <span>
+                    {{#with weapon.system}}
+                    <div class="field-label inactive">{{#if attackType}}{{attackType}}{{else}}{{weaponType}}{{/if}}</div>
+                    {{/with}}
+                </span>
+            </div>
+        {{/each}}
+    </section>
+</div>

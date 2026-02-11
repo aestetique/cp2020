@@ -1,0 +1,68 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+    {{!-- Sheet Header --}}
+    <header class="cyberheader">
+        <div class="fieldrow">
+            <h1 class="title">
+                <input type="text" class="field-value" name="name"  value="{{actor.name}}"/>
+            </h1>
+            {{#if (equals actor.type "npc")}}
+                <div class="field">
+                    <label>{{CPLocal "NPC"}}</label>
+                </div>
+            {{/if}}
+            {{> (template "fields/string") label="Role" edit="system.role.value"}}
+            {{> (template "fields/number") label="Age" edit="system.age" isNum=true}}
+            {{> (template "fields/number") label="Points" edit="system.points"}}
+            </div>
+        </div>
+        
+        <div class="flexrow">
+            <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}"/>
+            <div class="flexcol">
+                {{> "systems/cyberpunk2020/templates/actor/parts/statsrow.hbs"}}
+                {{> "systems/cyberpunk2020/templates/actor/parts/woundtracker.hbs"}}
+            </div>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="skills">{{localize 'CYBERPUNK.TabSkills'}}</a>
+        <a class="item" data-tab="combat">{{localize 'CYBERPUNK.TabCombat'}}</a>
+        <a class="item" data-tab="gear">{{localize 'CYBERPUNK.TabGear'}}</a>
+        <a class="item" data-tab="cyber">{{localize 'CYBERPUNK.TabCyber'}}</a>
+        <a class="item" data-tab="life">{{localize 'CYBERPUNK.Life'}}</a>
+        <a class="item" data-tab="netrun">{{localize 'CYBERPUNK.NetRun'}}</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        <div class="tab skills flexcol" data-group="primary" data-tab="skills">
+            {{> "systems/cyberpunk2020/templates/actor/parts/skills.hbs"}}
+        </div>
+
+        <div class="tab combat flexcol" data-group="primary" data-tab="combat">
+            {{> "systems/cyberpunk2020/templates/actor/parts/combat.hbs"}}
+        </div>
+
+        <div class="tab gear flexcol" data-group="primary" data-tab="gear">
+            {{> "systems/cyberpunk2020/templates/actor/parts/gear.hbs"}}
+        </div>
+        
+        <div class="tab gear flexcol" data-group="primary" data-tab="cyber">
+            {{> "systems/cyberpunk2020/templates/actor/parts/cyberware.hbs"}}
+        </div>
+
+        {{!-- Biography Tab --}}
+        <div class="tab life flexcol" data-group="primary" data-tab="life">
+            <div class="biography">
+                {{editor system.notes target="system.notes" button=true owner=owner editable=options.editable}}
+            </div>
+        </div>
+
+        <div class="tab gear flexcol" data-group="primary" data-tab="netrun">
+            {{> "systems/cyberpunk2020/templates/actor/parts/netrunning.hbs"}}
+        </div>
+    </section>
+</form>
+
