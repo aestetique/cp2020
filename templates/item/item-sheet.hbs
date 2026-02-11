@@ -1,0 +1,48 @@
+
+{{!-- Use as 
+    {{#> systems/cyberpunk2020/templates/item/item-sheet.hbs}}
+        settings tab contents
+    {{/systems/cyberpunk2020/templates/item/item-sheet.hbs}}
+ --}}
+<form class="cyberpunk {{cssClass}}" autocomplete="off">
+    <header class="flexrow nowrap">
+        <div class="flexcol item-info">
+            <span class="infoline">
+                <h1 class="title">
+                    <input class="field-value fillwidth" name="name" type="text" value="{{item.name}}" placeholder="{{CPLocal 'ItemName'}}"/>
+                </h1>
+                <span class="summary inactive">{{> (varTemplate "item/parts/[VAR]/summary.hbs" item.type)}}</span>
+            </span>
+            <textarea class="flavor" name="system.flavor" placeholder="{{CPLocal 'Flavor'}}">{{system.flavor}}</textarea>
+        </div>
+        <img class="item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="settings">{{CPLocal 'Settings'}}</a>
+        <a class="item" data-tab="notes">{{CPLocal 'Notes'}}</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        
+        {{!-- Notes Tab --}}
+        <div class="tab" data-group="primary" data-tab="notes">
+            {{editor system.notes target="system.notes" button=true owner=owner editable=options.editable}}
+        </div>
+
+        {{!-- Attributes Tab --}}
+        <div class="tab" data-group="primary" data-tab="settings">
+            
+            {{#unless (equals item.type "misc")}}
+            {{> (varTemplate "item/parts/[VAR]/settings.hbs" item.type)}}
+            {{/unless}}
+            {{!-- Not all items have common settings --}}
+            {{!-- May be worth instead other settings things just including the template on their own --}}
+            {{#if (hasProperty item.system "equipped")}}
+            {{> (varTemplate "item/parts/misc/settings.hbs" item.type)}}
+            {{/if}}
+        </div>
+    </section>
+</form>

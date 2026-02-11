@@ -1,0 +1,15 @@
+<div class="wound-tracker">
+    {{!-- 10 wound states - Light, Serious, Critical, Mortal0-6 --}}
+    {{#each woundStates as |stateName stateNo|}}
+    <div class="wound-state">
+        <div class="wound-state-label">{{stateName}}</div>
+        <div class="damageholder">
+            {{!-- damageBoxes gives context. WoundNo is which wound, classes dictate which are filled and which have left/right borders --}}
+            {{#damageBoxes stateNo ../system.damage}}
+                {{!-- span instead of radio, because radio doesn't allow clicking of current wound to toggle --}}
+                <span data-damage={{woundNo}} class="damage {{classes}}"></span>
+            {{/damageBoxes}}
+        </div>
+    </div>
+    {{/each}}
+</div>

@@ -1,0 +1,1238 @@
+* {
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: rgb(90, 90, 90);
+  border-radius: 0px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-width: 0px;
+  background-color: black;
+}
+
+.cyberpunk section.window-content {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: bold;
+  overflow-y: scroll;
+}
+.cyberpunk section.window-content .editor-content {
+  font-weight: normal;
+  border: 2px solid black;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.cyberpunk section.window-content nav.tabs {
+  border-bottom: 2px solid black;
+  box-sizing: content-box;
+  flex: 0;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.cyberpunk section.window-content nav.tabs > .item {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  flex-grow: 1;
+}
+.cyberpunk section.window-content nav.tabs > .item.active {
+  color: whitesmoke;
+  background-color: black;
+  text-shadow: unset;
+}
+.cyberpunk section.window-content .meter-gauge {
+  border: 2px solid black;
+}
+.cyberpunk section.window-content .meter-gauge > span {
+  display: block;
+  min-height: 6px;
+  background-color: green;
+}
+.cyberpunk section.window-content .meter-gauge > span.danger {
+  background-color: darkorange;
+}
+
+/* Overall sheet structure */
+.sheet header.cyberheader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-grow: 0;
+}
+.sheet header.cyberheader > div {
+  margin-bottom: 3px;
+}
+
+.cyberpunk h2 {
+  font-family: "Noto Sans", sans-serif;
+  font-variant: small-caps;
+  font-weight: bold;
+}
+
+.cyberpunk .fieldrow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.cyberpunk .fieldrow > * {
+  flex-grow: 1;
+  margin-right: 5px;
+}
+
+.cyberpunk h1.title {
+  font-size: 1.75em;
+  font-weight: bold;
+  font-variant: petite-caps;
+  border: solid 0px;
+  margin-bottom: 0px;
+  padding-right: 5px;
+  min-width: 6em;
+  flex-grow: 2;
+}
+.cyberpunk h1.title > input {
+  border: 0 none;
+  border-radius: 0px;
+  padding: unset;
+  height: unset;
+  min-width: unset;
+  background-color: unset;
+  font: inherit;
+  color: black;
+  font-family: "Open Sans ExtraBold", sans-serif;
+  font-weight: bold;
+}
+
+.cyberpunk .flexwrap {
+  flex-wrap: wrap !important;
+}
+
+.cyberpunk .nowrap {
+  flex-wrap: nowrap !important;
+}
+
+.cyberpunk .fillwidth {
+  width: 100% !important;
+}
+
+.cyberpunk .nogrow {
+  flex-grow: 0 !important;
+}
+
+.profile-img {
+  max-height: 170px;
+  max-width: 20%;
+  flex-shrink: 2;
+  width: 15%;
+  margin-right: 4px;
+}
+
+.sheet-body .tab {
+  height: 100%;
+}
+
+.editor {
+  height: 100%;
+}
+
+.flex-pad {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.field-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  grid-auto-rows: auto;
+  flex-grow: 0;
+}
+.field-list + .spacer {
+  flex-grow: 1;
+}
+.field-list.one-col {
+  grid-template-columns: 1fr;
+}
+.field-list.full-item-width .field {
+  width: 100%;
+}
+
+.span-two-cells {
+  grid-column-end: span 2;
+}
+
+.field-list + * {
+  margin-top: 10px;
+}
+
+.margin-bottom {
+  margin-bottom: 10px;
+}
+
+.roll-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  max-width: 32px;
+  width: 32px;
+}
+
+.cyberpunk .field .roll-results {
+  overflow-y: hidden;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.cyberpunk .field .roll-results > span.roll-result {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+details[open] summary ~ * {
+  animation: sweep 0.5s ease-in-out;
+}
+
+@keyframes sweep {
+  0% {
+    opacity: 0;
+    margin-left: -10px;
+  }
+  100% {
+    opacity: 1;
+    margin-left: 0px;
+  }
+}
+/**
+* A convenience class to prevent boilerplate
+* Best used like so, in its basic form:
+* <div class="field"><label></label><input></div>
+* 
+* Can include a div with a background using .field-image, and the size of the input adjusted with the classes .number, .smallnumber, or .textsize
+* This specifically does not adjust margins - that's up to containers.
+* Adjusting field size is best done by changing the font size and/or the childrens' padding
+*/
+.cyberpunk .field {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border-width: 2px;
+  border-style: solid;
+  border-color: black;
+}
+.cyberpunk .field select option {
+  background-color: black;
+}
+.cyberpunk .field > * {
+  padding: 2px 3px 2px 0px;
+}
+.cyberpunk .field > *, .cyberpunk .field > span > *, .cyberpunk .field > div > * {
+  background-color: black;
+  color: whitesmoke;
+  font-weight: bold;
+  font-variant: small-caps;
+  padding-left: calc(5px - 2px);
+  padding-right: 5px;
+}
+.cyberpunk .field > * .field, .cyberpunk .field > *.field-list, .cyberpunk .field > span > * .field, .cyberpunk .field > span > *.field-list, .cyberpunk .field > div > * .field, .cyberpunk .field > div > *.field-list {
+  background-color: unset;
+  color: black;
+  padding: unset;
+}
+.cyberpunk .field .field-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  max-width: 32px;
+  width: 32px;
+  padding: 0px 3px 0px 0px;
+}
+.cyberpunk .field:hover > .field-image.roll {
+  background-image: url("../../../icons/svg/d10-grey.svg") !important;
+}
+.cyberpunk .field > input {
+  border: 0 none;
+  border-radius: 0px;
+  padding: unset;
+  height: unset;
+  min-width: unset;
+  background-color: unset;
+  font: inherit;
+  background-color: unset;
+  color: black;
+  font-family: "Open Sans ExtraBold", sans-serif;
+  padding-left: 5px;
+  padding-right: 0px;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.cyberpunk .field > input[type=checkbox] {
+  -webkit-appearance: checkbox;
+}
+.cyberpunk .field > input[type=number] {
+  width: 2.5em;
+  padding-left: 0px;
+  text-align: center;
+}
+.cyberpunk .field > input[type=number].smallnumber {
+  width: 1.5em;
+}
+.cyberpunk .field > input[type=text] {
+  width: 6em;
+  min-width: 2em;
+}
+.cyberpunk .field select {
+  border-radius: 0px;
+  border: 1px solid rgb(90, 90, 90);
+  width: 50%;
+}
+.cyberpunk .field p {
+  margin: 0px 3px 0px 3px;
+}
+.cyberpunk .field i.fas {
+  padding-left: 0;
+  padding-right: 0;
+  font-size: small;
+  color: rgba(255, 255, 255, 0.7);
+}
+.cyberpunk .field i.fas + .fas {
+  padding-left: 2px;
+}
+.cyberpunk .field label.larger {
+  font-size: larger;
+  font-style: italic;
+}
+
+.inactive {
+  filter: opacity(0.45);
+}
+
+.action {
+  cursor: pointer;
+}
+.action > * {
+  cursor: pointer;
+}
+
+.no-action {
+  cursor: default;
+}
+
+.not-editable {
+  cursor: not-allowed;
+}
+
+.invisible {
+  display: none;
+}
+
+.statsrow {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+}
+
+.statsrow > div.stat {
+  display: flex;
+  flex-direction: column;
+  width: 2em;
+  flex-grow: 1;
+  flex-shrink: 1;
+  font-weight: bold;
+  border: 0 none;
+}
+.statsrow > div.stat + .stat {
+  margin-left: 3px;
+}
+.statsrow > div.stat div, .statsrow > div.stat input {
+  border: 0 none;
+  border-radius: 0px;
+  padding: unset;
+  height: unset;
+  min-width: unset;
+  background-color: unset;
+  font: inherit;
+  text-align: center;
+}
+.statsrow > div.stat label {
+  padding: 3px 0px 3px 0px;
+  text-align: center;
+}
+.statsrow > div.stat .stat-total {
+  border-color: black;
+  border-style: none solid solid solid;
+  border-width: 2px;
+  font-size: 13pt;
+  font-weight: bold;
+}
+.statsrow > div.stat .stat-base {
+  font-size: 9pt;
+  color: whitesmoke;
+  background: black;
+  border-color: black;
+  border-style: none solid none solid;
+  border-width: 2px;
+}
+.statsrow > div.stat .stat-mod {
+  font-size: 9pt;
+  background: rgb(90, 90, 90);
+  color: whitesmoke;
+  padding: 0px 1px 0px 1px;
+}
+.statsrow > div.stat .stat-temp {
+  font-size: 9pt;
+  background: rgb(90, 90, 90);
+  color: whitesmoke;
+  border-right-style: solid;
+  border-right-color: black;
+  border-width: 2px;
+}
+
+.stats > .derivedrow {
+  margin-top: -3px;
+  margin-bottom: 8px;
+  display: flex;
+  font-size: smaller;
+}
+.stats > .derivedrow > .field {
+  flex-grow: 1;
+}
+.stats > .derivedrow > .field * {
+  font-size: small;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.stats > .derivedrow > .field input {
+  width: 2em;
+  flex-grow: 2;
+  flex-shrink: 2;
+}
+.stats > .derivedrow > .field.ma {
+  align-self: flex-end;
+}
+.stats > .derivedrow > .field + .statderive.liftstat {
+  margin-right: 3px;
+}
+
+div.statderive {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  flex-grow: 1;
+  font-size: smaller;
+}
+div.statderive > input {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+div.statderive .value.rightborder {
+  border-right-width: 2px;
+}
+
+.wound-tracker {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 2;
+  margin-right: -3px;
+}
+.wound-tracker .wound-state {
+  display: flex;
+  flex-grow: 1;
+  height: fit-content;
+  flex-direction: column;
+  margin-right: 3px;
+  margin-top: 5px;
+  border: solid black;
+  border-width: 0px 2px 2px 2px;
+}
+.wound-tracker .wound-state-label {
+  background-color: black;
+  color: whitesmoke;
+  font-size: smaller;
+  font-variant: small-caps;
+  padding: 2px;
+  padding-left: 2px;
+}
+.wound-tracker .damageholder {
+  display: flex;
+  flex-grow: 1;
+  height: 0.5em;
+}
+.wound-tracker .damage {
+  border: 0 none;
+  border-radius: 0px;
+  padding: unset;
+  height: unset;
+  min-width: unset;
+  background-color: unset;
+  font: inherit;
+  position: unset;
+  top: unset;
+  margin: unset;
+}
+.wound-tracker .damage:checked {
+  filter: none;
+}
+.wound-tracker .damage {
+  height: 100%;
+  width: 1.3em;
+  flex-grow: 1;
+  border-style: solid;
+  border-width: 0px 1px 0px 1px;
+  border-color: black;
+  transition: background-color 0.25s;
+}
+.wound-tracker .damage.filled:hover {
+  background-color: rgba(178, 34, 34, 0.7);
+}
+.wound-tracker .damage.unfilled:hover {
+  background-color: rgba(178, 34, 34, 0.3);
+}
+.wound-tracker .damage + .damage {
+  border-left-width: 0px;
+}
+.wound-tracker .damage.leftmost {
+  border-left-width: 0px;
+}
+.wound-tracker .damage.rightmost {
+  border-right-width: 0px;
+}
+.wound-tracker .filled {
+  background-color: firebrick;
+}
+.wound-tracker .unfilled {
+  background-color: transparent;
+}
+
+.skill-top-matter {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 3px;
+  flex-grow: 0;
+}
+.skill-top-matter > * {
+  flex-grow: 1;
+}
+.skill-top-matter div.search-icon {
+  background-color: black;
+  background-image: url(../img/search.png);
+}
+
+.field.skill > * {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.field.skill > label.skill-roll {
+  flex: 4;
+}
+.field.skill label.chip-toggle {
+  background-color: black;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 3px;
+}
+.field.skill label.chip-toggle > * {
+  font-variant: all-small-caps;
+}
+.field.skill label.chip-toggle .skill-stat-display {
+  flex: 1;
+}
+.field.skill input[type=checkbox] {
+  display: none;
+}
+.field.skill .chip-icon {
+  border: 0px;
+  border-radius: 0px;
+  background-size: cover;
+  height: 1.5em;
+  width: 1.5em;
+  background-image: url(../img/chip.png);
+}
+
+.skill-group .field.skill {
+  width: 100%;
+}
+
+.cyberpunk textarea.flavor {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: bold;
+  font-style: italic;
+  align-self: stretch;
+  border: 2px solid black;
+  border-radius: 0px;
+  min-height: 5em;
+}
+
+.item-info {
+  width: 80%;
+}
+
+.item-img {
+  max-height: 150px;
+  max-width: 20%;
+  flex-shrink: 2;
+  flex-grow: 0;
+  min-width: 7.5em;
+  width: 20%;
+  margin-left: 4px;
+}
+
+.infoline {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.summary {
+  flex-grow: 0;
+  font-variant: small-caps;
+  font-size: 15px;
+  white-space: nowrap;
+  margin-right: 5px;
+}
+
+.gear label {
+  min-width: 128px;
+  padding-right: 10px;
+}
+.gear > span.item-delete {
+  display: none;
+}
+.gear:hover > span.item-delete {
+  display: inline;
+}
+
+.cyberpunk-card h2 {
+  font-family: "Noto Sans", sans-serif;
+  font-variant: small-caps;
+  font-weight: bold;
+  border-bottom: 2px solid black;
+}
+.cyberpunk-card .roll-image {
+  margin-right: 5px;
+}
+.cyberpunk-card .part-total.crit {
+  background-color: rgba(119, 185, 104, 0.7215686275);
+}
+.cyberpunk-card .part-total.fumble {
+  background-color: rgba(209, 80, 47, 0.7215686275);
+}
+.cyberpunk-card.autofire .damage-tally {
+  margin-left: 3em;
+}
+
+.combat-tab {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 10fr;
+  grid-template-areas: "rolls rolls" "weapons armor";
+  column-gap: 10px;
+  row-gap: 10px;
+  align-items: start;
+}
+.combat-tab .armor-section {
+  grid-area: armor;
+}
+.combat-tab .armor-section .armors-mockup .field label {
+  min-width: 3em;
+}
+.combat-tab .combat-rolls {
+  grid-area: rolls;
+  display: flex;
+  flex-flow: column nowrap;
+}
+.combat-tab .combat-rolls .field + .field {
+  margin-left: 5px;
+}
+.combat-tab .weapons-list {
+  grid-area: weapons;
+  display: flex;
+  flex-flow: column nowrap;
+}
+.combat-tab .weapons-list > .field {
+  margin-bottom: 3px;
+}
+
+.cyberpunk .armor-display {
+  max-height: 200px;
+  max-width: 25em;
+  padding-left: 10%;
+  padding-right: 10%;
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas: ". Head ." "lArm Torso rArm" "lLeg . rLeg";
+  column-gap: 3px;
+  row-gap: 3px;
+  justify-items: center;
+}
+.cyberpunk .armor-display .armor-segment {
+  width: 100%;
+  border: solid black;
+  border-width: 2px 2px 0px 2px;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-areas: "loc loc loc" "ablate sp repair" "name name name";
+}
+.cyberpunk .armor-display .armor-segment .segment-sp {
+  grid-area: sp;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 100%;
+  background-color: transparent;
+  color: black;
+  font-family: "Noto Sans", sans-serif;
+}
+.cyberpunk .armor-display .armor-segment .segment-ablate {
+  grid-area: ablate;
+}
+.cyberpunk .armor-display .armor-segment .segment-repair {
+  grid-area: repair;
+}
+.cyberpunk .armor-display .armor-segment .segment-ablate, .cyberpunk .armor-display .armor-segment .segment-repair {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  line-height: 100%;
+  display: none;
+}
+.cyberpunk .armor-display .armor-segment:hover .segment-ablate, .cyberpunk .armor-display .armor-segment:hover .segment-repair {
+  display: inline;
+}
+.cyberpunk .armor-display .armor-segment .segment-name {
+  grid-area: name;
+  text-align: center;
+  padding: 0px;
+}
+.cyberpunk .armor-display .armor-segment .segment-loc {
+  grid-area: loc;
+  text-align: center;
+  line-height: 100%;
+  padding-left: 0px;
+  padding-right: 0px;
+  border-top: 0px;
+  margin-top: -2px;
+}
+
+/* The cleanup button in the skill search */
+.field.skill-search-field { position: relative; }
+
+.field.skill-search-field > input.skill-search {
+  padding-right: 1.9rem;
+  box-sizing: border-box;
+}
+
+
+.field.skill-search-field > .skill-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 0;
+  background: rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.7);
+  font: inherit;
+  line-height: 22px;
+  text-align: center;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.field.skill-search-field > .skill-search-clear:hover {
+  background: rgba(0,0,0,0.16);
+  color: rgba(0,0,0,0.9);
+}
+
+.field.skill-search-field > .skill-search-clear.is-visible {
+  display: inline-block;
+}
+
+.cyberpunk .field.skill-search-field > .skill-search-clear {
+  background: rgba(0,0,0,0.08) !important;
+  font-variant: normal !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* -- Skill modifier checkbox ------------------------------------ */
+.skill-mod-toggle input[type=checkbox] {
+  display: inline-block !important;
+  margin: 0 4px;
+}
+/* -----------------------------------------------------------------
+ *  Weapon‑modifier dialog
+ * ----------------------------------------------------------------- */
+#weapon-modifier,
+#weapon-modifier form,
+#weapon-modifier .window-content {
+  height: auto !important;
+  max-height: none !important;
+}
+
+#weapon-modifier .window-content {
+  overflow-y: visible !important;
+  padding-right: 8 !important;
+}
+
+
+/**********************************************
+
+ *  NETRUN TAB
+
+ **********************************************/
+
+ .netrun-container {
+
+  border: 3px solid black;
+
+  width: 100%;
+
+  margin-top: 10px;
+
+  box-sizing: border-box;
+
+  padding: 0;
+
+}
+
+
+
+.netrun-row {
+
+  display: flex;
+
+  flex-direction: row;
+
+  border-bottom: 3px solid black;
+
+}
+
+.netrun-row:last-child {
+
+  border-bottom: none;
+
+}
+
+
+
+.netrun-cell {
+
+  flex: 1;
+
+  border-right: 3px solid black;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+}
+
+.netrun-cell:last-child {
+
+  border-right: none;
+
+}
+
+
+
+/* String of 5 columns (CPU, SPEED, DATA WALL, RAM)*/
+
+.netrun-row-four {
+
+  display: flex;
+
+  flex-direction: row;
+
+  width: 100%;
+
+  border-bottom: 3px solid black;
+
+}
+
+.netrun-row-four .netrun-cell {
+
+  flex: 1;
+
+  border-right: 3px solid black;
+
+  padding: 6px;
+
+}
+
+.netrun-row-four .netrun-cell:last-child {
+
+  border-right: none;
+
+}
+
+.netrun-cell-ram {
+
+  width: auto !important;
+
+}
+
+
+
+.netrun-label {
+
+  display: block;
+
+  font-weight: bold;
+
+  margin-bottom: 4px;
+
+}
+
+
+
+.netrun-icon-frame {
+
+  width: 80px;
+
+  height: 80px;
+
+  border: 2px solid #333;
+
+  background-color: #ddd;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 5px;
+
+  cursor: pointer;
+
+}
+
+.netrun-icon-frame img {
+
+  max-width: 80px;
+
+  max-height: 80px;
+
+  object-fit: cover;
+
+}
+
+
+
+.netrun-cell input[type="text"],
+
+.netrun-cell input[type="number"] {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 4px;
+
+  margin-bottom: 3px;
+
+}
+
+
+
+.short-input {
+
+  max-width: 60px !important;
+
+}
+
+/* RAM (Used/Max) */
+
+.netrun-ram-short {
+
+  width: 60px !important;
+
+}
+
+
+
+/**********************************************
+
+ *  OPTIONS ROW
+
+ **********************************************/
+
+.netrun-options-row {
+
+  display: flex;
+
+  flex-direction: row;
+
+  width: 100%;
+
+  border-bottom: 3px solid black;
+
+}
+
+.netrun-options-row .netrun-cell {
+
+  flex: 1;
+
+  border-right: 3px solid black;
+
+  padding: 6px;
+
+}
+
+.netrun-options-row .netrun-cell:last-child {
+
+  border-right: none;
+
+}
+
+
+
+.deck-type-select {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-top: 5px;
+
+  margin-bottom: 5px;
+
+  padding: 4px;
+
+}
+
+
+
+.deck-options {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+}
+
+.deck-option {
+
+  display: flex;
+
+  align-items: center;
+
+  background-color: transparent;
+
+  color: black;
+
+}
+
+.deck-option input[type="checkbox"] {
+
+  margin-right: 5px;
+
+}
+
+
+
+/**********************************************
+
+ *  ACTIVE PROGRAMS
+
+ **********************************************/
+
+.netrun-active-programs-container {
+
+  border: 3px solid black;
+
+  padding: 6px;
+
+  margin-top: 5px;
+
+}
+
+
+
+.netrun-active-icons {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 5px;
+
+
+
+  min-height: 100px;
+
+  border: 2px dashed #999;
+
+  margin-bottom: 15px;
+
+}
+
+
+
+.netrun-active-icon {
+
+  width: 120px;
+
+  height: 120px;
+
+  border: 2px solid black;
+
+  background-color: #ccc;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+
+
+.netrun-active-icon img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+}
+
+
+
+/**********************************************
+
+ *  ALL PROGRAMS
+
+ **********************************************/
+
+
+
+/* List (2 columns) */
+
+.netrun-program-list {
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 4px;
+
+  grid-auto-rows: auto;
+
+  margin-top: 5px;
+
+  border: 3px solid black;
+
+  padding: 6px;
+
+}
+
+/* Each program (tile) - background on the whole area */
+
+.field.netrun-program {
+
+  display: flex;
+
+  flex-direction: row;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+
+
+  background-color: rgb(90, 90, 90);
+
+  color: whitesmoke;
+
+  border: 2px solid black;
+
+  padding: 4px;
+
+  margin-bottom: 0;
+
+}
+
+.field.netrun-program .program-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+.field.netrun-program .program-left img {
+
+  width: 32px;
+
+  height: 32px;
+
+  border: 2px solid #333;
+
+  object-fit: cover;
+
+}
+
+.field.netrun-program .program-controls i {
+
+  margin-left: 5px;
+
+  cursor: pointer;
+
+}
+
+.field.netrun-program .program-type {
+
+  font-style: italic;
+
+  color: #ccc;
+
+}
+
+.netrun-cost-info {
+  margin-top: 8px;
+  border-top: 1px dashed #666;
+  padding-top: 4px;
+
+  font-size: inherit;
+  font-weight: bold;
+  font-variant: small-caps;
+  line-height: 1.2em;
+}
+
+.netrun-cost-info .strong {
+  font-weight: bold;
+}
+
+/*# sourceMappingURL=cyberpunk2020.css.map */

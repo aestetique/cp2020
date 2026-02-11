@@ -1,0 +1,17 @@
+<div class="field-list">
+    {{> (template "fields/string") label="CyberwareType" edit="system.cyberwareType"}}
+    {{> (template "fields/string") label="CyberwareSubtype" edit="system.cyberwareSubtype"}}
+    {{> (template "fields/string") label="SurgeryCode" edit="system.surgCode"}}
+    <div class="field">
+        
+        <label for="system.humanityCost">{{CPLocal "HumanityCostRoll"}}</label>
+        <span class="flex-pad"></span>
+        <input class="textsize" name="system.humanityCost" S
+            type="text" value="{{system.humanityCost}}"/>
+        <div class="humanity-cost-roll field-image action" style="background-image: url('../../../icons/svg/d10-grey.svg')"></div>
+    </div>
+    {{> (template "fields/number") label="HumanityLoss" edit="system.humanityLoss"}}
+    {{> (template "fields/string") label="Abbrev" edit="system.abbrev"}}
+    {{> (template "fields/number") label="Slots" edit="system.slots"}}
+    {{> (template "fields/number") label="Spaces" edit="system.spaces"}}
+</div>
