@@ -1601,9 +1601,6 @@ div.statderive .value.rightborder {
 .damage-grid__icon--muted {
   opacity: 0.5;
 }
-.damage-grid__icon--muted img {
-  filter: brightness(0) invert(0.5);
-}
 
 .damage-grid__value {
   flex: 1;
@@ -4959,6 +4956,12 @@ input.skill-value.skill-level-input:focus {
 .melee-attack-wrapper .location-grid.disabled .location-btn {
   background: #26282F;
   cursor: default;
+}
+.reload-dialog-wrapper .location-grid.disabled .location-btn img,
+.ranged-attack-wrapper .location-grid.disabled .location-btn img,
+.range-selection-wrapper .location-grid.disabled .location-btn img,
+.melee-attack-wrapper .location-grid.disabled .location-btn img {
+  filter: none;
 }
 .reload-dialog-wrapper .location-btn,
 .ranged-attack-wrapper .location-btn,
