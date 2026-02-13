@@ -1,99 +1,9 @@
 import { sortSkills, SortModes } from "./actor/skill-sort.js";
 import { localize, safeLocalize } from "./utils.js";
 
-const OLD_NAMESPACE = "cp2020";
-const NEW_NAMESPACE = "cyberpunk";
-
 const updateFuncs = {
     "Actor": migrateActor,
     "Item": migrateItem
-}
-
-/**
- * Migrate flags from old "cp2020" namespace to "cyberpunk" on a single document.
- */
-async function migrateDocFlags(doc) {
-    const oldFlags = doc.flags?.[OLD_NAMESPACE];
-    if (!oldFlags || Object.keys(oldFlags).length === 0) return;
-
-    const updates = {};
-    for (const [key, value] of Object.entries(oldFlags)) {
-        updates[`flags.${NEW_NAMESPACE}.${key}`] = value;
-    }
-    updates[`flags.${OLD_NAMESPACE}`] = null;
-
-    await doc.update(updates);
-}
-
-/**
- * One-time migration of all document flags from "cp2020" to "cyberpunk" namespace.
- * Also migrates settings stored under the old namespace.
- */
-export async function migrateNamespace() {
-    if (!game.user.isGM) return;
-
-    // Check if already migrated
-    try {
-        const alreadyMigrated = game.settings.get(NEW_NAMESPACE, "namespaceMigrated");
-        if (alreadyMigrated) return;
-    } catch (e) {
-        // Setting not registered yet — will be handled below
-    }
-
-    // Migrate settings from old namespace
-    try {
-        const storage = game.settings.storage.get("world");
-        const oldVersion = storage.getItem(`${OLD_NAMESPACE}.systemMigrationVersion`);
-        if (oldVersion) {
-            const currentVersion = game.settings.get(NEW_NAMESPACE, "systemMigrationVersion");
-            if (!currentVersion) {
-                await game.settings.set(NEW_NAMESPACE, "systemMigrationVersion", oldVersion);
-            }
-        }
-        const oldMappings = storage.getItem(`${OLD_NAMESPACE}.skillMappings`);
-        if (oldMappings) {
-            try {
-                const parsed = JSON.parse(oldMappings);
-                await game.settings.set(NEW_NAMESPACE, "skillMappings", parsed);
-            } catch (e) {
-                console.warn("Cyberpunk: Could not parse old skill mappings", e);
-            }
-        }
-    } catch (e) {
-        console.warn("Cyberpunk: Could not migrate old settings", e);
-    }
-
-    // Migrate flags on all documents
-    console.log("Cyberpunk: Migrating flags from cp2020 to cyberpunk namespace...");
-
-    for (const actor of game.actors) {
-        await migrateDocFlags(actor);
-        for (const item of actor.items) {
-            await migrateDocFlags(item);
-        }
-        for (const effect of actor.effects) {
-            await migrateDocFlags(effect);
-        }
-    }
-
-    for (const item of game.items) {
-        await migrateDocFlags(item);
-    }
-
-    for (const msg of game.messages) {
-        await migrateDocFlags(msg);
-    }
-
-    for (const scene of game.scenes) {
-        for (const token of scene.tokens) {
-            if (!token.actorLink && token.actor) {
-                await migrateDocFlags(token.actor);
-            }
-        }
-    }
-
-    await game.settings.set(NEW_NAMESPACE, "namespaceMigrated", true);
-    console.log("Cyberpunk: Namespace migration complete.");
 }
 
 let migrationSuccess = true;

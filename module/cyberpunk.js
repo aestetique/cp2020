@@ -206,9 +206,6 @@ Hooks.once("ready", async function() {
     // Determine whether a system migration is required and feasible
     if ( !game.user.isGM ) return;
 
-    // Migrate flags and settings from old "cp2020" namespace to "cyberpunk"
-    await migrations.migrateNamespace();
-
     // Reconcile skill mappings with current defaults (add new, remove obsolete)
     migrateSkillMappings();
 

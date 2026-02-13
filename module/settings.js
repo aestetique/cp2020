@@ -54,17 +54,6 @@ export function registerSystemSettings() {
   });
 
   /**
-   * Track whether the cp2020 → cyberpunk namespace migration has run
-   */
-  game.settings.register("cyberpunk", "namespaceMigrated", {
-    name: "Namespace Migration",
-    scope: "world",
-    config: false,
-    type: Boolean,
-    default: false
-  });
-
-  /**
    * Skill mappings data (hidden setting that stores the actual configuration)
    */
   game.settings.register("cyberpunk", "skillMappings", {
