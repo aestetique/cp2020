@@ -97,9 +97,6 @@ export const preloadHandlebarsTemplates = async function() {
         // Settings
         "systems/cyberpunk/templates/settings/skill-mapping-config.hbs",
 
-        // Settings
-        "systems/cp2020/templates/settings/skill-mapping-config.hbs",
-
     ]);
   };
   

@@ -353,7 +353,7 @@ export class ReloadDialog extends Application {
       await this.actor.createEmbeddedDocuments("Item", [{
         name: nameParts.join(" "),
         type: "ammo",
-        img: "systems/cp2020/img/items/ammo.svg",
+        img: "systems/cyberpunk/img/items/ammo.svg",
         system: {
           weaponType: ammoWT,
           caliber: weaponCaliber,
