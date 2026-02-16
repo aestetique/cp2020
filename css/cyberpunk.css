@@ -5075,6 +5075,24 @@ input.skill-value.skill-level-input:focus {
 .defence-roll-wrapper .location-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
+.reload-dialog-wrapper .location-btn.disabled,
+.ranged-attack-wrapper .location-btn.disabled,
+.range-selection-wrapper .location-btn.disabled,
+.melee-attack-wrapper .location-btn.disabled,
+.skill-roll-wrapper .location-btn.disabled,
+.defence-roll-wrapper .location-btn.disabled {
+  background: #26282F;
+  cursor: default;
+  pointer-events: none;
+}
+.reload-dialog-wrapper .location-btn.disabled img,
+.ranged-attack-wrapper .location-btn.disabled img,
+.range-selection-wrapper .location-btn.disabled img,
+.melee-attack-wrapper .location-btn.disabled img,
+.skill-roll-wrapper .location-btn.disabled img,
+.defence-roll-wrapper .location-btn.disabled img {
+  filter: none;
+}
 .reload-dialog-wrapper .conditions-grid--single,
 .ranged-attack-wrapper .conditions-grid--single,
 .range-selection-wrapper .conditions-grid--single,

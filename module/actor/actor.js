@@ -57,8 +57,31 @@ export class CyberpunkActor extends Actor {
       return item.system.equipped;
     });
 
+    // Initialize unarmed combat properties BEFORE applying bonuses
+    system.unarmedBaseDamage = "1d3";
+    system.unarmedDamageMultiplier = 1;
+
     // Apply bonuses from equipped tools, drugs, and cyberware
-    const equippedWithBonuses = equippedItems.filter(i => i.type === "tool" || i.type === "drug" || i.type === "cyberware");
+    // For cyberware options, verify base cyberware is also equipped
+    const equippedWithBonuses = equippedItems.filter(i => {
+      if (i.type === "tool" || i.type === "drug") return true;
+      if (i.type === "cyberware") {
+        // For cyberware options, check if base is also equipped
+        if (i.system.isOption) {
+          const baseId = i.getFlag('cyberpunk', 'attachedTo');
+          if (baseId) {
+            const base = this.items.get(baseId);
+            // Option only applies if base exists and is equipped
+            return base && base.system.equipped;
+          }
+          // No base reference = don't apply
+          return false;
+        }
+        // Non-option cyberware always applies if equipped
+        return true;
+      }
+      return false;
+    });
     equippedWithBonuses.forEach(item => {
       const bonuses = item.system.bonuses || [];
       bonuses.forEach(bonus => {
@@ -73,7 +96,7 @@ export class CyberpunkActor extends Actor {
               stats[statKey].tempMod = (stats[statKey].tempMod || 0) + (bonus.value || 0);
             }
           } else if (parts.length === 1) {
-            // Direct property like "initiativeMod"
+            // Direct property like "initiativeMod" or "unarmedDamageMultiplier"
             system[bonus.property] = (system[bonus.property] || 0) + (bonus.value || 0);
           }
         }
@@ -85,10 +108,6 @@ export class CyberpunkActor extends Actor {
     for (const stat of Object.values(stats)) {
       stat.total = stat.base + (stat.tempMod || 0);
     }
-
-    // Unarmed combat properties
-    system.unarmedBaseDamage = "1d6/2";
-    system.unarmedDamageMultiplier = system.unarmedDamageMultiplier || 1;
 
     // Check luck recovery (8 hours = 28,800,000 ms)
     const LUCK_RECOVERY_MS = 8 * 60 * 60 * 1000;
@@ -140,6 +159,10 @@ export class CyberpunkActor extends Actor {
     stats.ref.total = stats.ref.base + stats.ref.tempMod + stats.ref.armorMod;
 
     const move = stats.ma;
+    // Immobilized and prone conditions reduce movement to 0
+    if (this.statuses.has("immobilized") || this.statuses.has("prone")) {
+      move.total = 0;
+    }
     move.run = move.total * 3;
     move.leap = Math.floor(move.run / 4); 
 
@@ -245,18 +268,37 @@ export class CyberpunkActor extends Actor {
       };
     }
 
-    // Cyberarm/cyberleg upgrade unarmed damage
+    // Helper function to check if cyberlimb is structurally broken
+    const isCyberlimbBroken = (limb) => {
+      const current = limb.system.structure?.current ?? 0;
+      const baseDisablesAt = limb.system.disablesAt ?? 0;
+
+      // Find attached options and sum their SDP bonuses
+      const attachedOptions = this.items.filter(i =>
+        i.type === 'cyberware' &&
+        i.system.isOption &&
+        i.getFlag('cyberpunk', 'attachedTo') === limb.id
+      );
+      const sdpBonusTotal = attachedOptions.reduce((sum, opt) => sum + (opt.system.sdpBonus || 0), 0);
+      const disablesAt = baseDisablesAt + sdpBonusTotal;
+
+      return current > 0 && current <= disablesAt;
+    };
+
+    // Cyberarm/cyberleg upgrade unarmed damage (only if equipped and not broken)
     const hasCyberarm = equippedItems.some(i =>
       i.type === 'cyberware' &&
       i.system.cyberwareType === 'cyberlimb' &&
       !i.system.isOption &&
-      ['leftArm', 'rightArm', 'extraArm'].includes(i.system.cyberwareSubtype)
+      ['leftArm', 'rightArm', 'extraArm'].includes(i.system.cyberwareSubtype) &&
+      !isCyberlimbBroken(i)
     );
     const hasCyberleg = equippedItems.some(i =>
       i.type === 'cyberware' &&
       i.system.cyberwareType === 'cyberlimb' &&
       !i.system.isOption &&
-      ['leftLeg', 'rightLeg'].includes(i.system.cyberwareSubtype)
+      ['leftLeg', 'rightLeg'].includes(i.system.cyberwareSubtype) &&
+      !isCyberlimbBroken(i)
     );
     if (hasCyberarm) system.unarmedBaseDamage = "1d6";
     system.kickBaseDamage = hasCyberleg ? "2d6" : "1d6";

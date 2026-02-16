@@ -558,7 +558,19 @@ export class CyberpunkChatMessage extends ChatMessage {
     _onDefenceClick(event, html) {
         event.preventDefault();
         const btn = event.currentTarget;
-        const defenceType = btn.classList.contains("defence-btn--parry") ? "parry" : "dodge";
+
+        // Determine defence type from button class
+        let defenceType;
+        if (btn.classList.contains("defence-btn--parry")) {
+            defenceType = "parry";
+        } else if (btn.classList.contains("defence-btn--dodge")) {
+            defenceType = "dodge";
+        } else if (btn.classList.contains("defence-btn--escape")) {
+            defenceType = "escape";
+        } else {
+            return; // Unknown button type
+        }
+
         const attackTotal = Number(html.querySelector(".defence-buttons")?.dataset.attackTotal) || 0;
 
         // Determine the defending actor: selected token for GM, assigned character for players
@@ -698,6 +710,42 @@ export class CyberpunkChatMessage extends ChatMessage {
             applyBtn.disabled = targets.length === 0;
         }
         defenceBtns.forEach(b => b.disabled = targets.length === 0);
+
+        // Check if targets are restrained or immobilized - if so, show only Escape button
+        const defenceButtons = html.querySelector(".defence-buttons");
+        const anyRestrainedOrImmobilized = targets.some(t =>
+            t.actor?.statuses.has("restrained") || t.actor?.statuses.has("immobilized")
+        );
+
+        if (anyRestrainedOrImmobilized) {
+            // Hide Parry and Dodge buttons
+            const parryBtn = html.querySelector(".defence-btn--parry");
+            const dodgeBtn = html.querySelector(".defence-btn--dodge");
+            if (parryBtn) parryBtn.style.display = "none";
+            if (dodgeBtn) dodgeBtn.style.display = "none";
+
+            // Show or create Escape button
+            let escapeBtn = html.querySelector(".defence-btn--escape");
+            if (!escapeBtn && defenceButtons) {
+                escapeBtn = document.createElement("button");
+                escapeBtn.className = "defence-btn defence-btn--escape";
+                escapeBtn.textContent = game.i18n.localize("CYBERPUNK.Escape");
+                escapeBtn.disabled = targets.length === 0;
+                defenceButtons.appendChild(escapeBtn);
+                escapeBtn.addEventListener("click", (ev) => this._onDefenceClick(ev, html));
+            } else if (escapeBtn) {
+                escapeBtn.style.display = "";
+                escapeBtn.disabled = targets.length === 0;
+            }
+        } else {
+            // Normal: show Parry and Dodge, hide Escape if it exists
+            const parryBtn = html.querySelector(".defence-btn--parry");
+            const dodgeBtn = html.querySelector(".defence-btn--dodge");
+            const escapeBtn = html.querySelector(".defence-btn--escape");
+            if (parryBtn) parryBtn.style.display = "";
+            if (dodgeBtn) dodgeBtn.style.display = "";
+            if (escapeBtn) escapeBtn.style.display = "none";
+        }
     }
 
     /**
@@ -756,77 +804,85 @@ export class CyberpunkChatMessage extends ChatMessage {
 
             for (const hit of hits) {
                 const rawDamage = hit.damage || 0;
+                const ignoreArmor = hit.ignoreArmor || false;
 
-                // Get armor SP for this location
-                const hitLocations = actor.system?.hitLocations || {};
-                const locData = hitLocations[location] || {};
-                const armorSP = locData.stoppingPower || 0;
-
-                // Determine if armor at this location is hard or soft
-                const hasHardArmor = actor.items.some(i =>
-                    i.type === "armor" && i.system.equipped &&
-                    i.system.armorType === "hard" &&
-                    i.system.coverage?.[location]?.stoppingPower > 0
-                );
-
-                // Apply melee damage type modifiers to effective SP
-                let effectiveSP = armorSP;
+                // Get armor SP for this location (skip if ignoring armor)
+                let effectiveSP = 0;
                 let dmgTypeLabel = "";
-                if (damageType === "edged") {
-                    // Edged: SP/2 vs soft armor, normal vs hard
-                    if (!hasHardArmor && armorSP > 0) {
-                        effectiveSP = Math.floor(armorSP / 2);
-                    }
-                    dmgTypeLabel = "Edged";
-                } else if (damageType === "spike") {
-                    // Spike: SP/2 vs any armor
-                    if (armorSP > 0) {
-                        effectiveSP = Math.floor(armorSP / 2);
-                    }
-                    dmgTypeLabel = "Spike";
-                } else if (damageType === "monoblade") {
-                    // Monoblade: SP/3 vs soft, SP/1.5 vs hard (round down)
-                    if (armorSP > 0) {
-                        effectiveSP = hasHardArmor
-                            ? Math.floor(armorSP / 1.5)
-                            : Math.floor(armorSP / 3);
-                    }
-                    dmgTypeLabel = "Mono";
-                }
 
-                // Apply ammo type modifiers to armor penetration (stacks with melee damage type)
-                if (ammoType === "armorPiercing") {
-                    effectiveSP = Math.floor(effectiveSP / 2);
-                } else if (ammoType === "hollowPoint") {
-                    effectiveSP = effectiveSP * 2;
-                }
+                if (!ignoreArmor) {
+                    const hitLocations = actor.system?.hitLocations || {};
+                    const locData = hitLocations[location] || {};
+                    const armorSP = locData.stoppingPower || 0;
 
-                // Rubber slugs: hard armor blocks completely, soft armor penetrates to max 1
-                if (ammoType === "rubberSlug") {
-                    if (hasHardArmor) {
-                        hintParts.push(`${location}: ${rawDamage} (rubber vs hard armor) = 0`);
+                    // Determine if armor at this location is hard or soft
+                    const hasHardArmor = actor.items.some(i =>
+                        i.type === "armor" && i.system.equipped &&
+                        i.system.armorType === "hard" &&
+                        i.system.coverage?.[location]?.stoppingPower > 0
+                    );
+
+                    // Apply melee damage type modifiers to effective SP
+                    effectiveSP = armorSP;
+                    if (damageType === "edged") {
+                        // Edged: SP/2 vs soft armor, normal vs hard
+                        if (!hasHardArmor && armorSP > 0) {
+                            effectiveSP = Math.floor(armorSP / 2);
+                        }
+                        dmgTypeLabel = "Edged";
+                    } else if (damageType === "spike") {
+                        // Spike: SP/2 vs any armor
+                        if (armorSP > 0) {
+                            effectiveSP = Math.floor(armorSP / 2);
+                        }
+                        dmgTypeLabel = "Spike";
+                    } else if (damageType === "monoblade") {
+                        // Monoblade: SP/3 vs soft, SP/1.5 vs hard (round down)
+                        if (armorSP > 0) {
+                            effectiveSP = hasHardArmor
+                                ? Math.floor(armorSP / 1.5)
+                                : Math.floor(armorSP / 3);
+                        }
+                        dmgTypeLabel = "Mono";
+                    }
+
+                    // Apply ammo type modifiers to armor penetration (stacks with melee damage type)
+                    if (ammoType === "armorPiercing") {
+                        effectiveSP = Math.floor(effectiveSP / 2);
+                    } else if (ammoType === "hollowPoint") {
+                        effectiveSP = effectiveSP * 2;
+                    }
+
+                    // Rubber slugs: hard armor blocks completely, soft armor penetrates to max 1
+                    if (ammoType === "rubberSlug") {
+                        if (hasHardArmor) {
+                            hintParts.push(`${location}: ${rawDamage} (rubber vs hard armor) = 0`);
+                            continue;
+                        }
+                        // Soft armor or no armor — normal penetration, cap at 1
+                        const afterArmorRubber = Math.max(0, rawDamage - armorSP);
+                        let finalDamageRubber = 0;
+                        if (afterArmorRubber > 0) {
+                            finalDamageRubber = 1;
+                            if (hasCyberlimb) {
+                                hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1 SDP`);
+                                locationCyberlimbDamage += finalDamageRubber;
+                            } else {
+                                hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1`);
+                                locationWoundDamage += finalDamageRubber;
+                            }
+                        } else {
+                            hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 0`);
+                        }
                         continue;
                     }
-                    // Soft armor or no armor — normal penetration, cap at 1
-                    const afterArmorRubber = Math.max(0, rawDamage - armorSP);
-                    let finalDamageRubber = 0;
-                    if (afterArmorRubber > 0) {
-                        finalDamageRubber = 1;
-                        if (hasCyberlimb) {
-                            hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1 SDP`);
-                            locationCyberlimbDamage += finalDamageRubber;
-                        } else {
-                            hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 1`);
-                            locationWoundDamage += finalDamageRubber;
-                        }
-                    } else {
-                        hintParts.push(`${location}: ${rawDamage} - ${armorSP} SP (rubber) = 0`);
-                    }
-                    continue;
+                } else if (rawDamage > 0) {
+                    // Armor ignored
+                    dmgTypeLabel = "Armor Ignored";
                 }
 
                 // Calculate damage after armor
-                const afterArmor = Math.max(0, rawDamage - effectiveSP);
+                const afterArmor = ignoreArmor ? rawDamage : Math.max(0, rawDamage - effectiveSP);
 
                 // Apply ammo type modifier to post-armor damage
                 let modifiedDamage = afterArmor;
@@ -1156,13 +1212,24 @@ export class CyberpunkChatMessage extends ChatMessage {
                 }
             }
 
+            // Check for instant death from head damage (8+ to Head = instant death, no save)
+            const headDamage = preview.byLocation["Head"];
+            const headWoundDamage = headDamage?.woundDamage || 0;
+            if (headWoundDamage >= 8 && !actor.statuses.has("dead")) {
+                await actor.toggleStatusEffect("dead", { active: true });
+                // Skip Death Save - instant death from catastrophic head trauma
+                needsDeathSave = false; // Override any other Death Save triggers
+            }
+
             // Check for entering Mortal state (woundState 4+)
-            if (newWoundState >= 4 && previousWoundState < 4) {
+            // Only if not already dead from head trauma
+            if (newWoundState >= 4 && previousWoundState < 4 && !actor.statuses.has("dead")) {
                 needsDeathSave = true;
             }
 
             // Roll Death Save once if needed (limb loss, cyberlimb destruction, or entering mortal state)
-            if (needsDeathSave) {
+            // But NOT if already dead from head trauma
+            if (needsDeathSave && !actor.statuses.has("dead")) {
                 const modifier = actor.system.deathSaveMod || 0;
                 await actor.rollDeathSave(modifier);
             }
@@ -1256,6 +1323,55 @@ export class CyberpunkChatMessage extends ChatMessage {
                 await actor.toggleStatusEffect("restrained", { active: true });
                 const grappler = this.getAssociatedActor();
                 if (grappler) await grappler.toggleStatusEffect("grappling", { active: true });
+                break;
+
+            case "hold":
+                // Remove "restrained" if present (upgrading grapple to hold)
+                if (actor.statuses.has("restrained")) {
+                    await actor.toggleStatusEffect("restrained", { active: false });
+                }
+                // Apply "immobilized" to target
+                await actor.toggleStatusEffect("immobilized", { active: true });
+                // NOTE: Do NOT apply "grappling" to attacker - they already have it from initial grapple
+                break;
+
+            case "throw":
+                // Apply "prone" to target
+                await actor.toggleStatusEffect("prone", { active: true });
+
+                // Remove "restrained" if present
+                if (actor.statuses.has("restrained")) {
+                    await actor.toggleStatusEffect("restrained", { active: false });
+                }
+
+                // Remove "immobilized" if present
+                if (actor.statuses.has("immobilized")) {
+                    await actor.toggleStatusEffect("immobilized", { active: false });
+                }
+
+                // Remove "grappling" from attacker (releases the grapple)
+                const thrower = this.getAssociatedActor();
+                if (thrower && thrower.statuses.has("grappling")) {
+                    await thrower.toggleStatusEffect("grappling", { active: false });
+                }
+                break;
+
+            case "release":
+                // Remove "restrained" if present
+                if (actor.statuses.has("restrained")) {
+                    await actor.toggleStatusEffect("restrained", { active: false });
+                }
+
+                // Remove "immobilized" if present
+                if (actor.statuses.has("immobilized")) {
+                    await actor.toggleStatusEffect("immobilized", { active: false });
+                }
+
+                // Remove "grappling" from attacker (releases the grapple)
+                const releaser = this.getAssociatedActor();
+                if (releaser && releaser.statuses.has("grappling")) {
+                    await releaser.toggleStatusEffect("grappling", { active: false });
+                }
                 break;
         }
     }

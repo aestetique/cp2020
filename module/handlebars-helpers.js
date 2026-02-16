@@ -39,6 +39,7 @@ export function registerHandlebarsHelpers() {
     h('cmp', (x, op, y) => COMPARATORS[op]?.(x, y));
     h('calc', (x, op, y) => ARITHMETIC[op]?.(x, y));
     h('hasProp', (x, prop) => x[prop] !== undefined);
+    h('contains', (array, value) => Array.isArray(array) && array.includes(value));
 
     // --- Iteration & strings ---
     h("times", (amount, options) =>

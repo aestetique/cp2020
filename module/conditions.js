@@ -221,6 +221,12 @@ export const CYBERPUNK_CONDITIONS = [
         statuses: ["restrained"]
     },
     {
+        id: "immobilized",
+        name: "CYBERPUNK.Conditions.Immobilized",
+        icon: "systems/cyberpunk/img/conditions/immobilized.svg",
+        statuses: ["immobilized"]
+    },
+    {
         id: "prone",
         name: "CYBERPUNK.Conditions.Prone",
         icon: "systems/cyberpunk/img/conditions/prone.svg",
@@ -387,6 +393,10 @@ export const CONDITION_EFFECTS = {
     },
     "restrained": {
         // -2 on all checks - applied manually in rolls
+        changes: []
+    },
+    "immobilized": {
+        // Movement reduced to 0 - handled in movement logic
         changes: []
     },
     "prone": {

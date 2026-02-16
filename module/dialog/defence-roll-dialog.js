@@ -3,14 +3,14 @@ import { getSkillsForCategory } from "../lookups.js";
 import { buildD10Roll, RollBundle } from "../dice.js";
 
 /**
- * Defence Roll Dialog — lets a defender roll Parry or Dodge against a melee attack.
+ * Defence Roll Dialog — lets a defender roll Parry, Dodge, or Escape against a melee attack.
  * Shows a skill dropdown (populated from skill mappings) and luck controls.
  */
 export class DefenceRollDialog extends Application {
 
   /**
    * @param {Actor}  actor        The defending actor
-   * @param {string} defenceType  "parry" or "dodge"
+   * @param {string} defenceType  "parry", "dodge", or "escape"
    * @param {number} attackTotal  The attack roll total to beat
    */
   constructor(actor, defenceType, attackTotal) {
@@ -55,12 +55,12 @@ export class DefenceRollDialog extends Application {
   /**
    * Build the list of available skills for the defence type.
    * Parry: meleeAttacks + unarmedAttacks
-   * Dodge: escapeSkills + unarmedAttacks
+   * Dodge/Escape: escapeSkills + unarmedAttacks
    */
   _buildSkillOptions() {
     const categories = this.defenceType === "parry"
       ? ["meleeAttacks", "unarmedAttacks"]
-      : ["escapeSkills", "unarmedAttacks"];
+      : ["escapeSkills", "unarmedAttacks"]; // dodge and escape use same categories
 
     // Collect unique skill names from mapped categories
     const mappedNames = new Set();
@@ -106,8 +106,17 @@ export class DefenceRollDialog extends Application {
     const hasSkills = this._skillOptions.length > 0;
     const luckDisabled = this._availableLuck <= 0;
 
+    let defenceLabel;
+    if (this.defenceType === "parry") {
+      defenceLabel = localize("Parry");
+    } else if (this.defenceType === "escape") {
+      defenceLabel = localize("Escape");
+    } else {
+      defenceLabel = localize("Dodge");
+    }
+
     return {
-      defenceLabel: this.defenceType === "parry" ? localize("Parry") : localize("Dodge"),
+      defenceLabel,
       skills: this._skillOptions,
       hasSkills,
       selectedSkillLabel: this._selectedSkill?.label || localize("NoSkillsBonus"),
@@ -238,7 +247,14 @@ export class DefenceRollDialog extends Application {
       const isNatural1 = d10Result === 1;
       const success = !isNatural1 && roll.total >= this.attackTotal;
 
-      const actionLabel = this.defenceType === "parry" ? localize("Parry") : localize("Dodge");
+      let actionLabel;
+      if (this.defenceType === "parry") {
+        actionLabel = localize("Parry");
+      } else if (this.defenceType === "escape") {
+        actionLabel = localize("Escape");
+      } else {
+        actionLabel = localize("Dodge");
+      }
       const speaker = ChatMessage.getSpeaker({ actor: this.actor });
       new RollBundle(actionLabel)
         .addRoll(roll)
@@ -289,7 +305,14 @@ export class DefenceRollDialog extends Application {
     const isNatural1 = d10Result === 1;
     const success = !isNatural1 && roll.total >= this.attackTotal;
 
-    const actionLabel = this.defenceType === "parry" ? localize("Parry") : localize("Dodge");
+    let actionLabel;
+    if (this.defenceType === "parry") {
+      actionLabel = localize("Parry");
+    } else if (this.defenceType === "escape") {
+      actionLabel = localize("Escape");
+    } else {
+      actionLabel = localize("Dodge");
+    }
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     new RollBundle(actionLabel)
       .addRoll(roll)

@@ -32,7 +32,7 @@ export class UnarmedAttackDialog extends Application {
   getData() {
     const isGrappling = this.actor.statuses.has("grappling");
     const actions = isGrappling
-      ? ["Hold", "Choke", "Throw", "Release"]
+      ? ["Hold", "Break", "Choke", "Crush", "Throw", "Release"]
       : ["Punch", "Kick", "Disarm", "Grapple", "Sweep", "Ram"];
 
     return {
@@ -59,10 +59,50 @@ export class UnarmedAttackDialog extends Application {
     // Action buttons
     html.find('.unarmed-action-btn').click(ev => {
       const action = ev.currentTarget.dataset.action;
-      if (action === "Punch" || action === "Kick" || action === "Disarm" || action === "Sweep" || action === "Grapple") {
+
+      // Release executes immediately without opening dialog
+      if (action === "Release") {
+        this._executeRelease();
+        this.close();
+        return;
+      }
+
+      if (action === "Punch" || action === "Kick" || action === "Disarm" || action === "Sweep" || action === "Grapple" || action === "Hold" || action === "Break" || action === "Choke" || action === "Crush" || action === "Throw") {
         new PunchDialog(this.actor, { actionKey: action }).render(true);
         this.close();
       }
     });
+  }
+
+  /**
+   * Execute Release action immediately - post chat message and apply effects.
+   */
+  async _executeRelease() {
+    const { localize } = await import("../utils.js");
+    const { RollBundle } = await import("../dice.js");
+
+    // === CHAT MESSAGE ===
+    const templateData = {
+      actionIcon: "ref",
+      fireModeLabel: localize("Release"),
+      attackRoll: null,  // No attack roll for Release
+      hasDamage: false,
+      hasApply: true,    // Show Apply button for effect
+      areaDamages: {},
+      weaponName: localize("UnarmedAttack"),
+      weaponImage: "systems/cyberpunk/img/ui/unarmed.svg",
+      weaponType: "Melee · 1 m",
+      loadedAmmoType: "standard",
+      damageType: "blunt",
+      weaponEffect: "release",
+      hasEffect: true,
+      effectIcon: "released",
+      effectLabel: localize("Conditions.Released"),
+      hitLocation: ""
+    };
+
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    new RollBundle(localize("Release"))
+      .execute(speaker, "systems/cyberpunk/templates/chat/melee-hit.hbs", templateData);
   }
 }

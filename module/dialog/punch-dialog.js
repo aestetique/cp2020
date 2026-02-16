@@ -17,12 +17,20 @@ export class PunchDialog extends Application {
     super();
     this.actor = actor;
     this._actionKey = actionKey;
-    const martialKeys = { Kick: "kick", Disarm: "disarm", Sweep: "sweep", Grapple: "grapple" };
+    const martialKeys = { Kick: "kick", Disarm: "disarm", Sweep: "sweep", Grapple: "grapple", Hold: "hold", Break: "hold", Choke: "choke", Crush: "choke", Throw: "throw" };
     this._martialKey = martialKeys[actionKey] || "strike";
-    const noDamageActions = ["Disarm", "Sweep", "Grapple"];
-    this._baseDamage = noDamageActions.includes(actionKey) ? null
-      : actionKey === "Kick" ? actor.system.kickBaseDamage : actor.system.unarmedBaseDamage;
-    const effectMap = { Sweep: "prone", Grapple: "grapple" };
+    const noDamageActions = ["Disarm", "Sweep", "Grapple", "Hold"];
+    // Break, Choke, and Crush use same base damage as Punch, but Crush multiplies by 2
+    const baseDmg = noDamageActions.includes(actionKey) ? null
+      : actionKey === "Kick" ? actor.system.kickBaseDamage
+      : actor.system.unarmedBaseDamage;
+
+    // Crush doubles the base damage
+    this._baseDamage = actionKey === "Crush"
+      ? this._multiplyDiceFormula(baseDmg, 2)
+      : baseDmg;
+
+    const effectMap = { Sweep: "prone", Grapple: "grapple", Hold: "hold", Throw: "throw" };
     this._weaponEffect = effectMap[actionKey] || "";
 
     // Skill selector
@@ -44,9 +52,36 @@ export class PunchDialog extends Application {
     // Location targeting
     this._selectedLocation = null;
 
+    // Choke always targets Head
+    if (actionKey === "Choke") {
+      this._selectedLocation = "Head";
+    }
+
+    // Crush always targets Torso
+    if (actionKey === "Crush") {
+      this._selectedLocation = "Torso";
+    }
+
     // Luck spending
     this._luckToSpend = 0;
     this._availableLuck = actor.system.stats.luck?.effective ?? actor.system.stats.luck?.total ?? 0;
+  }
+
+  /**
+   * Helper method to multiply dice formula
+   * @param {string} formula - Dice formula like "1d3" or "2d6"
+   * @param {number} multiplier - Multiplier for dice count
+   * @returns {string} - Multiplied formula like "2d3" or "4d6"
+   */
+  _multiplyDiceFormula(formula, multiplier) {
+    if (!formula) return null;
+    const match = formula.match(/^(\d+)d(\d+)$/);
+    if (match) {
+      const count = Number(match[1]);
+      const size = match[2];
+      return `${count * multiplier}d${size}`;
+    }
+    return formula; // Fallback if format doesn't match
   }
 
   /** @override */
@@ -105,6 +140,17 @@ export class PunchDialog extends Application {
   /** @override */
   getData() {
     const hasSkills = this._skillOptions.length > 0;
+    const noDamageActions = ["Disarm", "Sweep", "Grapple", "Hold"];
+    // Choke and Crush hide location selector (target Head/Torso automatically)
+    const showLocation = !noDamageActions.includes(this._actionKey)
+                      && this._actionKey !== "Choke"
+                      && this._actionKey !== "Crush"
+                      && this._actionKey !== "Throw";
+
+    // Break: show location with Head/Torso disabled, location required
+    const isBreak = this._actionKey === "Break";
+    const locationRequired = isBreak;
+    const disabledLocations = isBreak ? ["Head", "Torso"] : [];
 
     return {
       actionLabel: localize(this._actionKey),
@@ -112,6 +158,9 @@ export class PunchDialog extends Application {
       hasSkills,
       selectedSkillLabel: this._selectedSkill?.label || localize("NoSkillsBonus"),
       noSkillsLabel: localize("NoSkillsBonus"),
+      showLocation,
+      locationRequired,
+      disabledLocations,
       // Luck data
       luckToSpend: this._luckToSpend,
       availableLuck: this._availableLuck,
@@ -180,6 +229,12 @@ export class PunchDialog extends Application {
     // Location button selection
     html.find('.location-btn').click(ev => {
       const btn = ev.currentTarget;
+
+      // Ignore clicks on disabled buttons
+      if (btn.disabled || btn.classList.contains('disabled')) {
+        return;
+      }
+
       const location = btn.dataset.location;
 
       if (this._selectedLocation === location) {
@@ -236,6 +291,12 @@ export class PunchDialog extends Application {
    * Execute the punch attack — roll attack, damage, location, post chat message.
    */
   async _executeRoll() {
+    // Validate: Break requires location selection
+    if (this._actionKey === "Break" && !this._selectedLocation) {
+      ui.notifications.warn(localize("MustSelectLimbForBreak"));
+      return;
+    }
+
     const system = this.actor.system;
 
     // Spend luck if any was used
@@ -258,7 +319,7 @@ export class PunchDialog extends Application {
                    + (this._conditions.ambush ? 5 : 0)
                    + (this._conditions.distracted ? -2 : 0)
                    + (this._conditions.indirect ? -5 : 0)
-                   + (this._selectedLocation ? -4 : 0)
+                   + (this._selectedLocation && this._actionKey !== "Break" && this._actionKey !== "Choke" && this._actionKey !== "Crush" ? -4 : 0)
                    + this._luckToSpend;
 
     const attackTerms = [`@stats.${attackStat}.total`];
@@ -280,8 +341,13 @@ export class PunchDialog extends Application {
     // Status penalties
     if (this.actor.statuses.has("fast-draw")) attackTerms.push(-3);
     if (this.actor.statuses.has("action-surge")) attackTerms.push(-3);
-    if (this.actor.statuses.has("restrained")) attackTerms.push(-2);
-    if (this.actor.statuses.has("grappling")) attackTerms.push(-2);
+
+    // Grappling/Restrained penalties don't apply to grappling actions
+    const grapplingActions = ["Hold", "Break", "Choke", "Crush", "Throw"];
+    const isGrapplingAction = grapplingActions.includes(this._actionKey);
+
+    if (this.actor.statuses.has("restrained") && !isGrapplingAction) attackTerms.push(-2);
+    if (this.actor.statuses.has("grappling") && !isGrapplingAction) attackTerms.push(-2);
     if (this.actor.statuses.has("prone")) attackTerms.push(-2);
 
     const attackRoll = await buildD10Roll(attackTerms, system).evaluate();
@@ -305,7 +371,16 @@ export class PunchDialog extends Application {
       let baseDamageFormula = this._baseDamage;
       const mult = system.unarmedDamageMultiplier;
       if (mult > 1) {
-        baseDamageFormula = `(${baseDamageFormula})*${mult}`;
+        // Parse formula and multiply dice count
+        const diceMatch = baseDamageFormula.match(/^(\d+)d(\d+)$/);
+        if (diceMatch) {
+          const diceCount = Number(diceMatch[1]);
+          const diceSize = diceMatch[2];
+          baseDamageFormula = `${diceCount * mult}d${diceSize}`;
+        } else {
+          // Fallback for complex formulas (shouldn't happen with new system)
+          baseDamageFormula = `(${baseDamageFormula})*${mult}`;
+        }
       }
 
       const baseDamageRoll = await new Roll(baseDamageFormula).evaluate();
@@ -336,7 +411,8 @@ export class PunchDialog extends Application {
         dice: baseDamageRoll.dice.map(term => ({
           faces: term.faces,
           results: term.results.map(r => ({ result: r.result, exploded: r.exploded }))
-        }))
+        })),
+        ignoreArmor: this._actionKey === "Break" || this._actionKey === "Choke" || this._actionKey === "Crush" || this._actionKey === "Throw"
       }];
     }
 
@@ -355,8 +431,8 @@ export class PunchDialog extends Application {
       damageType: "blunt",
       weaponEffect: this._weaponEffect,
       hasEffect: !!this._weaponEffect,
-      effectIcon: { prone: "prone", grapple: "restrained" }[this._weaponEffect] || null,
-      effectLabel: { prone: localize("Conditions.Prone"), grapple: localize("Conditions.Restrained") }[this._weaponEffect] || null,
+      effectIcon: { prone: "prone", grapple: "restrained", hold: "immobilized", throw: "prone" }[this._weaponEffect] || null,
+      effectLabel: { prone: localize("Conditions.Prone"), grapple: localize("Conditions.Restrained"), hold: localize("Conditions.Immobilized"), throw: localize("Conditions.Prone") }[this._weaponEffect] || null,
       hitLocation: hitLocation
     };
 

@@ -55,6 +55,7 @@
     </button>
   </div>
 
+  {{#if showLocation}}
   {{!-- Location section bar --}}
   <div class="fire-mode-section">
     <img src="systems/cyberpunk/img/chat/location.svg" alt="">
@@ -63,25 +64,26 @@
 
   {{!-- Location buttons - 2x3 grid --}}
   <div class="location-grid">
-    <button type="button" class="location-btn" data-location="LeftArm">
-      <img src="systems/cyberpunk/img/chat/LeftArm.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'LeftArm')}} disabled{{/if}}" data-location="LeftArm">
+      <img src="systems/cyberpunk/img/chat/LeftArm{{#if (contains disabledLocations 'LeftArm')}}-disabled{{/if}}.svg" alt="">
     </button>
-    <button type="button" class="location-btn" data-location="Head">
-      <img src="systems/cyberpunk/img/chat/Head.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'Head')}} disabled{{/if}}" data-location="Head">
+      <img src="systems/cyberpunk/img/chat/Head{{#if (contains disabledLocations 'Head')}}-disabled{{/if}}.svg" alt="">
     </button>
-    <button type="button" class="location-btn" data-location="RightArm">
-      <img src="systems/cyberpunk/img/chat/RightArm.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'RightArm')}} disabled{{/if}}" data-location="RightArm">
+      <img src="systems/cyberpunk/img/chat/RightArm{{#if (contains disabledLocations 'RightArm')}}-disabled{{/if}}.svg" alt="">
     </button>
-    <button type="button" class="location-btn" data-location="LeftLeg">
-      <img src="systems/cyberpunk/img/chat/LeftLeg.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'LeftLeg')}} disabled{{/if}}" data-location="LeftLeg">
+      <img src="systems/cyberpunk/img/chat/LeftLeg{{#if (contains disabledLocations 'LeftLeg')}}-disabled{{/if}}.svg" alt="">
     </button>
-    <button type="button" class="location-btn" data-location="Torso">
-      <img src="systems/cyberpunk/img/chat/Torso.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'Torso')}} disabled{{/if}}" data-location="Torso">
+      <img src="systems/cyberpunk/img/chat/Torso{{#if (contains disabledLocations 'Torso')}}-disabled{{/if}}.svg" alt="">
     </button>
-    <button type="button" class="location-btn" data-location="RightLeg">
-      <img src="systems/cyberpunk/img/chat/RightLeg.svg" alt="">
+    <button type="button" class="location-btn{{#if (contains disabledLocations 'RightLeg')}} disabled{{/if}}" data-location="RightLeg">
+      <img src="systems/cyberpunk/img/chat/RightLeg{{#if (contains disabledLocations 'RightLeg')}}-disabled{{/if}}.svg" alt="">
     </button>
   </div>
+  {{/if}}
 
   {{!-- Luck section bar --}}
   <div class="fire-mode-section">

@@ -1,4 +1,4 @@
-import { buildMartialModifierGroups, meleeAttackTypes, buildMeleeModifierGroups, meleeDamageTypes, buildRangedModifierGroups, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes, fireModes } from "../lookups.js"
+import { buildMartialModifierGroups, meleeAttackTypes, buildMeleeModifierGroups, meleeDamageTypes, buildRangedModifierGroups, weaponTypes, reliability, concealability, ammoWeaponTypes, ammoCalibersByWeaponType, ammoTypes, ammoAbbreviations, weaponToAmmoType, ordnanceTemplateTypes, exoticEffects, toolBonusProperties, cyberwareSubtypes, surgeryCodes, getCyberwareSubtypes, fireModes, meleeDamageBonus } from "../lookups.js"
 import { localize, formatLocale, tabBeautifying, toTitleCase } from "../utils.js"
 import { processFormulaRoll } from "../dice.js"
 import { ModifiersDialog } from "../dialog/modifiers.js"
@@ -856,15 +856,28 @@ export class CyberpunkActorSheet extends ActorSheet {
     // Unarmed attack damage display
     const unarmedBase = this.actor.system.unarmedBaseDamage;
     const unarmedMult = this.actor.system.unarmedDamageMultiplier;
+    const bodyBonus = meleeDamageBonus(this.actor.system.stats.bt.total);
+
+    let baseDamageStr;
     if (unarmedMult <= 1) {
-      sheetData.unarmedDamage = unarmedBase;
+      baseDamageStr = unarmedBase;
     } else {
+      // Base damage is always "XdY" format, multiply dice count
       const diceMatch = unarmedBase.match(/^(\d+)d(\d+)$/);
       if (diceMatch) {
-        sheetData.unarmedDamage = `${Number(diceMatch[1]) * unarmedMult}d${diceMatch[2]}`;
+        baseDamageStr = `${Number(diceMatch[1]) * unarmedMult}d${diceMatch[2]}`;
       } else {
-        sheetData.unarmedDamage = `(${unarmedBase})×${unarmedMult}`;
+        // Shouldn't happen with new format, but keep as fallback
+        baseDamageStr = `(${unarmedBase})×${unarmedMult}`;
       }
+    }
+
+    // Add BODY modifier to damage display
+    if (bodyBonus !== 0) {
+      const sign = bodyBonus > 0 ? "+" : "";
+      sheetData.unarmedDamage = `${baseDamageStr} ${sign}${bodyBonus}`;
+    } else {
+      sheetData.unarmedDamage = baseDamageStr;
     }
 
     // Prepare ordnance data

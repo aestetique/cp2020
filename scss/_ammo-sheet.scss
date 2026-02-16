@@ -502,6 +502,17 @@
         background: lighten(#24563D, 5%);
       }
     }
+
+    // Individual location button disabled state (for Break action)
+    &.disabled {
+      background: #26282F;
+      cursor: default;
+      pointer-events: none;
+
+      img {
+        filter: none;
+      }
+    }
   }
 
   // Single-button variant (Melee execute toggle)
