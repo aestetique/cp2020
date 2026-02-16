@@ -18,7 +18,9 @@
 .app.window-app.reload-dialog,
 .app.window-app.ranged-attack-dialog,
 .app.window-app.range-selection-dialog,
-.app.window-app.melee-attack-dialog {
+.app.window-app.melee-attack-dialog,
+.app.window-app.skill-roll-dialog,
+.app.window-app.defence-roll-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -38,11 +40,13 @@
   }
 }
 
-// Dialog content wrapper (shared by Reload, Ranged Attack, and Range Selection dialogs)
+// Dialog content wrapper (shared by all attack/roll dialogs)
 .reload-dialog-wrapper,
 .ranged-attack-wrapper,
 .range-selection-wrapper,
-.melee-attack-wrapper {
+.melee-attack-wrapper,
+.skill-roll-wrapper,
+.defence-roll-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -539,6 +543,31 @@
 
       &:hover {
         background: lighten(#1A804D, 5%);
+      }
+    }
+  }
+
+  // Unarmed actions grid (2 columns)
+  &.ranged-attack-wrapper {
+    .unarmed-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  }
+
+  // Defence dialog disabled dropdown styling
+  &.defence-roll-wrapper {
+    .range-dropdown--disabled {
+      .range-dropdown-btn.disabled {
+        background: #26282F;
+        color: #444856;
+        cursor: default;
+        pointer-events: none;
+
+        .range-label {
+          color: #444856;
+        }
       }
     }
   }

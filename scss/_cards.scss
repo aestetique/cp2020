@@ -235,6 +235,70 @@ $fail-color: #d1502fb8;
 }
 
 // ============================================
+// Fumble Luck Roll Styles
+// ============================================
+.fumble-hint-container {
+  padding: 0;
+}
+
+.fumble-luck-container {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.fumble-roll-luck-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: 2px;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  border: none;
+  background: var(--chat-red);
+  color: var(--chat-text);
+
+  &:hover {
+    background: var(--chat-red-text);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &--disabled {
+    border: 1px solid var(--chat-stroke);
+    background: transparent;
+    color: var(--chat-gray);
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &--used {
+    display: none;
+  }
+}
+
+.fumble-luck-result {
+  display: none;
+
+  &--visible {
+    display: block;
+  }
+
+  .roll-container {
+    margin-top: 0;
+  }
+}
+
+// ============================================
 // Card Header
 // ============================================
 .card-header {
@@ -782,6 +846,104 @@ $fail-color: #d1502fb8;
 // Active state for clicked cell (brighter background)
 .damage-grid__cell--active {
   background: var(--chat-green);
+}
+
+.damage-grid--single {
+  .damage-grid__cell {
+    width: 100%;
+  }
+}
+
+// ============================================
+// Effect Row (Exotic Weapons)
+// ============================================
+.effect-row {
+  display: flex;
+  width: 272px;
+  height: 36px;
+  padding: 0 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 2px;
+  background: var(--Chat-Green-Back, #1A2A25);
+
+  img {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border: none;
+  }
+
+  &__label {
+    font-family: var(--font-blender);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    text-transform: uppercase;
+    color: var(--chat-text, #FFF);
+  }
+}
+
+// ============================================
+// Microwave Result
+// ============================================
+.microwave-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+
+  .roll-value {
+    font-family: var(--font-blender);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--chat-text);
+  }
+
+  .effect-text {
+    font-family: var(--font-blender);
+    font-size: 14px;
+    color: var(--chat-text);
+  }
+}
+
+// ============================================
+// Defence Buttons (Melee Hit Chat Card)
+// ============================================
+.defence-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.defence-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  background: #444856;
+  border: 1px solid #444856;
+  border-radius: 2px;
+  color: #FFFFFF;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: none;
+  outline: none;
+
+  &:hover:not(:disabled) {
+    background: rgb(79.26, 83.92, 100.24);
+  }
+
+  &:disabled {
+    border: 1px solid var(--chat-stroke);
+    background: transparent;
+    color: var(--chat-gray);
+    cursor: not-allowed;
+  }
 }
 
 // ============================================

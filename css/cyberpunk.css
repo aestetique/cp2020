@@ -864,6 +864,60 @@ div.statderive .value.rightborder {
   background-color: rgba(209, 80, 47, 0.7215686275);
 }
 
+.fumble-hint-container {
+  padding: 0;
+}
+
+.fumble-luck-container {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.fumble-roll-luck-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: 2px;
+  font-family: var(--font-blender);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  border: none;
+  background: var(--chat-red);
+  color: var(--chat-text);
+}
+.fumble-roll-luck-btn:hover {
+  background: var(--chat-red-text);
+}
+.fumble-roll-luck-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+.fumble-roll-luck-btn--disabled {
+  border: 1px solid var(--chat-stroke);
+  background: transparent;
+  color: var(--chat-gray);
+  cursor: not-allowed;
+}
+.fumble-roll-luck-btn--disabled:hover {
+  background: transparent;
+}
+.fumble-roll-luck-btn--used {
+  display: none;
+}
+
+.fumble-luck-result {
+  display: none;
+}
+.fumble-luck-result--visible {
+  display: block;
+}
+.fumble-luck-result .roll-container {
+  margin-top: 0;
+}
+
 .card-header {
   display: flex;
   flex-direction: column;
@@ -1392,6 +1446,87 @@ div.statderive .value.rightborder {
 
 .damage-grid__cell--active {
   background: var(--chat-green);
+}
+
+.damage-grid--single .damage-grid__cell {
+  width: 100%;
+}
+
+.effect-row {
+  display: flex;
+  width: 272px;
+  height: 36px;
+  padding: 0 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 2px;
+  background: var(--Chat-Green-Back, #1A2A25);
+}
+.effect-row img {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: none;
+}
+.effect-row__label {
+  font-family: var(--font-blender);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: var(--chat-text, #FFF);
+}
+
+.microwave-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+}
+.microwave-result .roll-value {
+  font-family: var(--font-blender);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--chat-text);
+}
+.microwave-result .effect-text {
+  font-family: var(--font-blender);
+  font-size: 14px;
+  color: var(--chat-text);
+}
+
+.defence-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.defence-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  background: #444856;
+  border: 1px solid #444856;
+  border-radius: 2px;
+  color: #FFFFFF;
+  font-family: var(--font-blender);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: none;
+  outline: none;
+}
+.defence-btn:hover:not(:disabled) {
+  background: rgb(79.26, 83.92, 100.24);
+}
+.defence-btn:disabled {
+  border: 1px solid var(--chat-stroke);
+  background: transparent;
+  color: var(--chat-gray);
+  cursor: not-allowed;
 }
 
 .hit-tally {
@@ -2827,6 +2962,9 @@ input.skill-value.skill-level-input:focus {
   gap: 4px;
   border-bottom: 1px dashed #26282F;
 }
+.gear-row .invisible {
+  visibility: hidden;
+}
 
 .gear-icon {
   width: 36px;
@@ -2842,7 +2980,7 @@ input.skill-value.skill-level-input:focus {
   object-fit: cover;
   border: none;
 }
-.gear-icon.gear-fire-weapon {
+.gear-icon.gear-fire-weapon, .gear-icon.gear-fire-ordnance {
   cursor: pointer;
 }
 
@@ -2854,7 +2992,7 @@ input.skill-value.skill-level-input:focus {
   flex-direction: column;
   gap: 2px;
 }
-.gear-info.gear-fire-weapon {
+.gear-info.gear-fire-weapon, .gear-info.gear-fire-ordnance {
   cursor: pointer;
 }
 
@@ -4223,7 +4361,9 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.reload-dialog,
 .app.window-app.ranged-attack-dialog,
 .app.window-app.range-selection-dialog,
-.app.window-app.melee-attack-dialog {
+.app.window-app.melee-attack-dialog,
+.app.window-app.skill-roll-dialog,
+.app.window-app.defence-roll-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -4232,13 +4372,17 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.reload-dialog .window-header,
 .app.window-app.ranged-attack-dialog .window-header,
 .app.window-app.range-selection-dialog .window-header,
-.app.window-app.melee-attack-dialog .window-header {
+.app.window-app.melee-attack-dialog .window-header,
+.app.window-app.skill-roll-dialog .window-header,
+.app.window-app.defence-roll-dialog .window-header {
   display: none;
 }
 .app.window-app.reload-dialog .window-content,
 .app.window-app.ranged-attack-dialog .window-content,
 .app.window-app.range-selection-dialog .window-content,
-.app.window-app.melee-attack-dialog .window-content {
+.app.window-app.melee-attack-dialog .window-content,
+.app.window-app.skill-roll-dialog .window-content,
+.app.window-app.defence-roll-dialog .window-content {
   background: transparent;
   padding: 0;
   margin: 0;
@@ -4248,7 +4392,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper,
 .ranged-attack-wrapper,
 .range-selection-wrapper,
-.melee-attack-wrapper {
+.melee-attack-wrapper,
+.skill-roll-wrapper,
+.defence-roll-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -4257,7 +4403,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-header,
 .ranged-attack-wrapper .reload-header,
 .range-selection-wrapper .reload-header,
-.melee-attack-wrapper .reload-header {
+.melee-attack-wrapper .reload-header,
+.skill-roll-wrapper .reload-header,
+.defence-roll-wrapper .reload-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4268,7 +4416,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-header .reload-title,
 .ranged-attack-wrapper .reload-header .reload-title,
 .range-selection-wrapper .reload-header .reload-title,
-.melee-attack-wrapper .reload-header .reload-title {
+.melee-attack-wrapper .reload-header .reload-title,
+.skill-roll-wrapper .reload-header .reload-title,
+.defence-roll-wrapper .reload-header .reload-title {
   font-family: var(--font-refinery);
   font-size: 16px;
   font-weight: 500;
@@ -4279,7 +4429,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-header .header-control.close,
 .ranged-attack-wrapper .reload-header .header-control.close,
 .range-selection-wrapper .reload-header .header-control.close,
-.melee-attack-wrapper .reload-header .header-control.close {
+.melee-attack-wrapper .reload-header .header-control.close,
+.skill-roll-wrapper .reload-header .header-control.close,
+.defence-roll-wrapper .reload-header .header-control.close {
   position: absolute;
   right: 0;
   top: 50%;
@@ -4298,13 +4450,17 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-header .header-control.close:hover,
 .ranged-attack-wrapper .reload-header .header-control.close:hover,
 .range-selection-wrapper .reload-header .header-control.close:hover,
-.melee-attack-wrapper .reload-header .header-control.close:hover {
+.melee-attack-wrapper .reload-header .header-control.close:hover,
+.skill-roll-wrapper .reload-header .header-control.close:hover,
+.defence-roll-wrapper .reload-header .header-control.close:hover {
   opacity: 1;
 }
 .reload-dialog-wrapper .reload-ammo-btn,
 .ranged-attack-wrapper .reload-ammo-btn,
 .range-selection-wrapper .reload-ammo-btn,
-.melee-attack-wrapper .reload-ammo-btn {
+.melee-attack-wrapper .reload-ammo-btn,
+.skill-roll-wrapper .reload-ammo-btn,
+.defence-roll-wrapper .reload-ammo-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4319,19 +4475,25 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-ammo-btn:hover,
 .ranged-attack-wrapper .reload-ammo-btn:hover,
 .range-selection-wrapper .reload-ammo-btn:hover,
-.melee-attack-wrapper .reload-ammo-btn:hover {
+.melee-attack-wrapper .reload-ammo-btn:hover,
+.skill-roll-wrapper .reload-ammo-btn:hover,
+.defence-roll-wrapper .reload-ammo-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected,
 .ranged-attack-wrapper .reload-ammo-btn.selected,
 .range-selection-wrapper .reload-ammo-btn.selected,
-.melee-attack-wrapper .reload-ammo-btn.selected {
+.melee-attack-wrapper .reload-ammo-btn.selected,
+.skill-roll-wrapper .reload-ammo-btn.selected,
+.defence-roll-wrapper .reload-ammo-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected:hover,
 .ranged-attack-wrapper .reload-ammo-btn.selected:hover,
 .range-selection-wrapper .reload-ammo-btn.selected:hover,
-.melee-attack-wrapper .reload-ammo-btn.selected:hover {
+.melee-attack-wrapper .reload-ammo-btn.selected:hover,
+.skill-roll-wrapper .reload-ammo-btn.selected:hover,
+.defence-roll-wrapper .reload-ammo-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .reload-ammo-btn .ammo-name,
@@ -4341,7 +4503,11 @@ input.skill-value.skill-level-input:focus {
 .range-selection-wrapper .reload-ammo-btn .ammo-name,
 .range-selection-wrapper .reload-ammo-btn .ammo-qty,
 .melee-attack-wrapper .reload-ammo-btn .ammo-name,
-.melee-attack-wrapper .reload-ammo-btn .ammo-qty {
+.melee-attack-wrapper .reload-ammo-btn .ammo-qty,
+.skill-roll-wrapper .reload-ammo-btn .ammo-name,
+.skill-roll-wrapper .reload-ammo-btn .ammo-qty,
+.defence-roll-wrapper .reload-ammo-btn .ammo-name,
+.defence-roll-wrapper .reload-ammo-btn .ammo-qty {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4352,7 +4518,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-apply-btn,
 .ranged-attack-wrapper .reload-apply-btn,
 .range-selection-wrapper .reload-apply-btn,
-.melee-attack-wrapper .reload-apply-btn {
+.melee-attack-wrapper .reload-apply-btn,
+.skill-roll-wrapper .reload-apply-btn,
+.defence-roll-wrapper .reload-apply-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4373,13 +4541,17 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .reload-apply-btn:hover,
 .ranged-attack-wrapper .reload-apply-btn:hover,
 .range-selection-wrapper .reload-apply-btn:hover,
-.melee-attack-wrapper .reload-apply-btn:hover {
+.melee-attack-wrapper .reload-apply-btn:hover,
+.skill-roll-wrapper .reload-apply-btn:hover,
+.defence-roll-wrapper .reload-apply-btn:hover {
   background: rgb(154.3392857143, 39.1607142857, 70.2589285714);
 }
 .reload-dialog-wrapper .reload-empty,
 .ranged-attack-wrapper .reload-empty,
 .range-selection-wrapper .reload-empty,
-.melee-attack-wrapper .reload-empty {
+.melee-attack-wrapper .reload-empty,
+.skill-roll-wrapper .reload-empty,
+.defence-roll-wrapper .reload-empty {
   display: flex;
   height: 36px;
   padding: 0 6px;
@@ -4398,7 +4570,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .fire-mode-btn,
 .ranged-attack-wrapper .fire-mode-btn,
 .range-selection-wrapper .fire-mode-btn,
-.melee-attack-wrapper .fire-mode-btn {
+.melee-attack-wrapper .fire-mode-btn,
+.skill-roll-wrapper .fire-mode-btn,
+.defence-roll-wrapper .fire-mode-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4419,7 +4593,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .fire-mode-btn:hover,
 .ranged-attack-wrapper .fire-mode-btn:hover,
 .range-selection-wrapper .fire-mode-btn:hover,
-.melee-attack-wrapper .fire-mode-btn:hover {
+.melee-attack-wrapper .fire-mode-btn:hover,
+.skill-roll-wrapper .fire-mode-btn:hover,
+.defence-roll-wrapper .fire-mode-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn,
@@ -4437,13 +4613,23 @@ input.skill-value.skill-level-input:focus {
 .melee-attack-wrapper .reload-ammo-btn,
 .melee-attack-wrapper .reload-apply-btn,
 .melee-attack-wrapper .fire-mode-btn,
-.melee-attack-wrapper .range-dropdown-btn {
+.melee-attack-wrapper .range-dropdown-btn,
+.skill-roll-wrapper .reload-ammo-btn,
+.skill-roll-wrapper .reload-apply-btn,
+.skill-roll-wrapper .fire-mode-btn,
+.skill-roll-wrapper .range-dropdown-btn,
+.defence-roll-wrapper .reload-ammo-btn,
+.defence-roll-wrapper .reload-apply-btn,
+.defence-roll-wrapper .fire-mode-btn,
+.defence-roll-wrapper .range-dropdown-btn {
   box-shadow: none;
 }
 .reload-dialog-wrapper .fire-mode-section,
 .ranged-attack-wrapper .fire-mode-section,
 .range-selection-wrapper .fire-mode-section,
-.melee-attack-wrapper .fire-mode-section {
+.melee-attack-wrapper .fire-mode-section,
+.skill-roll-wrapper .fire-mode-section,
+.defence-roll-wrapper .fire-mode-section {
   display: flex;
   height: 26px;
   padding: 1px 0;
@@ -4456,7 +4642,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .fire-mode-section img,
 .ranged-attack-wrapper .fire-mode-section img,
 .range-selection-wrapper .fire-mode-section img,
-.melee-attack-wrapper .fire-mode-section img {
+.melee-attack-wrapper .fire-mode-section img,
+.skill-roll-wrapper .fire-mode-section img,
+.defence-roll-wrapper .fire-mode-section img {
   width: 16px;
   height: 16px;
   filter: brightness(0) invert(1);
@@ -4465,7 +4653,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .fire-mode-section .fire-mode-label,
 .ranged-attack-wrapper .fire-mode-section .fire-mode-label,
 .range-selection-wrapper .fire-mode-section .fire-mode-label,
-.melee-attack-wrapper .fire-mode-section .fire-mode-label {
+.melee-attack-wrapper .fire-mode-section .fire-mode-label,
+.skill-roll-wrapper .fire-mode-section .fire-mode-label,
+.defence-roll-wrapper .fire-mode-section .fire-mode-label {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4476,14 +4666,18 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-dropdown,
 .ranged-attack-wrapper .range-dropdown,
 .range-selection-wrapper .range-dropdown,
-.melee-attack-wrapper .range-dropdown {
+.melee-attack-wrapper .range-dropdown,
+.skill-roll-wrapper .range-dropdown,
+.defence-roll-wrapper .range-dropdown {
   position: relative;
   width: 100%;
 }
 .reload-dialog-wrapper .range-dropdown-btn,
 .ranged-attack-wrapper .range-dropdown-btn,
 .range-selection-wrapper .range-dropdown-btn,
-.melee-attack-wrapper .range-dropdown-btn {
+.melee-attack-wrapper .range-dropdown-btn,
+.skill-roll-wrapper .range-dropdown-btn,
+.defence-roll-wrapper .range-dropdown-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4499,19 +4693,25 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-dropdown-btn:hover,
 .ranged-attack-wrapper .range-dropdown-btn:hover,
 .range-selection-wrapper .range-dropdown-btn:hover,
-.melee-attack-wrapper .range-dropdown-btn:hover {
+.melee-attack-wrapper .range-dropdown-btn:hover,
+.skill-roll-wrapper .range-dropdown-btn:hover,
+.defence-roll-wrapper .range-dropdown-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .range-dropdown-btn.open,
 .ranged-attack-wrapper .range-dropdown-btn.open,
 .range-selection-wrapper .range-dropdown-btn.open,
-.melee-attack-wrapper .range-dropdown-btn.open {
+.melee-attack-wrapper .range-dropdown-btn.open,
+.skill-roll-wrapper .range-dropdown-btn.open,
+.defence-roll-wrapper .range-dropdown-btn.open {
   border-radius: 2px 2px 0 0;
 }
 .reload-dialog-wrapper .range-dropdown-btn .range-label,
 .ranged-attack-wrapper .range-dropdown-btn .range-label,
 .range-selection-wrapper .range-dropdown-btn .range-label,
-.melee-attack-wrapper .range-dropdown-btn .range-label {
+.melee-attack-wrapper .range-dropdown-btn .range-label,
+.skill-roll-wrapper .range-dropdown-btn .range-label,
+.defence-roll-wrapper .range-dropdown-btn .range-label {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4522,7 +4722,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-dropdown-btn i,
 .ranged-attack-wrapper .range-dropdown-btn i,
 .range-selection-wrapper .range-dropdown-btn i,
-.melee-attack-wrapper .range-dropdown-btn i {
+.melee-attack-wrapper .range-dropdown-btn i,
+.skill-roll-wrapper .range-dropdown-btn i,
+.defence-roll-wrapper .range-dropdown-btn i {
   font-size: 12px;
   color: var(--chat-text, #FFF);
   transition: transform 0.2s;
@@ -4530,13 +4732,17 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-dropdown-btn.open i,
 .ranged-attack-wrapper .range-dropdown-btn.open i,
 .range-selection-wrapper .range-dropdown-btn.open i,
-.melee-attack-wrapper .range-dropdown-btn.open i {
+.melee-attack-wrapper .range-dropdown-btn.open i,
+.skill-roll-wrapper .range-dropdown-btn.open i,
+.defence-roll-wrapper .range-dropdown-btn.open i {
   transform: rotate(180deg);
 }
 .reload-dialog-wrapper .range-dropdown-list,
 .ranged-attack-wrapper .range-dropdown-list,
 .range-selection-wrapper .range-dropdown-list,
-.melee-attack-wrapper .range-dropdown-list {
+.melee-attack-wrapper .range-dropdown-list,
+.skill-roll-wrapper .range-dropdown-list,
+.defence-roll-wrapper .range-dropdown-list {
   display: none;
   position: absolute;
   top: 100%;
@@ -4553,13 +4759,17 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-dropdown-list.open,
 .ranged-attack-wrapper .range-dropdown-list.open,
 .range-selection-wrapper .range-dropdown-list.open,
-.melee-attack-wrapper .range-dropdown-list.open {
+.melee-attack-wrapper .range-dropdown-list.open,
+.skill-roll-wrapper .range-dropdown-list.open,
+.defence-roll-wrapper .range-dropdown-list.open {
   display: block;
 }
 .reload-dialog-wrapper .range-option,
 .ranged-attack-wrapper .range-option,
 .range-selection-wrapper .range-option,
-.melee-attack-wrapper .range-option {
+.melee-attack-wrapper .range-option,
+.skill-roll-wrapper .range-option,
+.defence-roll-wrapper .range-option {
   display: flex;
   align-items: center;
   height: 32px;
@@ -4575,25 +4785,33 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .range-option:hover,
 .ranged-attack-wrapper .range-option:hover,
 .range-selection-wrapper .range-option:hover,
-.melee-attack-wrapper .range-option:hover {
+.melee-attack-wrapper .range-option:hover,
+.skill-roll-wrapper .range-option:hover,
+.defence-roll-wrapper .range-option:hover {
   background: var(--chat-gray, #444856);
 }
 .reload-dialog-wrapper .range-option.selected,
 .ranged-attack-wrapper .range-option.selected,
 .range-selection-wrapper .range-option.selected,
-.melee-attack-wrapper .range-option.selected {
+.melee-attack-wrapper .range-option.selected,
+.skill-roll-wrapper .range-option.selected,
+.defence-roll-wrapper .range-option.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .range-option.selected:hover,
 .ranged-attack-wrapper .range-option.selected:hover,
 .range-selection-wrapper .range-option.selected:hover,
-.melee-attack-wrapper .range-option.selected:hover {
+.melee-attack-wrapper .range-option.selected:hover,
+.skill-roll-wrapper .range-option.selected:hover,
+.defence-roll-wrapper .range-option.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .conditions-grid,
 .ranged-attack-wrapper .conditions-grid,
 .range-selection-wrapper .conditions-grid,
-.melee-attack-wrapper .conditions-grid {
+.melee-attack-wrapper .conditions-grid,
+.skill-roll-wrapper .conditions-grid,
+.defence-roll-wrapper .conditions-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
@@ -4601,13 +4819,17 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .conditions-grid.disabled,
 .ranged-attack-wrapper .conditions-grid.disabled,
 .range-selection-wrapper .conditions-grid.disabled,
-.melee-attack-wrapper .conditions-grid.disabled {
+.melee-attack-wrapper .conditions-grid.disabled,
+.skill-roll-wrapper .conditions-grid.disabled,
+.defence-roll-wrapper .conditions-grid.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .conditions-grid.disabled .condition-btn,
 .ranged-attack-wrapper .conditions-grid.disabled .condition-btn,
 .range-selection-wrapper .conditions-grid.disabled .condition-btn,
-.melee-attack-wrapper .conditions-grid.disabled .condition-btn {
+.melee-attack-wrapper .conditions-grid.disabled .condition-btn,
+.skill-roll-wrapper .conditions-grid.disabled .condition-btn,
+.defence-roll-wrapper .conditions-grid.disabled .condition-btn {
   background: #26282F;
   color: #444856;
   cursor: default;
@@ -4615,7 +4837,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .condition-btn,
 .ranged-attack-wrapper .condition-btn,
 .range-selection-wrapper .condition-btn,
-.melee-attack-wrapper .condition-btn {
+.melee-attack-wrapper .condition-btn,
+.skill-roll-wrapper .condition-btn,
+.defence-roll-wrapper .condition-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4637,51 +4861,67 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .condition-btn:hover,
 .ranged-attack-wrapper .condition-btn:hover,
 .range-selection-wrapper .condition-btn:hover,
-.melee-attack-wrapper .condition-btn:hover {
+.melee-attack-wrapper .condition-btn:hover,
+.skill-roll-wrapper .condition-btn:hover,
+.defence-roll-wrapper .condition-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .condition-btn.selected,
 .ranged-attack-wrapper .condition-btn.selected,
 .range-selection-wrapper .condition-btn.selected,
-.melee-attack-wrapper .condition-btn.selected {
+.melee-attack-wrapper .condition-btn.selected,
+.skill-roll-wrapper .condition-btn.selected,
+.defence-roll-wrapper .condition-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .condition-btn.selected:hover,
 .ranged-attack-wrapper .condition-btn.selected:hover,
 .range-selection-wrapper .condition-btn.selected:hover,
-.melee-attack-wrapper .condition-btn.selected:hover {
+.melee-attack-wrapper .condition-btn.selected:hover,
+.skill-roll-wrapper .condition-btn.selected:hover,
+.defence-roll-wrapper .condition-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .luck-controls,
 .ranged-attack-wrapper .luck-controls,
 .range-selection-wrapper .luck-controls,
-.melee-attack-wrapper .luck-controls {
+.melee-attack-wrapper .luck-controls,
+.skill-roll-wrapper .luck-controls,
+.defence-roll-wrapper .luck-controls {
   display: flex;
   gap: 6px;
 }
 .reload-dialog-wrapper .luck-controls.disabled,
 .ranged-attack-wrapper .luck-controls.disabled,
 .range-selection-wrapper .luck-controls.disabled,
-.melee-attack-wrapper .luck-controls.disabled {
+.melee-attack-wrapper .luck-controls.disabled,
+.skill-roll-wrapper .luck-controls.disabled,
+.defence-roll-wrapper .luck-controls.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .luck-controls.disabled .luck-btn,
 .ranged-attack-wrapper .luck-controls.disabled .luck-btn,
 .range-selection-wrapper .luck-controls.disabled .luck-btn,
-.melee-attack-wrapper .luck-controls.disabled .luck-btn {
+.melee-attack-wrapper .luck-controls.disabled .luck-btn,
+.skill-roll-wrapper .luck-controls.disabled .luck-btn,
+.defence-roll-wrapper .luck-controls.disabled .luck-btn {
   background: #26282F;
   cursor: default;
 }
 .reload-dialog-wrapper .luck-controls.disabled .luck-display .luck-value,
 .ranged-attack-wrapper .luck-controls.disabled .luck-display .luck-value,
 .range-selection-wrapper .luck-controls.disabled .luck-display .luck-value,
-.melee-attack-wrapper .luck-controls.disabled .luck-display .luck-value {
+.melee-attack-wrapper .luck-controls.disabled .luck-display .luck-value,
+.skill-roll-wrapper .luck-controls.disabled .luck-display .luck-value,
+.defence-roll-wrapper .luck-controls.disabled .luck-display .luck-value {
   color: #444856;
 }
 .reload-dialog-wrapper .luck-btn,
 .ranged-attack-wrapper .luck-btn,
 .range-selection-wrapper .luck-btn,
-.melee-attack-wrapper .luck-btn {
+.melee-attack-wrapper .luck-btn,
+.skill-roll-wrapper .luck-btn,
+.defence-roll-wrapper .luck-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4697,7 +4937,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .luck-btn img,
 .ranged-attack-wrapper .luck-btn img,
 .range-selection-wrapper .luck-btn img,
-.melee-attack-wrapper .luck-btn img {
+.melee-attack-wrapper .luck-btn img,
+.skill-roll-wrapper .luck-btn img,
+.defence-roll-wrapper .luck-btn img {
   width: 24px;
   height: 24px;
   border: none;
@@ -4705,20 +4947,26 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .luck-btn:hover:not(.disabled),
 .ranged-attack-wrapper .luck-btn:hover:not(.disabled),
 .range-selection-wrapper .luck-btn:hover:not(.disabled),
-.melee-attack-wrapper .luck-btn:hover:not(.disabled) {
+.melee-attack-wrapper .luck-btn:hover:not(.disabled),
+.skill-roll-wrapper .luck-btn:hover:not(.disabled),
+.defence-roll-wrapper .luck-btn:hover:not(.disabled) {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .luck-btn.disabled,
 .ranged-attack-wrapper .luck-btn.disabled,
 .range-selection-wrapper .luck-btn.disabled,
-.melee-attack-wrapper .luck-btn.disabled {
+.melee-attack-wrapper .luck-btn.disabled,
+.skill-roll-wrapper .luck-btn.disabled,
+.defence-roll-wrapper .luck-btn.disabled {
   background: #26282F;
   cursor: not-allowed;
 }
 .reload-dialog-wrapper .luck-display,
 .ranged-attack-wrapper .luck-display,
 .range-selection-wrapper .luck-display,
-.melee-attack-wrapper .luck-display {
+.melee-attack-wrapper .luck-display,
+.skill-roll-wrapper .luck-display,
+.defence-roll-wrapper .luck-display {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -4730,7 +4978,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .luck-display .luck-value,
 .ranged-attack-wrapper .luck-display .luck-value,
 .range-selection-wrapper .luck-display .luck-value,
-.melee-attack-wrapper .luck-display .luck-value {
+.melee-attack-wrapper .luck-display .luck-value,
+.skill-roll-wrapper .luck-display .luck-value,
+.defence-roll-wrapper .luck-display .luck-value {
   font-family: var(--font-blender);
   font-size: 32px;
   font-weight: 700;
@@ -4741,7 +4991,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .location-grid,
 .ranged-attack-wrapper .location-grid,
 .range-selection-wrapper .location-grid,
-.melee-attack-wrapper .location-grid {
+.melee-attack-wrapper .location-grid,
+.skill-roll-wrapper .location-grid,
+.defence-roll-wrapper .location-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
@@ -4749,26 +5001,34 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .location-grid.disabled,
 .ranged-attack-wrapper .location-grid.disabled,
 .range-selection-wrapper .location-grid.disabled,
-.melee-attack-wrapper .location-grid.disabled {
+.melee-attack-wrapper .location-grid.disabled,
+.skill-roll-wrapper .location-grid.disabled,
+.defence-roll-wrapper .location-grid.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .location-grid.disabled .location-btn,
 .ranged-attack-wrapper .location-grid.disabled .location-btn,
 .range-selection-wrapper .location-grid.disabled .location-btn,
-.melee-attack-wrapper .location-grid.disabled .location-btn {
+.melee-attack-wrapper .location-grid.disabled .location-btn,
+.skill-roll-wrapper .location-grid.disabled .location-btn,
+.defence-roll-wrapper .location-grid.disabled .location-btn {
   background: #26282F;
   cursor: default;
 }
 .reload-dialog-wrapper .location-grid.disabled .location-btn img,
 .ranged-attack-wrapper .location-grid.disabled .location-btn img,
 .range-selection-wrapper .location-grid.disabled .location-btn img,
-.melee-attack-wrapper .location-grid.disabled .location-btn img {
+.melee-attack-wrapper .location-grid.disabled .location-btn img,
+.skill-roll-wrapper .location-grid.disabled .location-btn img,
+.defence-roll-wrapper .location-grid.disabled .location-btn img {
   filter: none;
 }
 .reload-dialog-wrapper .location-btn,
 .ranged-attack-wrapper .location-btn,
 .range-selection-wrapper .location-btn,
-.melee-attack-wrapper .location-btn {
+.melee-attack-wrapper .location-btn,
+.skill-roll-wrapper .location-btn,
+.defence-roll-wrapper .location-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4783,7 +5043,9 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .location-btn img,
 .ranged-attack-wrapper .location-btn img,
 .range-selection-wrapper .location-btn img,
-.melee-attack-wrapper .location-btn img {
+.melee-attack-wrapper .location-btn img,
+.skill-roll-wrapper .location-btn img,
+.defence-roll-wrapper .location-btn img {
   width: 24px;
   height: 24px;
   filter: brightness(0) invert(1);
@@ -4792,37 +5054,49 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .location-btn:hover,
 .ranged-attack-wrapper .location-btn:hover,
 .range-selection-wrapper .location-btn:hover,
-.melee-attack-wrapper .location-btn:hover {
+.melee-attack-wrapper .location-btn:hover,
+.skill-roll-wrapper .location-btn:hover,
+.defence-roll-wrapper .location-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .location-btn.selected,
 .ranged-attack-wrapper .location-btn.selected,
 .range-selection-wrapper .location-btn.selected,
-.melee-attack-wrapper .location-btn.selected {
+.melee-attack-wrapper .location-btn.selected,
+.skill-roll-wrapper .location-btn.selected,
+.defence-roll-wrapper .location-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .location-btn.selected:hover,
 .ranged-attack-wrapper .location-btn.selected:hover,
 .range-selection-wrapper .location-btn.selected:hover,
-.melee-attack-wrapper .location-btn.selected:hover {
+.melee-attack-wrapper .location-btn.selected:hover,
+.skill-roll-wrapper .location-btn.selected:hover,
+.defence-roll-wrapper .location-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .conditions-grid--single,
 .ranged-attack-wrapper .conditions-grid--single,
 .range-selection-wrapper .conditions-grid--single,
-.melee-attack-wrapper .conditions-grid--single {
+.melee-attack-wrapper .conditions-grid--single,
+.skill-roll-wrapper .conditions-grid--single,
+.defence-roll-wrapper .conditions-grid--single {
   display: block;
 }
 .reload-dialog-wrapper .conditions-grid--single .execute-btn,
 .ranged-attack-wrapper .conditions-grid--single .execute-btn,
 .range-selection-wrapper .conditions-grid--single .execute-btn,
-.melee-attack-wrapper .conditions-grid--single .execute-btn {
+.melee-attack-wrapper .conditions-grid--single .execute-btn,
+.skill-roll-wrapper .conditions-grid--single .execute-btn,
+.defence-roll-wrapper .conditions-grid--single .execute-btn {
   width: 100%;
 }
 .reload-dialog-wrapper .execute-btn,
 .ranged-attack-wrapper .execute-btn,
 .range-selection-wrapper .execute-btn,
-.melee-attack-wrapper .execute-btn {
+.melee-attack-wrapper .execute-btn,
+.skill-roll-wrapper .execute-btn,
+.defence-roll-wrapper .execute-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4844,20 +5118,55 @@ input.skill-value.skill-level-input:focus {
 .reload-dialog-wrapper .execute-btn:hover,
 .ranged-attack-wrapper .execute-btn:hover,
 .range-selection-wrapper .execute-btn:hover,
-.melee-attack-wrapper .execute-btn:hover {
+.melee-attack-wrapper .execute-btn:hover,
+.skill-roll-wrapper .execute-btn:hover,
+.defence-roll-wrapper .execute-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .execute-btn.selected,
 .ranged-attack-wrapper .execute-btn.selected,
 .range-selection-wrapper .execute-btn.selected,
-.melee-attack-wrapper .execute-btn.selected {
+.melee-attack-wrapper .execute-btn.selected,
+.skill-roll-wrapper .execute-btn.selected,
+.defence-roll-wrapper .execute-btn.selected {
   background: #1A804D;
 }
 .reload-dialog-wrapper .execute-btn.selected:hover,
 .ranged-attack-wrapper .execute-btn.selected:hover,
 .range-selection-wrapper .execute-btn.selected:hover,
-.melee-attack-wrapper .execute-btn.selected:hover {
+.melee-attack-wrapper .execute-btn.selected:hover,
+.skill-roll-wrapper .execute-btn.selected:hover,
+.defence-roll-wrapper .execute-btn.selected:hover {
   background: rgb(30.3051948052, 149.1948051948, 89.75);
+}
+.reload-dialog-wrapper.ranged-attack-wrapper .unarmed-actions,
+.ranged-attack-wrapper.ranged-attack-wrapper .unarmed-actions,
+.range-selection-wrapper.ranged-attack-wrapper .unarmed-actions,
+.melee-attack-wrapper.ranged-attack-wrapper .unarmed-actions,
+.skill-roll-wrapper.ranged-attack-wrapper .unarmed-actions,
+.defence-roll-wrapper.ranged-attack-wrapper .unarmed-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.reload-dialog-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.ranged-attack-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.range-selection-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.melee-attack-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.skill-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.defence-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled {
+  background: #26282F;
+  color: #444856;
+  cursor: default;
+  pointer-events: none;
+}
+.reload-dialog-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.ranged-attack-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.range-selection-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.melee-attack-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.skill-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.defence-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label {
+  color: #444856;
 }
 
 .cyberpunk.weapon-sheet.app {
