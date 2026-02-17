@@ -227,6 +227,10 @@ export class OrdnanceAttackDialog extends Application {
     }
 
     this.ordnance._fireOrdnance(fireOptions, this.targetTokens);
+
+    // Register ordnance attack action AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, `ordnance attack (${this.ordnance.name})`);
   }
 
   /**

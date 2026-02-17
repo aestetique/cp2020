@@ -104,5 +104,9 @@ export class UnarmedAttackDialog extends Application {
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     new RollBundle(localize("Release"))
       .execute(speaker, "systems/cyberpunk/templates/chat/melee-hit.hbs", templateData);
+
+    // Register action for release AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, "release grapple");
   }
 }

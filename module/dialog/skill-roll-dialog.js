@@ -227,6 +227,11 @@ export class SkillRollDialog extends Application {
         extraMod
       );
     }
+
+    // Register action AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    const actionType = this.rollType === "skill" ? "skill roll" : "stat roll";
+    await registerAction(this.actor, actionType);
   }
 
   /** @override */

@@ -315,6 +315,22 @@ Hooks.on("combatTurnChange", async (combat, prior, current) => {
 
     const actor = combatant.actor;
 
+    // Reset action count at start of turn
+    await actor.unsetFlag("cyberpunk", "actionCount");
+
+    // Reset movement tracking for cumulative distance
+    await actor.unsetFlag("cyberpunk", "movementActionRegistered");
+    await actor.setFlag("cyberpunk", "cumulativeDistance", 0);
+
+    // Store starting position for movement tracking
+    const token = combatant.token?.object;
+    if (token) {
+        await actor.setFlag("cyberpunk", "lastPosition", {
+            x: token.document.x,
+            y: token.document.y
+        });
+    }
+
     // Check if the actor has the Shocked condition (and is not Dead)
     if (actor.statuses.has("shocked") && !actor.statuses.has("dead")) {
         // Get the modifier from the character sheet
@@ -464,5 +480,82 @@ Hooks.on("combatTurnChange", async (combat, prior, current) => {
                 await actor.setFlag("cyberpunk", flagKey, newDuration);
             }
         }
+    }
+});
+
+/**
+ * Track token movement during combat and register as action if exceeds walk distance
+ */
+Hooks.on("updateToken", async (tokenDocument, change, options, userId) => {
+    // Only process for GM to avoid duplicate tracking
+    if (!game.user.isGM) return;
+
+    // Only track during combat
+    if (!game.combat) return;
+
+    // Only track position changes
+    if (!change.x && !change.y) return;
+
+    // Get the actor
+    const actor = tokenDocument.actor;
+    if (!actor) return;
+
+    // Only track for current combatant
+    const currentCombatant = game.combat.combatant;
+    if (!currentCombatant || currentCombatant.actorId !== actor.id) return;
+
+    // Get last position from previous move
+    const lastPos = actor.getFlag("cyberpunk", "lastPosition");
+    if (!lastPos) return; // No last position recorded
+
+    // Get current position (after this move)
+    const currentX = change.x ?? tokenDocument.x;
+    const currentY = change.y ?? tokenDocument.y;
+
+    // Get token dimensions for center point
+    const gridSize = canvas.grid.size;
+    const width = tokenDocument.width || 1;
+    const height = tokenDocument.height || 1;
+
+    const lastCenter = {
+        x: lastPos.x + (width * gridSize) / 2,
+        y: lastPos.y + (height * gridSize) / 2
+    };
+    const currentCenter = {
+        x: currentX + (width * gridSize) / 2,
+        y: currentY + (height * gridSize) / 2
+    };
+
+    // Calculate distance of THIS move
+    const path = canvas.grid.measurePath([lastCenter, currentCenter], { gridSpaces: false });
+    const moveDistance = path.distance;
+
+    // Add to cumulative distance
+    const previousCumulative = actor.getFlag("cyberpunk", "cumulativeDistance") || 0;
+    const newCumulative = previousCumulative + moveDistance;
+    await actor.setFlag("cyberpunk", "cumulativeDistance", newCumulative);
+
+    // Update last position for next move
+    await actor.setFlag("cyberpunk", "lastPosition", { x: currentX, y: currentY });
+
+    // Get walk distance from actor
+    const walkDistance = actor.system.stats?.ma?.total ?? 0;
+
+    console.log(`CYBERPUNK Movement: ${actor.name} moved ${Math.round(moveDistance)}m, cumulative: ${Math.round(newCumulative)}m (walk: ${walkDistance}m)`);
+
+    // Check if we've already registered movement as an action this turn
+    const movementRegistered = actor.getFlag("cyberpunk", "movementActionRegistered");
+
+    // If cumulative distance exceeds walk distance and haven't registered yet, register as action
+    if (newCumulative > walkDistance && !movementRegistered) {
+        console.log(`CYBERPUNK Movement: Registering as action (${Math.round(newCumulative)}m > ${walkDistance}m walk)`);
+        const { registerAction } = await import("./action-tracker.js");
+        await registerAction(actor, `movement (${Math.round(newCumulative)}m > ${walkDistance}m walk)`);
+        // Mark that we've registered movement this turn
+        await actor.setFlag("cyberpunk", "movementActionRegistered", true);
+    } else if (newCumulative <= walkDistance) {
+        console.log(`CYBERPUNK Movement: Within walk distance (${Math.round(newCumulative)}m ≤ ${walkDistance}m walk)`);
+    } else if (movementRegistered) {
+        console.log(`CYBERPUNK Movement: Already registered movement action this turn`);
     }
 });

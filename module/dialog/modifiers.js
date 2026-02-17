@@ -140,6 +140,13 @@ import { defaultTargetLocations, fireModes } from "../lookups.js"
     async _updateObject(event, formData) {
       this.object = formData;
       const fired = await this.options.onConfirm(this.object);
+
+      // Register weapon attack action AFTER executing
+      if (fired !== false && this.options.weapon) {
+        const { registerAction } = await import("../action-tracker.js");
+        await registerAction(this.actor, `weapon attack (${this.options.weapon.name})`);
+      }
+
       if (fired !== false) this.close();
     }
  }

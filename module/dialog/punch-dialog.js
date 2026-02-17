@@ -446,6 +446,10 @@ export class PunchDialog extends Application {
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     new RollBundle(localize(this._actionKey))
       .execute(speaker, "systems/cyberpunk/templates/chat/melee-hit.hbs", templateData);
+
+    // Register action for unarmed attacks AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, `unarmed: ${this._actionLabel}`);
   }
 
   /**
@@ -629,6 +633,10 @@ export class PunchDialog extends Application {
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     new RollBundle(localize("Ram"))
       .execute(speaker, "systems/cyberpunk/templates/chat/melee-hit.hbs", templateData);
+
+    // Register action for Ram attack AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, `unarmed: Ram`);
   }
 
   /**

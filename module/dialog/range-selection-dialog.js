@@ -317,6 +317,10 @@ export class RangeSelectionDialog extends Application {
 
     this.close();
     this.weapon._resolveAttack(fireOptions, this.targetTokens);
+
+    // Register ranged attack action AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, `ranged attack (${this.weapon.name})`);
   }
 
   /** @override */

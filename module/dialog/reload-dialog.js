@@ -191,6 +191,10 @@ export class ReloadDialog extends Application {
       await this.actor.deleteEmbeddedDocuments("Item", deletes);
     }
 
+    // Register reload as an action AFTER executing
+    const { registerAction } = await import("../action-tracker.js");
+    await registerAction(this.actor, "reload");
+
     this.close();
   }
 

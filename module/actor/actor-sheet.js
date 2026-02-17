@@ -2056,6 +2056,10 @@ export class CyberpunkActorSheet extends ActorSheet {
         updatePath = item._weaponUpdatePath("charges");
       }
       await item.update({ [updatePath]: chargesMax });
+
+      // Register charge as an action AFTER executing
+      const { registerAction } = await import("../action-tracker.js");
+      await registerAction(this.actor, `charge weapon (${item.name})`);
     });
 
     // Ammo quantity input (gear tab)

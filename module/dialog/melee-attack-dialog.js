@@ -225,6 +225,10 @@ export class MeleeAttackDialog extends Application {
         content
       });
 
+      // Register melee execute action AFTER executing
+      const { registerAction } = await import("../action-tracker.js");
+      await registerAction(this.actor, `melee execute (${this.weapon.name})`);
+
       this.close();
     } else {
       // === NORMAL STRIKE PATH ===
@@ -251,6 +255,10 @@ export class MeleeAttackDialog extends Application {
 
       this.close();
       this.weapon._resolveAttack(attackMods, this.targetTokens);
+
+      // Register melee attack action AFTER executing
+      const { registerAction } = await import("../action-tracker.js");
+      await registerAction(this.actor, `melee attack (${this.weapon.name})`);
     }
   }
 }
