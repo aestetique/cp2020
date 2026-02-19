@@ -2912,6 +2912,35 @@ input.skill-value.skill-level-input:focus {
   border: none;
 }
 
+.sheet-content {
+  position: relative;
+}
+
+.add-item-fab {
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  z-index: 10;
+  display: none;
+}
+.add-item-fab:hover {
+  opacity: 1;
+}
+.add-item-fab img {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .gear-container {
   width: 100%;
   flex: 1;
@@ -4512,7 +4541,8 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.medical-help-dialog,
 .app.window-app.heal-dialog,
 .app.window-app.stress-roll-dialog,
-.app.window-app.fright-roll-dialog {
+.app.window-app.fright-roll-dialog,
+.app.window-app.create-item-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -4528,7 +4558,8 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.medical-help-dialog .window-header,
 .app.window-app.heal-dialog .window-header,
 .app.window-app.stress-roll-dialog .window-header,
-.app.window-app.fright-roll-dialog .window-header {
+.app.window-app.fright-roll-dialog .window-header,
+.app.window-app.create-item-dialog .window-header {
   display: none;
 }
 .app.window-app.reload-dialog .window-content,
@@ -4541,7 +4572,8 @@ input.skill-value.skill-level-input:focus {
 .app.window-app.medical-help-dialog .window-content,
 .app.window-app.heal-dialog .window-content,
 .app.window-app.stress-roll-dialog .window-content,
-.app.window-app.fright-roll-dialog .window-content {
+.app.window-app.fright-roll-dialog .window-content,
+.app.window-app.create-item-dialog .window-content {
   background: transparent;
   padding: 0;
   margin: 0;
@@ -4557,7 +4589,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper,
 .heal-wrapper,
 .stress-roll-wrapper,
-.fright-roll-wrapper {
+.fright-roll-wrapper,
+.create-item-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -4572,7 +4605,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-header,
 .heal-wrapper .reload-header,
 .stress-roll-wrapper .reload-header,
-.fright-roll-wrapper .reload-header {
+.fright-roll-wrapper .reload-header,
+.create-item-wrapper .reload-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4589,7 +4623,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-header .reload-title,
 .heal-wrapper .reload-header .reload-title,
 .stress-roll-wrapper .reload-header .reload-title,
-.fright-roll-wrapper .reload-header .reload-title {
+.fright-roll-wrapper .reload-header .reload-title,
+.create-item-wrapper .reload-header .reload-title {
   font-family: var(--font-refinery);
   font-size: 16px;
   font-weight: 500;
@@ -4606,7 +4641,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-header .header-control.close,
 .heal-wrapper .reload-header .header-control.close,
 .stress-roll-wrapper .reload-header .header-control.close,
-.fright-roll-wrapper .reload-header .header-control.close {
+.fright-roll-wrapper .reload-header .header-control.close,
+.create-item-wrapper .reload-header .header-control.close {
   position: absolute;
   right: 0;
   top: 50%;
@@ -4631,7 +4667,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-header .header-control.close:hover,
 .heal-wrapper .reload-header .header-control.close:hover,
 .stress-roll-wrapper .reload-header .header-control.close:hover,
-.fright-roll-wrapper .reload-header .header-control.close:hover {
+.fright-roll-wrapper .reload-header .header-control.close:hover,
+.create-item-wrapper .reload-header .header-control.close:hover {
   opacity: 1;
 }
 .reload-dialog-wrapper .reload-ammo-btn,
@@ -4643,7 +4680,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-ammo-btn,
 .heal-wrapper .reload-ammo-btn,
 .stress-roll-wrapper .reload-ammo-btn,
-.fright-roll-wrapper .reload-ammo-btn {
+.fright-roll-wrapper .reload-ammo-btn,
+.create-item-wrapper .reload-ammo-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4664,7 +4702,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-ammo-btn:hover,
 .heal-wrapper .reload-ammo-btn:hover,
 .stress-roll-wrapper .reload-ammo-btn:hover,
-.fright-roll-wrapper .reload-ammo-btn:hover {
+.fright-roll-wrapper .reload-ammo-btn:hover,
+.create-item-wrapper .reload-ammo-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected,
@@ -4676,7 +4715,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-ammo-btn.selected,
 .heal-wrapper .reload-ammo-btn.selected,
 .stress-roll-wrapper .reload-ammo-btn.selected,
-.fright-roll-wrapper .reload-ammo-btn.selected {
+.fright-roll-wrapper .reload-ammo-btn.selected,
+.create-item-wrapper .reload-ammo-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .reload-ammo-btn.selected:hover,
@@ -4688,7 +4728,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-ammo-btn.selected:hover,
 .heal-wrapper .reload-ammo-btn.selected:hover,
 .stress-roll-wrapper .reload-ammo-btn.selected:hover,
-.fright-roll-wrapper .reload-ammo-btn.selected:hover {
+.fright-roll-wrapper .reload-ammo-btn.selected:hover,
+.create-item-wrapper .reload-ammo-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .reload-ammo-btn .ammo-name,
@@ -4710,7 +4751,9 @@ input.skill-value.skill-level-input:focus {
 .stress-roll-wrapper .reload-ammo-btn .ammo-name,
 .stress-roll-wrapper .reload-ammo-btn .ammo-qty,
 .fright-roll-wrapper .reload-ammo-btn .ammo-name,
-.fright-roll-wrapper .reload-ammo-btn .ammo-qty {
+.fright-roll-wrapper .reload-ammo-btn .ammo-qty,
+.create-item-wrapper .reload-ammo-btn .ammo-name,
+.create-item-wrapper .reload-ammo-btn .ammo-qty {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4727,7 +4770,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-apply-btn,
 .heal-wrapper .reload-apply-btn,
 .stress-roll-wrapper .reload-apply-btn,
-.fright-roll-wrapper .reload-apply-btn {
+.fright-roll-wrapper .reload-apply-btn,
+.create-item-wrapper .reload-apply-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4754,7 +4798,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-apply-btn:hover,
 .heal-wrapper .reload-apply-btn:hover,
 .stress-roll-wrapper .reload-apply-btn:hover,
-.fright-roll-wrapper .reload-apply-btn:hover {
+.fright-roll-wrapper .reload-apply-btn:hover,
+.create-item-wrapper .reload-apply-btn:hover {
   background: rgb(154.3392857143, 39.1607142857, 70.2589285714);
 }
 .reload-dialog-wrapper .reload-empty,
@@ -4766,7 +4811,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .reload-empty,
 .heal-wrapper .reload-empty,
 .stress-roll-wrapper .reload-empty,
-.fright-roll-wrapper .reload-empty {
+.fright-roll-wrapper .reload-empty,
+.create-item-wrapper .reload-empty {
   display: flex;
   height: 36px;
   padding: 0 6px;
@@ -4791,7 +4837,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .fire-mode-btn,
 .heal-wrapper .fire-mode-btn,
 .stress-roll-wrapper .fire-mode-btn,
-.fright-roll-wrapper .fire-mode-btn {
+.fright-roll-wrapper .fire-mode-btn,
+.create-item-wrapper .fire-mode-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -4818,7 +4865,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .fire-mode-btn:hover,
 .heal-wrapper .fire-mode-btn:hover,
 .stress-roll-wrapper .fire-mode-btn:hover,
-.fright-roll-wrapper .fire-mode-btn:hover {
+.fright-roll-wrapper .fire-mode-btn:hover,
+.create-item-wrapper .fire-mode-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .reload-ammo-btn,
@@ -4860,7 +4908,11 @@ input.skill-value.skill-level-input:focus {
 .fright-roll-wrapper .reload-ammo-btn,
 .fright-roll-wrapper .reload-apply-btn,
 .fright-roll-wrapper .fire-mode-btn,
-.fright-roll-wrapper .range-dropdown-btn {
+.fright-roll-wrapper .range-dropdown-btn,
+.create-item-wrapper .reload-ammo-btn,
+.create-item-wrapper .reload-apply-btn,
+.create-item-wrapper .fire-mode-btn,
+.create-item-wrapper .range-dropdown-btn {
   box-shadow: none;
 }
 .reload-dialog-wrapper .fire-mode-section,
@@ -4872,7 +4924,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .fire-mode-section,
 .heal-wrapper .fire-mode-section,
 .stress-roll-wrapper .fire-mode-section,
-.fright-roll-wrapper .fire-mode-section {
+.fright-roll-wrapper .fire-mode-section,
+.create-item-wrapper .fire-mode-section {
   display: flex;
   height: 26px;
   padding: 1px 0;
@@ -4891,7 +4944,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .fire-mode-section img,
 .heal-wrapper .fire-mode-section img,
 .stress-roll-wrapper .fire-mode-section img,
-.fright-roll-wrapper .fire-mode-section img {
+.fright-roll-wrapper .fire-mode-section img,
+.create-item-wrapper .fire-mode-section img {
   width: 16px;
   height: 16px;
   filter: brightness(0) invert(1);
@@ -4906,7 +4960,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .fire-mode-section .fire-mode-label,
 .heal-wrapper .fire-mode-section .fire-mode-label,
 .stress-roll-wrapper .fire-mode-section .fire-mode-label,
-.fright-roll-wrapper .fire-mode-section .fire-mode-label {
+.fright-roll-wrapper .fire-mode-section .fire-mode-label,
+.create-item-wrapper .fire-mode-section .fire-mode-label {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4923,7 +4978,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown,
 .heal-wrapper .range-dropdown,
 .stress-roll-wrapper .range-dropdown,
-.fright-roll-wrapper .range-dropdown {
+.fright-roll-wrapper .range-dropdown,
+.create-item-wrapper .range-dropdown {
   position: relative;
   width: 100%;
 }
@@ -4936,7 +4992,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn,
 .heal-wrapper .range-dropdown-btn,
 .stress-roll-wrapper .range-dropdown-btn,
-.fright-roll-wrapper .range-dropdown-btn {
+.fright-roll-wrapper .range-dropdown-btn,
+.create-item-wrapper .range-dropdown-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4958,7 +5015,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn:hover,
 .heal-wrapper .range-dropdown-btn:hover,
 .stress-roll-wrapper .range-dropdown-btn:hover,
-.fright-roll-wrapper .range-dropdown-btn:hover {
+.fright-roll-wrapper .range-dropdown-btn:hover,
+.create-item-wrapper .range-dropdown-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .range-dropdown-btn.open,
@@ -4970,7 +5028,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn.open,
 .heal-wrapper .range-dropdown-btn.open,
 .stress-roll-wrapper .range-dropdown-btn.open,
-.fright-roll-wrapper .range-dropdown-btn.open {
+.fright-roll-wrapper .range-dropdown-btn.open,
+.create-item-wrapper .range-dropdown-btn.open {
   border-radius: 2px 2px 0 0;
 }
 .reload-dialog-wrapper .range-dropdown-btn .range-label,
@@ -4982,7 +5041,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn .range-label,
 .heal-wrapper .range-dropdown-btn .range-label,
 .stress-roll-wrapper .range-dropdown-btn .range-label,
-.fright-roll-wrapper .range-dropdown-btn .range-label {
+.fright-roll-wrapper .range-dropdown-btn .range-label,
+.create-item-wrapper .range-dropdown-btn .range-label {
   font-family: var(--font-blender);
   font-size: 16px;
   font-weight: 500;
@@ -4999,7 +5059,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn i,
 .heal-wrapper .range-dropdown-btn i,
 .stress-roll-wrapper .range-dropdown-btn i,
-.fright-roll-wrapper .range-dropdown-btn i {
+.fright-roll-wrapper .range-dropdown-btn i,
+.create-item-wrapper .range-dropdown-btn i {
   font-size: 12px;
   color: var(--chat-text, #FFF);
   transition: transform 0.2s;
@@ -5013,7 +5074,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-btn.open i,
 .heal-wrapper .range-dropdown-btn.open i,
 .stress-roll-wrapper .range-dropdown-btn.open i,
-.fright-roll-wrapper .range-dropdown-btn.open i {
+.fright-roll-wrapper .range-dropdown-btn.open i,
+.create-item-wrapper .range-dropdown-btn.open i {
   transform: rotate(180deg);
 }
 .reload-dialog-wrapper .range-dropdown-list,
@@ -5025,7 +5087,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-list,
 .heal-wrapper .range-dropdown-list,
 .stress-roll-wrapper .range-dropdown-list,
-.fright-roll-wrapper .range-dropdown-list {
+.fright-roll-wrapper .range-dropdown-list,
+.create-item-wrapper .range-dropdown-list {
   display: none;
   position: absolute;
   top: 100%;
@@ -5048,7 +5111,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-dropdown-list.open,
 .heal-wrapper .range-dropdown-list.open,
 .stress-roll-wrapper .range-dropdown-list.open,
-.fright-roll-wrapper .range-dropdown-list.open {
+.fright-roll-wrapper .range-dropdown-list.open,
+.create-item-wrapper .range-dropdown-list.open {
   display: block;
 }
 .reload-dialog-wrapper .range-option,
@@ -5060,7 +5124,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-option,
 .heal-wrapper .range-option,
 .stress-roll-wrapper .range-option,
-.fright-roll-wrapper .range-option {
+.fright-roll-wrapper .range-option,
+.create-item-wrapper .range-option {
   display: flex;
   align-items: center;
   height: 32px;
@@ -5082,7 +5147,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-option:hover,
 .heal-wrapper .range-option:hover,
 .stress-roll-wrapper .range-option:hover,
-.fright-roll-wrapper .range-option:hover {
+.fright-roll-wrapper .range-option:hover,
+.create-item-wrapper .range-option:hover {
   background: var(--chat-gray, #444856);
 }
 .reload-dialog-wrapper .range-option.selected,
@@ -5094,7 +5160,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-option.selected,
 .heal-wrapper .range-option.selected,
 .stress-roll-wrapper .range-option.selected,
-.fright-roll-wrapper .range-option.selected {
+.fright-roll-wrapper .range-option.selected,
+.create-item-wrapper .range-option.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .range-option.selected:hover,
@@ -5106,7 +5173,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .range-option.selected:hover,
 .heal-wrapper .range-option.selected:hover,
 .stress-roll-wrapper .range-option.selected:hover,
-.fright-roll-wrapper .range-option.selected:hover {
+.fright-roll-wrapper .range-option.selected:hover,
+.create-item-wrapper .range-option.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .conditions-grid,
@@ -5118,7 +5186,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .conditions-grid,
 .heal-wrapper .conditions-grid,
 .stress-roll-wrapper .conditions-grid,
-.fright-roll-wrapper .conditions-grid {
+.fright-roll-wrapper .conditions-grid,
+.create-item-wrapper .conditions-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
@@ -5132,7 +5201,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .conditions-grid.disabled,
 .heal-wrapper .conditions-grid.disabled,
 .stress-roll-wrapper .conditions-grid.disabled,
-.fright-roll-wrapper .conditions-grid.disabled {
+.fright-roll-wrapper .conditions-grid.disabled,
+.create-item-wrapper .conditions-grid.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .conditions-grid.disabled .condition-btn,
@@ -5144,7 +5214,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .conditions-grid.disabled .condition-btn,
 .heal-wrapper .conditions-grid.disabled .condition-btn,
 .stress-roll-wrapper .conditions-grid.disabled .condition-btn,
-.fright-roll-wrapper .conditions-grid.disabled .condition-btn {
+.fright-roll-wrapper .conditions-grid.disabled .condition-btn,
+.create-item-wrapper .conditions-grid.disabled .condition-btn {
   background: #26282F;
   color: #444856;
   cursor: default;
@@ -5158,7 +5229,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .condition-btn,
 .heal-wrapper .condition-btn,
 .stress-roll-wrapper .condition-btn,
-.fright-roll-wrapper .condition-btn {
+.fright-roll-wrapper .condition-btn,
+.create-item-wrapper .condition-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5186,7 +5258,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .condition-btn:hover,
 .heal-wrapper .condition-btn:hover,
 .stress-roll-wrapper .condition-btn:hover,
-.fright-roll-wrapper .condition-btn:hover {
+.fright-roll-wrapper .condition-btn:hover,
+.create-item-wrapper .condition-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .condition-btn.selected,
@@ -5198,7 +5271,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .condition-btn.selected,
 .heal-wrapper .condition-btn.selected,
 .stress-roll-wrapper .condition-btn.selected,
-.fright-roll-wrapper .condition-btn.selected {
+.fright-roll-wrapper .condition-btn.selected,
+.create-item-wrapper .condition-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .condition-btn.selected:hover,
@@ -5210,7 +5284,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .condition-btn.selected:hover,
 .heal-wrapper .condition-btn.selected:hover,
 .stress-roll-wrapper .condition-btn.selected:hover,
-.fright-roll-wrapper .condition-btn.selected:hover {
+.fright-roll-wrapper .condition-btn.selected:hover,
+.create-item-wrapper .condition-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .luck-controls,
@@ -5222,7 +5297,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-controls,
 .heal-wrapper .luck-controls,
 .stress-roll-wrapper .luck-controls,
-.fright-roll-wrapper .luck-controls {
+.fright-roll-wrapper .luck-controls,
+.create-item-wrapper .luck-controls {
   display: flex;
   gap: 6px;
 }
@@ -5235,7 +5311,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-controls.disabled,
 .heal-wrapper .luck-controls.disabled,
 .stress-roll-wrapper .luck-controls.disabled,
-.fright-roll-wrapper .luck-controls.disabled {
+.fright-roll-wrapper .luck-controls.disabled,
+.create-item-wrapper .luck-controls.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .luck-controls.disabled .luck-btn,
@@ -5247,7 +5324,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-controls.disabled .luck-btn,
 .heal-wrapper .luck-controls.disabled .luck-btn,
 .stress-roll-wrapper .luck-controls.disabled .luck-btn,
-.fright-roll-wrapper .luck-controls.disabled .luck-btn {
+.fright-roll-wrapper .luck-controls.disabled .luck-btn,
+.create-item-wrapper .luck-controls.disabled .luck-btn {
   background: #26282F;
   cursor: default;
 }
@@ -5260,7 +5338,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-controls.disabled .luck-display .luck-value,
 .heal-wrapper .luck-controls.disabled .luck-display .luck-value,
 .stress-roll-wrapper .luck-controls.disabled .luck-display .luck-value,
-.fright-roll-wrapper .luck-controls.disabled .luck-display .luck-value {
+.fright-roll-wrapper .luck-controls.disabled .luck-display .luck-value,
+.create-item-wrapper .luck-controls.disabled .luck-display .luck-value {
   color: #444856;
 }
 .reload-dialog-wrapper .luck-btn,
@@ -5272,7 +5351,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-btn,
 .heal-wrapper .luck-btn,
 .stress-roll-wrapper .luck-btn,
-.fright-roll-wrapper .luck-btn {
+.fright-roll-wrapper .luck-btn,
+.create-item-wrapper .luck-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5294,7 +5374,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-btn img,
 .heal-wrapper .luck-btn img,
 .stress-roll-wrapper .luck-btn img,
-.fright-roll-wrapper .luck-btn img {
+.fright-roll-wrapper .luck-btn img,
+.create-item-wrapper .luck-btn img {
   width: 24px;
   height: 24px;
   border: none;
@@ -5308,7 +5389,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-btn:hover:not(.disabled),
 .heal-wrapper .luck-btn:hover:not(.disabled),
 .stress-roll-wrapper .luck-btn:hover:not(.disabled),
-.fright-roll-wrapper .luck-btn:hover:not(.disabled) {
+.fright-roll-wrapper .luck-btn:hover:not(.disabled),
+.create-item-wrapper .luck-btn:hover:not(.disabled) {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .luck-btn.disabled,
@@ -5320,7 +5402,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-btn.disabled,
 .heal-wrapper .luck-btn.disabled,
 .stress-roll-wrapper .luck-btn.disabled,
-.fright-roll-wrapper .luck-btn.disabled {
+.fright-roll-wrapper .luck-btn.disabled,
+.create-item-wrapper .luck-btn.disabled {
   background: #26282F;
   cursor: not-allowed;
 }
@@ -5333,7 +5416,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-display,
 .heal-wrapper .luck-display,
 .stress-roll-wrapper .luck-display,
-.fright-roll-wrapper .luck-display {
+.fright-roll-wrapper .luck-display,
+.create-item-wrapper .luck-display {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -5351,7 +5435,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .luck-display .luck-value,
 .heal-wrapper .luck-display .luck-value,
 .stress-roll-wrapper .luck-display .luck-value,
-.fright-roll-wrapper .luck-display .luck-value {
+.fright-roll-wrapper .luck-display .luck-value,
+.create-item-wrapper .luck-display .luck-value {
   font-family: var(--font-blender);
   font-size: 32px;
   font-weight: 700;
@@ -5368,7 +5453,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-grid,
 .heal-wrapper .location-grid,
 .stress-roll-wrapper .location-grid,
-.fright-roll-wrapper .location-grid {
+.fright-roll-wrapper .location-grid,
+.create-item-wrapper .location-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
@@ -5382,7 +5468,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-grid.disabled,
 .heal-wrapper .location-grid.disabled,
 .stress-roll-wrapper .location-grid.disabled,
-.fright-roll-wrapper .location-grid.disabled {
+.fright-roll-wrapper .location-grid.disabled,
+.create-item-wrapper .location-grid.disabled {
   pointer-events: none;
 }
 .reload-dialog-wrapper .location-grid.disabled .location-btn,
@@ -5394,7 +5481,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-grid.disabled .location-btn,
 .heal-wrapper .location-grid.disabled .location-btn,
 .stress-roll-wrapper .location-grid.disabled .location-btn,
-.fright-roll-wrapper .location-grid.disabled .location-btn {
+.fright-roll-wrapper .location-grid.disabled .location-btn,
+.create-item-wrapper .location-grid.disabled .location-btn {
   background: #26282F;
   cursor: default;
 }
@@ -5407,7 +5495,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-grid.disabled .location-btn img,
 .heal-wrapper .location-grid.disabled .location-btn img,
 .stress-roll-wrapper .location-grid.disabled .location-btn img,
-.fright-roll-wrapper .location-grid.disabled .location-btn img {
+.fright-roll-wrapper .location-grid.disabled .location-btn img,
+.create-item-wrapper .location-grid.disabled .location-btn img {
   filter: none;
 }
 .reload-dialog-wrapper .location-btn,
@@ -5419,7 +5508,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn,
 .heal-wrapper .location-btn,
 .stress-roll-wrapper .location-btn,
-.fright-roll-wrapper .location-btn {
+.fright-roll-wrapper .location-btn,
+.create-item-wrapper .location-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5440,7 +5530,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn img,
 .heal-wrapper .location-btn img,
 .stress-roll-wrapper .location-btn img,
-.fright-roll-wrapper .location-btn img {
+.fright-roll-wrapper .location-btn img,
+.create-item-wrapper .location-btn img {
   width: 24px;
   height: 24px;
   filter: brightness(0) invert(1);
@@ -5455,7 +5546,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn:hover,
 .heal-wrapper .location-btn:hover,
 .stress-roll-wrapper .location-btn:hover,
-.fright-roll-wrapper .location-btn:hover {
+.fright-roll-wrapper .location-btn:hover,
+.create-item-wrapper .location-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .location-btn.selected,
@@ -5467,7 +5559,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn.selected,
 .heal-wrapper .location-btn.selected,
 .stress-roll-wrapper .location-btn.selected,
-.fright-roll-wrapper .location-btn.selected {
+.fright-roll-wrapper .location-btn.selected,
+.create-item-wrapper .location-btn.selected {
   background: var(--chat-green, #24563D);
 }
 .reload-dialog-wrapper .location-btn.selected:hover,
@@ -5479,7 +5572,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn.selected:hover,
 .heal-wrapper .location-btn.selected:hover,
 .stress-roll-wrapper .location-btn.selected:hover,
-.fright-roll-wrapper .location-btn.selected:hover {
+.fright-roll-wrapper .location-btn.selected:hover,
+.create-item-wrapper .location-btn.selected:hover {
   background: rgb(43.5245901639, 103.9754098361, 73.75);
 }
 .reload-dialog-wrapper .location-btn.disabled,
@@ -5491,7 +5585,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn.disabled,
 .heal-wrapper .location-btn.disabled,
 .stress-roll-wrapper .location-btn.disabled,
-.fright-roll-wrapper .location-btn.disabled {
+.fright-roll-wrapper .location-btn.disabled,
+.create-item-wrapper .location-btn.disabled {
   background: #26282F;
   cursor: default;
   pointer-events: none;
@@ -5505,7 +5600,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .location-btn.disabled img,
 .heal-wrapper .location-btn.disabled img,
 .stress-roll-wrapper .location-btn.disabled img,
-.fright-roll-wrapper .location-btn.disabled img {
+.fright-roll-wrapper .location-btn.disabled img,
+.create-item-wrapper .location-btn.disabled img {
   filter: none;
 }
 .reload-dialog-wrapper .conditions-grid--single,
@@ -5517,7 +5613,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .conditions-grid--single,
 .heal-wrapper .conditions-grid--single,
 .stress-roll-wrapper .conditions-grid--single,
-.fright-roll-wrapper .conditions-grid--single {
+.fright-roll-wrapper .conditions-grid--single,
+.create-item-wrapper .conditions-grid--single {
   display: block;
 }
 .reload-dialog-wrapper .conditions-grid--single .execute-btn,
@@ -5529,7 +5626,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .conditions-grid--single .execute-btn,
 .heal-wrapper .conditions-grid--single .execute-btn,
 .stress-roll-wrapper .conditions-grid--single .execute-btn,
-.fright-roll-wrapper .conditions-grid--single .execute-btn {
+.fright-roll-wrapper .conditions-grid--single .execute-btn,
+.create-item-wrapper .conditions-grid--single .execute-btn {
   width: 100%;
 }
 .reload-dialog-wrapper .execute-btn,
@@ -5541,7 +5639,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .execute-btn,
 .heal-wrapper .execute-btn,
 .stress-roll-wrapper .execute-btn,
-.fright-roll-wrapper .execute-btn {
+.fright-roll-wrapper .execute-btn,
+.create-item-wrapper .execute-btn {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5569,7 +5668,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .execute-btn:hover,
 .heal-wrapper .execute-btn:hover,
 .stress-roll-wrapper .execute-btn:hover,
-.fright-roll-wrapper .execute-btn:hover {
+.fright-roll-wrapper .execute-btn:hover,
+.create-item-wrapper .execute-btn:hover {
   background: rgb(79.2597402597, 83.9220779221, 100.2402597403);
 }
 .reload-dialog-wrapper .execute-btn.selected,
@@ -5581,7 +5681,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .execute-btn.selected,
 .heal-wrapper .execute-btn.selected,
 .stress-roll-wrapper .execute-btn.selected,
-.fright-roll-wrapper .execute-btn.selected {
+.fright-roll-wrapper .execute-btn.selected,
+.create-item-wrapper .execute-btn.selected {
   background: #1A804D;
 }
 .reload-dialog-wrapper .execute-btn.selected:hover,
@@ -5593,7 +5694,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper .execute-btn.selected:hover,
 .heal-wrapper .execute-btn.selected:hover,
 .stress-roll-wrapper .execute-btn.selected:hover,
-.fright-roll-wrapper .execute-btn.selected:hover {
+.fright-roll-wrapper .execute-btn.selected:hover,
+.create-item-wrapper .execute-btn.selected:hover {
   background: rgb(30.3051948052, 149.1948051948, 89.75);
 }
 .reload-dialog-wrapper.ranged-attack-wrapper .unarmed-actions,
@@ -5605,7 +5707,38 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper.ranged-attack-wrapper .unarmed-actions,
 .heal-wrapper.ranged-attack-wrapper .unarmed-actions,
 .stress-roll-wrapper.ranged-attack-wrapper .unarmed-actions,
-.fright-roll-wrapper.ranged-attack-wrapper .unarmed-actions {
+.fright-roll-wrapper.ranged-attack-wrapper .unarmed-actions,
+.create-item-wrapper.ranged-attack-wrapper .unarmed-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.reload-dialog-wrapper .create-item-grid,
+.ranged-attack-wrapper .create-item-grid,
+.range-selection-wrapper .create-item-grid,
+.melee-attack-wrapper .create-item-grid,
+.skill-roll-wrapper .create-item-grid,
+.defence-roll-wrapper .create-item-grid,
+.medical-help-wrapper .create-item-grid,
+.heal-wrapper .create-item-grid,
+.stress-roll-wrapper .create-item-grid,
+.fright-roll-wrapper .create-item-grid,
+.create-item-wrapper .create-item-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.reload-dialog-wrapper .create-item-row,
+.ranged-attack-wrapper .create-item-row,
+.range-selection-wrapper .create-item-row,
+.melee-attack-wrapper .create-item-row,
+.skill-roll-wrapper .create-item-row,
+.defence-roll-wrapper .create-item-row,
+.medical-help-wrapper .create-item-row,
+.heal-wrapper .create-item-row,
+.stress-roll-wrapper .create-item-row,
+.fright-roll-wrapper .create-item-row,
+.create-item-wrapper .create-item-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -5619,7 +5752,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
 .heal-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
 .stress-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
-.fright-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled {
+.fright-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled,
+.create-item-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled {
   background: #26282F;
   color: #444856;
   cursor: default;
@@ -5634,7 +5768,8 @@ input.skill-value.skill-level-input:focus {
 .medical-help-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
 .heal-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
 .stress-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
-.fright-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label {
+.fright-roll-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label,
+.create-item-wrapper.defence-roll-wrapper .range-dropdown--disabled .range-dropdown-btn.disabled .range-label {
   color: #444856;
 }
 

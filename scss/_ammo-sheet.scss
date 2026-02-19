@@ -25,7 +25,8 @@
 .app.window-app.medical-help-dialog,
 .app.window-app.heal-dialog,
 .app.window-app.stress-roll-dialog,
-.app.window-app.fright-roll-dialog {
+.app.window-app.fright-roll-dialog,
+.app.window-app.create-item-dialog {
   background: var(--chat-back, #1A1A1A);
   border: 2px solid var(--chat-stroke, #252730);
   border-radius: 4px;
@@ -55,7 +56,8 @@
 .medical-help-wrapper,
 .heal-wrapper,
 .stress-roll-wrapper,
-.fright-roll-wrapper {
+.fright-roll-wrapper,
+.create-item-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -574,6 +576,19 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+  }
+
+  // Create Item dialog grid - 6 rows × 2 columns
+  .create-item-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .create-item-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   // Defence dialog disabled dropdown styling

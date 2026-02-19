@@ -1,0 +1,17 @@
+<div class="create-item-wrapper">
+  <header class="reload-header">
+    <span class="reload-title">{{title}}</span>
+    <a class="header-control close"><i class="fas fa-times"></i></a>
+  </header>
+  <div class="create-item-grid">
+    {{#each rows}}
+    <div class="create-item-row">
+      {{#each this}}
+      <button type="button" class="fire-mode-btn create-item-btn" data-type="{{this.type}}">
+        {{this.label}}
+      </button>
+      {{/each}}
+    </div>
+    {{/each}}
+  </div>
+</div>

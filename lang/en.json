@@ -8,6 +8,8 @@
     "TYPES.Item.misc": "Commodity",
     "TYPES.Item.program": "Program",
     "TYPES.Item.role": "Role",
+    "CYBERPUNK.CreateItem": "Create Item",
+    "CYBERPUNK.AddItem": "Add Item",
     "CYBERPUNK.ActorName": "Handle",
     "CYBERPUNK.Role": "Role",
     "CYBERPUNK.Age": "Age",

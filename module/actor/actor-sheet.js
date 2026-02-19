@@ -15,6 +15,7 @@ import { HealDialog } from "../dialog/heal-dialog.js"
 import { StressRollDialog } from "../dialog/stress-roll-dialog.js"
 import { FrightRollDialog } from "../dialog/fright-roll-dialog.js"
 import { COVER_TYPES, CONDITION_TOGGLE_ROWS } from "../conditions.js"
+import { CreateItemDialog } from "../dialog/create-item-dialog.js"
 
 /**
  * Character sheet for Cyberpunk 2020 actors.
@@ -75,7 +76,8 @@ export class CyberpunkActorSheet extends ActorSheet {
       width: 930,
       height: 624,
       resizable: true,
-      tabs: [{ navSelector: ".tab-selector", contentSelector: ".sheet-details", initial: "skills" }]
+      tabs: [{ navSelector: ".tab-selector", contentSelector: ".sheet-details", initial: "skills" }],
+      dragDrop: [{dragSelector: ".gear-row[data-item-id]:not(.cyberware-option.detached)", dropSelector: null}]
     });
   }
 
@@ -1610,6 +1612,12 @@ export class CyberpunkActorSheet extends ActorSheet {
       this.close();
     });
 
+    // Add Item floating button (Gear & Cyberware tabs)
+    html.find('.add-item-fab').click(ev => {
+      ev.preventDefault();
+      new CreateItemDialog(this.actor).render(true);
+    });
+
     // ----- Portrait Click -----
     // When locked: show full-screen image popup
     // When unlocked: open FilePicker to change image
@@ -2843,7 +2851,25 @@ export class CyberpunkActorSheet extends ActorSheet {
     });
 
     tabBeautifying(html[0]);
-    html.find('.tab-selector').on('click', () => tabBeautifying(html[0]));
+    html.find('.tab-selector').on('click', () => {
+      tabBeautifying(html[0]);
+      this._updateAddItemFab(html);
+    });
+
+    // Show/hide the Add Item FAB based on the active tab
+    this._updateAddItemFab(html);
+  }
+
+  /**
+   * Show the Add Item FAB only on the Gear and Cyberware tabs
+   * @param {jQuery} html
+   */
+  _updateAddItemFab(html) {
+    const fab = html.find('.add-item-fab')[0];
+    if (!fab) return;
+    const activeTab = html.find('.tab.active')[0];
+    const show = activeTab?.classList.contains('gear') || activeTab?.classList.contains('cyber');
+    fab.style.display = show ? 'block' : 'none';
   }
 
   /**

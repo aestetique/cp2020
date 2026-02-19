@@ -18,6 +18,7 @@ import { CyberpunkCombat } from "./combat.js";
 import { processFormulaRoll } from "./dice.js";
 import { CYBERPUNK_CONDITIONS, CONDITION_EFFECTS } from "./conditions.js";
 import { CyberpunkTokenRuler } from "./canvas/token-ruler.js";
+import { CreateItemDialog } from "./dialog/create-item-dialog.js";
 
 import { preloadHandlebarsTemplates } from "./templates.js";
 import { registerHandlebarsHelpers } from "./handlebars-helpers.js"
@@ -47,6 +48,16 @@ Hooks.once('init', async function () {
 
     // Register custom token ruler for color-coded movement
     CONFIG.Token.rulerClass = CyberpunkTokenRuler;
+
+    // Override the Items sidebar "Create Item" button with our custom dialog
+    class CyberpunkItemDirectory extends ItemDirectory {
+      _onCreateEntry(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        new CreateItemDialog().render(true);
+      }
+    }
+    CONFIG.ui.items = CyberpunkItemDirectory;
 
     // Register sheets, unregister original core sheets
     Actors.unregisterSheet("core", ActorSheet);

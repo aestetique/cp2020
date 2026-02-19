@@ -87,6 +87,7 @@ export const preloadHandlebarsTemplates = async function() {
         "systems/cyberpunk/templates/dialog/defence-roll.hbs",
         "systems/cyberpunk/templates/dialog/stress-roll.hbs",
         "systems/cyberpunk/templates/dialog/fright-roll.hbs",
+        "systems/cyberpunk/templates/dialog/create-item.hbs",
 
         // Program
         "systems/cyberpunk/templates/item/parts/program/summary.hbs",
