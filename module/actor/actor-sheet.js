@@ -140,6 +140,27 @@ export class CyberpunkActorSheet extends ActorSheet {
       }
     }
 
+    // If the sheet is minimized, re-apply minimized styling to the fresh DOM elements
+    if (this._isMinimized && this.element?.length) {
+      const tabSelector = this.element.find('.tab-selector')[0];
+      const sheetContent = this.element.find('.sheet-content')[0];
+      const sheetResize = this.element.find('.sheet-resize')[0];
+      const sheetFrame = this.element.find('.sheet-frame')[0];
+      const characterSheet = this.element.find('.character-sheet')[0];
+      if (tabSelector) tabSelector.style.display = 'none';
+      if (sheetContent) sheetContent.style.display = 'none';
+      if (sheetResize) sheetResize.style.display = 'none';
+      if (sheetFrame) {
+        sheetFrame.style.minHeight = '0';
+        sheetFrame.style.width = '400px';
+        sheetFrame.style.height = '46px';
+      }
+      if (characterSheet) {
+        characterSheet.style.width = '400px';
+        characterSheet.style.minHeight = '46px';
+      }
+    }
+
     return result;
   }
 

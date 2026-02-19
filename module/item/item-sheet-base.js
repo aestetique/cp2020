@@ -122,6 +122,7 @@ export class CyberpunkItemSheet extends ItemSheet {
 
     const appElement = this.element[0];
     const content = appElement.querySelector(".item-content");
+    const card = appElement.querySelector(".item-card");
 
     if (this._isMinimized) {
       // Maximize - restore original height
@@ -131,6 +132,8 @@ export class CyberpunkItemSheet extends ItemSheet {
       setTimeout(() => {
         if (content) content.style.display = "";
         appElement.style.transition = "";
+        appElement.style.minHeight = "";
+        if (card) card.style.minHeight = "";
         this.setPosition({ height: this._originalHeight });
       }, 200);
 
@@ -140,6 +143,8 @@ export class CyberpunkItemSheet extends ItemSheet {
       this._originalHeight = appElement.offsetHeight;
 
       if (content) content.style.display = "none";
+      appElement.style.minHeight = "0";
+      if (card) card.style.minHeight = "0";
 
       appElement.style.transition = "height 200ms ease";
       appElement.style.height = "38px";
