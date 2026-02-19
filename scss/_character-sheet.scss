@@ -1344,6 +1344,7 @@ input.skill-value.skill-level-input {
 
 // Weight: same style as price
 .gear-weight {
+  width: 50px;
   height: 24px;
   display: flex;
   flex-direction: row;
@@ -1353,6 +1354,7 @@ input.skill-value.skill-level-input {
   padding-right: 8px;
 
   .price-value {
+    width: 100%;
     font-family: var(--font-blender);
     font-weight: 300; // Book
     font-size: 16px;
@@ -1379,6 +1381,7 @@ input.skill-value.skill-level-input {
   padding-right: 8px;
 
   .price-value {
+    width: 100%;
     font-family: var(--font-blender);
     font-weight: 300; // Book
     font-size: 16px;
@@ -1392,6 +1395,31 @@ input.skill-value.skill-level-input {
     height: 16px;
     border: none;
   }
+}
+
+// Eurodollars inline input (in gear-price position)
+.eurobucks-input {
+  height: 24px;
+  padding: 0;
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: right;
+  color: #FFFFFF;
+  background: transparent;
+  border: none;
+
+  &:focus {
+    box-shadow: 0 0 0 1px #444856;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
 }
 
 // Item-specific field: 30px tall

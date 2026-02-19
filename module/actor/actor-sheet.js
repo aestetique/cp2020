@@ -1160,6 +1160,9 @@ export class CyberpunkActorSheet extends ActorSheet {
       };
     });
 
+    // Eurodollars (spare funds)
+    sheetData.eurobucks = this.actor.system.gear?.eurobucks || 0;
+
     // Prepare ammo data
     const ammoItems = this.actor.itemTypes.ammo || [];
     sheetData.ammoItems = ammoItems.map(a => {
@@ -1993,6 +1996,12 @@ export class CyberpunkActorSheet extends ActorSheet {
         "system.chipLevel": newChipLevel
       }]);
     });
+
+    // Eurodollars input on Gear tab
+    html.find('.eurobucks-input').change(async ev => {
+      const value = parseInt(ev.target.value, 10) || 0;
+      await this.actor.update({ "system.gear.eurobucks": Math.max(0, value) });
+    }).dblclick(ev => ev.target.select());
 
     // Skill IP input for new skills tab
     html.find('.skill-ip').change(async ev => {

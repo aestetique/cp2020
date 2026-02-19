@@ -3053,6 +3053,7 @@ input.skill-value.skill-level-input:focus {
 }
 
 .gear-weight {
+  width: 50px;
   height: 24px;
   display: flex;
   flex-direction: row;
@@ -3062,6 +3063,7 @@ input.skill-value.skill-level-input:focus {
   padding-right: 8px;
 }
 .gear-weight .price-value {
+  width: 100%;
   font-family: var(--font-blender);
   font-weight: 300;
   font-size: 16px;
@@ -3085,6 +3087,7 @@ input.skill-value.skill-level-input:focus {
   padding-right: 8px;
 }
 .gear-price .price-value {
+  width: 100%;
   font-family: var(--font-blender);
   font-weight: 300;
   font-size: 16px;
@@ -3096,6 +3099,29 @@ input.skill-value.skill-level-input:focus {
   width: 16px;
   height: 16px;
   border: none;
+}
+
+.eurobucks-input {
+  height: 24px;
+  padding: 0;
+  font-family: var(--font-blender);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: right;
+  color: #FFFFFF;
+  background: transparent;
+  border: none;
+}
+.eurobucks-input:focus {
+  box-shadow: 0 0 0 1px #444856;
+}
+.eurobucks-input::-webkit-outer-spin-button, .eurobucks-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.eurobucks-input {
+  -moz-appearance: textfield;
 }
 
 .gear-field {

@@ -253,6 +253,8 @@
     "CYBERPUNK.Cyberware": "Cyberware",
     "CYBERPUNK.Misc": "Misc",
     "CYBERPUNK.Eurobucks": "Eurodollari",
+    "CYBERPUNK.Eurodollars": "Eurodollari",
+    "CYBERPUNK.SpareFunds": "Fondi disponibili",
 
     "CYBERPUNK.Equipped": "Equipaggiata",
     "CYBERPUNK.Details": "Dettagli",

@@ -292,14 +292,35 @@
   </div>
   {{/if}}
 
-  {{!-- 6. COMMODITIES Block --}}
-  {{#if gearItems.length}}
+  {{!-- 6. COMMODITIES Block (always visible — eurodollars row is permanent) --}}
   <div class="gear-block">
     <header class="tab-header">
       <span class="tab-title">COMMODITIES</span>
       <img class="tab-badge" src="systems/cyberpunk/img/ui/badge-commodity.svg" alt="">
     </header>
     <div class="tab-content gear-content">
+      {{!-- Eurodollars (always first) --}}
+      <div class="gear-row" data-item-id="eurodollars">
+        <div class="gear-icon">
+          <img src="systems/cyberpunk/img/ui/eurodollars.svg" alt="{{loc "Eurodollars"}}">
+        </div>
+        <div class="gear-info">
+          <span class="gear-name">{{loc "Eurodollars"}}</span>
+          <span class="gear-context">{{loc "SpareFunds"}}</span>
+        </div>
+        <div class="gear-price">
+          <input type="number" class="eurobucks-input" value="{{eurobucks}}" min="0">
+          <img src="systems/cyberpunk/img/ui/badge-eurodollar.svg" alt="eb">
+        </div>
+        <div class="gear-weight invisible">
+          <span class="price-value">0</span>
+          <img src="systems/cyberpunk/img/ui/badge-weight.svg" alt="kg">
+        </div>
+        <div class="gear-field" style="width: 60px;"></div>
+        <div class="gear-field" style="width: 60px;"></div>
+        <div class="gear-action-btn"></div>
+        <div class="gear-actions"></div>
+      </div>
       {{#each gearItems as |item|}}
         <div class="gear-row" data-item-id="{{item.id}}">
           <div class="gear-icon">
@@ -332,7 +353,6 @@
       {{/each}}
     </div>
   </div>
-  {{/if}}
 
   {{!-- 7. AMMO Block --}}
   {{#if ammoItems.length}}
